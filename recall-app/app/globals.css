@@ -45,3 +45,38 @@ select {
 ::selection {
   background: rgba(52, 211, 153, 0.25);
 }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+@utility input-base {
+  display: block;
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: #e2e8f0;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+  resize: vertical;
+
+  &::placeholder {
+    color: #475569;
+  }
+
+  &:focus {
+    border-color: rgba(52, 211, 153, 0.45);
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.12);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

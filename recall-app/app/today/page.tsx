@@ -24,9 +24,12 @@ export default async function TodayPage() {
         </div>
 
         {dueCards.length === 0 ? (
-          <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/10 p-8 text-center">
-            <p className="text-lg font-semibold text-white">Done for today</p>
-            <p className="mt-3 text-sm leading-7 text-slate-300">You can close the app here, or add a new card while a thought is still fresh.</p>
+          <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 p-10 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-300/20 bg-emerald-400/15 text-2xl">
+              ✓
+            </div>
+            <p className="text-xl font-semibold text-white">All clear.</p>
+            <p className="mx-auto mt-3 max-w-sm text-sm leading-7 text-slate-400">You showed up. Nothing else is asked of you today. Come back when something new surfaces.</p>
           </div>
         ) : (
           <div className="space-y-5">
@@ -42,6 +45,8 @@ export default async function TodayPage() {
                   hook: card.hook,
                   synonyms: card.synonyms,
                   deckName: card.deck.name,
+                  interval: card.interval,
+                  repetitions: card.repetitions,
                 }}
                 onGrade={gradeCard}
               />

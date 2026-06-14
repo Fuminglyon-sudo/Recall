@@ -5,46 +5,59 @@ import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
 import { CalmCard } from "@/components/calm-card";
 import { DeckList } from "@/components/deck-list";
+import { computeDistribution, getMastery, MASTERY, type MasteryLevel } from "@/lib/mastery";
 
 async function getDashboardData() {
   const today = new Date();
   const todayStart = new Date(today);
   todayStart.setHours(0, 0, 0, 0);
 
-  const [dueToday, totalCards, streak, decks] = await Promise.all([
-    prisma.card.count({ where: { dueAt: { lte: today } } }),
-    prisma.card.count(),
+  const [allCards, streak, decks] = await Promise.all([
+    prisma.card.findMany({
+      select: { interval: true, repetitions: true },
+    }),
     prisma.streak.findFirst(),
     prisma.deck.findMany({
       orderBy: { createdAt: "asc" },
       include: {
         _count: { select: { cards: true } },
         cards: {
-          where: { dueAt: { lte: today } },
-          select: { id: true },
+          select: { id: true, interval: true, repetitions: true, dueAt: true },
         },
       },
     }),
   ]);
 
+  const dueTodayCount = decks.reduce(
+    (sum, d) => sum + d.cards.filter((c) => c.dueAt <= today).length,
+    0,
+  );
+
+  const mastery = computeDistribution(allCards);
+
   return {
-    dueToday,
-    totalCards,
+    dueToday: dueTodayCount,
+    totalCards: allCards.length,
     currentStreak: streak?.currentStreak ?? 0,
     reviewedToday: streak?.lastReviewDate ? isSameCalendarDay(streak.lastReviewDate, todayStart) : false,
+    mastery,
     decks: decks.map((deck) => ({
       id: deck.id,
       name: deck.name,
       description: deck.description,
       cardCount: deck._count.cards,
-      dueCount: deck.cards.length,
+      dueCount: deck.cards.filter((c) => c.dueAt <= today).length,
       createdAt: deck.createdAt,
+      mastery: computeDistribution(deck.cards),
     })),
   };
 }
 
+const MASTERY_ORDER: MasteryLevel[] = ["new", "learning", "familiar", "mastered"];
+
 export default async function HomePage() {
   const data = await getDashboardData();
+  const total = data.totalCards || 1;
 
   return (
     <AppShell>
@@ -62,8 +75,60 @@ export default async function HomePage() {
 
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard label="Current streak" value={String(data.currentStreak)} helper={data.reviewedToday ? "You showed up today." : "Your rhythm resumes today."} />
-          <StatCard label="Total cards learned" value={String(data.totalCards)} helper="Every saved card counts." />
-          <StatCard label="Cards due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
+          <StatCard label="Total cards" value={String(data.totalCards)} helper="Every saved card counts." />
+          <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
+        </div>
+
+        {/* Mastery distribution */}
+        <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Mastery</p>
+              <p className="mt-1 text-base font-semibold text-white">
+                {data.mastery.mastered} of {data.totalCards} card{data.totalCards === 1 ? "" : "s"} mastered
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+              {MASTERY_ORDER.map((lvl) => (
+                <span key={lvl} className="flex items-center gap-1.5">
+                  <span className={`h-2 w-2 rounded-full ${MASTERY[lvl].bar}`} />
+                  {MASTERY[lvl].label}
+                  <span className="font-medium text-slate-300">{data.mastery[lvl]}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Segmented progress bar */}
+          <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-white/5">
+            {MASTERY_ORDER.map((lvl) => {
+              const pct = (data.mastery[lvl] / total) * 100;
+              if (pct === 0) return null;
+              return (
+                <div
+                  key={lvl}
+                  className={`h-full transition-all ${MASTERY[lvl].bar}`}
+                  style={{ width: `${pct}%` }}
+                  title={`${MASTERY[lvl].label}: ${data.mastery[lvl]}`}
+                />
+              );
+            })}
+          </div>
+
+          {/* Per-mastery breakdown cards */}
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {MASTERY_ORDER.map((lvl) => {
+              const meta = MASTERY[lvl];
+              const count = data.mastery[lvl];
+              return (
+                <div key={lvl} className={`rounded-2xl border p-3 ${meta.bg} ${meta.border}`}>
+                  <p className={`text-xs font-medium ${meta.color}`}>{meta.label}</p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{count}</p>
+                  <p className="text-xs text-slate-500">{total > 0 ? Math.round((count / total) * 100) : 0}%</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1.35fr_0.9fr]">
