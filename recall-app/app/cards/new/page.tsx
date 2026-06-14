@@ -3,9 +3,11 @@ import { AppShell } from "@/components/app-shell";
 import { SubmitButton } from "@/components/forms";
 import { createCard } from "./actions";
 import { DraftCardForm } from "@/components/draft-card-form";
+import { isDatabaseReady } from "@/lib/db-ready";
 
 export default async function NewCardPage() {
-  const decks = await prisma.deck.findMany({ orderBy: { createdAt: "asc" } });
+  const ready = await isDatabaseReady();
+  const decks = ready ? await prisma.deck.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []) : [];
 
   return (
     <AppShell>
@@ -16,7 +18,13 @@ export default async function NewCardPage() {
           Type the front of the card, ask Recall to draft the rest, edit anything you want, then save.
         </p>
         <div className="mt-8">
-          <DraftCardForm decks={decks} createCardAction={createCard} submitButton={<SubmitButton label="Save card" pendingLabel="Saving card..." />} />
+          {decks.length > 0 ? (
+            <DraftCardForm decks={decks} createCardAction={createCard} submitButton={<SubmitButton label="Save card" pendingLabel="Saving card..." />} />
+          ) : (
+            <div className="rounded-3xl border border-amber-300/20 bg-amber-400/10 p-5 text-sm leading-7 text-amber-100">
+              The database is not ready yet. Run [`prisma migrate deploy`](package.json:1) against your PostgreSQL database, then redeploy or refresh.
+            </div>
+          )}
         </div>
       </section>
     </AppShell>

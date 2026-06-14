@@ -43,6 +43,8 @@ For Vercel production, run a deploy migration after your environment variables a
 npx prisma migrate deploy
 ```
 
+If your hosted Postgres database is still empty, run the migration before expecting the deployed app to render real data. After migrating, run the seed locally against the same database only if you want starter data there.
+
 ## Run locally
 
 ```bash

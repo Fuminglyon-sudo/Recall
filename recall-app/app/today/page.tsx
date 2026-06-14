@@ -2,13 +2,17 @@ import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { ReviewCard } from "@/components/review-card";
 import { gradeCard } from "./actions";
+import { isDatabaseReady } from "@/lib/db-ready";
 
 export default async function TodayPage() {
-  const dueCards = await prisma.card.findMany({
-    where: { dueAt: { lte: new Date() } },
-    orderBy: [{ dueAt: "asc" }, { createdAt: "asc" }],
-    include: { deck: true },
-  });
+  const ready = await isDatabaseReady();
+  const dueCards = ready
+    ? await prisma.card.findMany({
+        where: { dueAt: { lte: new Date() } },
+        orderBy: [{ dueAt: "asc" }, { createdAt: "asc" }],
+        include: { deck: true },
+      })
+    : [];
 
   return (
     <AppShell>
@@ -23,7 +27,14 @@ export default async function TodayPage() {
           </p>
         </div>
 
-        {dueCards.length === 0 ? (
+        {!ready ? (
+          <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/10 p-10 text-center">
+            <p className="text-xl font-semibold text-white">Database setup still needed.</p>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-amber-100">
+              Run [`prisma migrate deploy`](package.json:1) against your PostgreSQL database so Recall can load your review queue.
+            </p>
+          </div>
+        ) : dueCards.length === 0 ? (
           <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 p-10 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-emerald-300/20 bg-emerald-400/15 text-2xl">
               ✓

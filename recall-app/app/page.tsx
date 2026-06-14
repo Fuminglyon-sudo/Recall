@@ -6,11 +6,25 @@ import { StatCard } from "@/components/stat-card";
 import { CalmCard } from "@/components/calm-card";
 import { DeckList } from "@/components/deck-list";
 import { computeDistribution, getMastery, MASTERY, type MasteryLevel } from "@/lib/mastery";
+import { isDatabaseReady } from "@/lib/db-ready";
 
 async function getDashboardData() {
   const today = new Date();
   const todayStart = new Date(today);
   todayStart.setHours(0, 0, 0, 0);
+
+  const tablesReady = await isDatabaseReady();
+
+  if (!tablesReady) {
+    return {
+      dueToday: 0,
+      totalCards: 0,
+      currentStreak: 0,
+      reviewedToday: false,
+      mastery: computeDistribution([]),
+      decks: [],
+    };
+  }
 
   const [allCards, streak, decks] = await Promise.all([
     prisma.card.findMany({

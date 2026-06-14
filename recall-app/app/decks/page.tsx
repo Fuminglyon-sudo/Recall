@@ -3,12 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { createDeck } from "./actions";
 import { SubmitButton } from "@/components/forms";
+import { isDatabaseReady } from "@/lib/db-ready";
 
 export default async function DecksPage() {
-  const decks = await prisma.deck.findMany({
-    orderBy: { createdAt: "asc" },
-    include: { _count: { select: { cards: true } } },
-  });
+  const ready = await isDatabaseReady();
+  const decks = ready
+    ? await prisma.deck.findMany({
+        orderBy: { createdAt: "asc" },
+        include: { _count: { select: { cards: true } } },
+      })
+    : [];
 
   return (
     <AppShell>
@@ -17,6 +21,11 @@ export default async function DecksPage() {
           <p className="text-sm font-medium text-emerald-300">Decks</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Organise cards by topic, product, or people you want to remember well.</h1>
           <div className="mt-8 grid gap-4">
+            {!ready ? (
+              <div className="rounded-3xl border border-amber-300/20 bg-amber-400/10 p-5 text-sm leading-7 text-amber-100">
+                Decks will appear after your PostgreSQL database has been migrated.
+              </div>
+            ) : null}
             {decks.map((deck) => (
               <Link key={deck.id} href={`/decks/${deck.id}`} className="rounded-3xl border border-white/10 bg-slate-950/60 p-5 transition hover:border-emerald-300/30">
                 <div className="flex items-start justify-between gap-4">
