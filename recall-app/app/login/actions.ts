@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkCredentials, signToken, COOKIE_NAME } from "@/lib/auth";
+import { checkCredentials, createSessionToken, COOKIE_NAME } from "@/lib/auth";
 
 export async function loginAction(formData: FormData) {
   const username = (formData.get("username") as string | null) ?? "";
@@ -13,7 +13,7 @@ export async function loginAction(formData: FormData) {
     redirect(`/login?error=1&from=${encodeURIComponent(from)}`);
   }
 
-  const token = signToken("authenticated");
+  const token = createSessionToken();
   const jar = await cookies();
   jar.set(COOKIE_NAME, token, {
     httpOnly: true,

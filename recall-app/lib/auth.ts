@@ -1,23 +1,10 @@
-import { createHmac, timingSafeEqual } from "crypto";
+import { createHmac } from "crypto";
 
 const COOKIE_NAME = "recall_session";
-const SECRET = process.env.AUTH_SECRET ?? "fallback-dev-secret";
 
-export function signToken(value: string): string {
-  const sig = createHmac("sha256", SECRET).update(value).digest("hex");
-  return `${value}.${sig}`;
-}
-
-export function verifyToken(token: string): boolean {
-  const dot = token.lastIndexOf(".");
-  if (dot === -1) return false;
-  const value = token.slice(0, dot);
-  const expected = signToken(value);
-  try {
-    return timingSafeEqual(Buffer.from(token), Buffer.from(expected));
-  } catch {
-    return false;
-  }
+export function createSessionToken(): string {
+  const secret = process.env.AUTH_SECRET ?? "fallback-dev-secret";
+  return createHmac("sha256", secret).update("authenticated").digest("hex");
 }
 
 export function checkCredentials(username: string, password: string): boolean {
