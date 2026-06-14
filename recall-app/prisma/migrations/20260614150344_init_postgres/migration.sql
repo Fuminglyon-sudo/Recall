@@ -1,14 +1,16 @@
 -- CreateTable
 CREATE TABLE "Deck" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Deck_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Card" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "deckId" TEXT NOT NULL,
     "front" TEXT NOT NULL,
     "back" TEXT NOT NULL,
@@ -18,29 +20,33 @@ CREATE TABLE "Card" (
     "synonyms" TEXT,
     "kind" TEXT NOT NULL DEFAULT 'VOCABULARY',
     "sourceContext" TEXT,
-    "easeFactor" REAL NOT NULL DEFAULT 2.5,
+    "easeFactor" DOUBLE PRECISION NOT NULL DEFAULT 2.5,
     "interval" INTEGER NOT NULL DEFAULT 0,
     "repetitions" INTEGER NOT NULL DEFAULT 0,
-    "dueAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Card_deckId_fkey" FOREIGN KEY ("deckId") REFERENCES "Deck" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "dueAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Card_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "ReviewLog" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "cardId" TEXT NOT NULL,
     "grade" INTEGER NOT NULL,
-    "reviewedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "ReviewLog_cardId_fkey" FOREIGN KEY ("cardId") REFERENCES "Card" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "reviewedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ReviewLog_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Streak" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "currentStreak" INTEGER NOT NULL DEFAULT 0,
-    "lastReviewDate" DATETIME
+    "lastReviewDate" TIMESTAMP(3),
+
+    CONSTRAINT "Streak_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -57,3 +63,9 @@ CREATE INDEX "ReviewLog_cardId_idx" ON "ReviewLog"("cardId");
 
 -- CreateIndex
 CREATE INDEX "ReviewLog_reviewedAt_idx" ON "ReviewLog"("reviewedAt");
+
+-- AddForeignKey
+ALTER TABLE "Card" ADD CONSTRAINT "Card_deckId_fkey" FOREIGN KEY ("deckId") REFERENCES "Deck"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ReviewLog" ADD CONSTRAINT "ReviewLog_cardId_fkey" FOREIGN KEY ("cardId") REFERENCES "Card"("id") ON DELETE CASCADE ON UPDATE CASCADE;
