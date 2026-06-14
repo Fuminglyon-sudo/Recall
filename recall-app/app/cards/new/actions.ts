@@ -16,18 +16,6 @@ const cardSchema = z.object({
   sourceContext: z.string().optional(),
 });
 
-const batchSchema = z.object({
-  deckId: z.string().min(1),
-  front: z.string().min(1),
-  back: z.string().min(1),
-  partOfSpeech: z.string().optional(),
-  example: z.string().optional(),
-  hook: z.string().optional(),
-  synonyms: z.string().optional(),
-  kind: z.enum(["VOCABULARY", "FOUNDER", "MEMORY"]),
-  sourceContext: z.string().optional(),
-});
-
 export async function createCard(formData: FormData) {
   const values = cardSchema.parse({
     deckId: formData.get("deckId"),
@@ -42,10 +30,7 @@ export async function createCard(formData: FormData) {
   });
 
   await prisma.card.create({
-    data: {
-      ...values,
-      dueAt: new Date(),
-    },
+    data: { ...values, dueAt: new Date() },
   });
 
   redirect("/decks/" + values.deckId);
@@ -64,8 +49,8 @@ export async function createFounderBatchCards(formData: FormData) {
     cardsByIndex.set(index, current);
   }
 
-  const cards = Array.from(cardsByIndex.values()).map((card) =>
-    batchSchema.parse({
+  const cards = Array.from(cardsByIndex.values()).flatMap((card) => {
+    const result = cardSchema.safeParse({
       deckId: card.deckId,
       front: card.front,
       back: card.back,
@@ -75,18 +60,16 @@ export async function createFounderBatchCards(formData: FormData) {
       synonyms: card.synonyms || undefined,
       kind: card.kind,
       sourceContext: card.sourceContext || undefined,
-    })
-  );
+    });
+    return result.success ? [result.data] : [];
+  });
 
   if (cards.length === 0) {
     redirect("/cards/new");
   }
 
   await prisma.card.createMany({
-    data: cards.map((card) => ({
-      ...card,
-      dueAt: new Date(),
-    })),
+    data: cards.map((card) => ({ ...card, dueAt: new Date() })),
   });
 
   redirect("/decks/" + cards[0].deckId);

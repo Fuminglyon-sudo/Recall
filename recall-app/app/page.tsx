@@ -30,10 +30,7 @@ async function getDashboardData() {
     };
   }
 
-  const [allCards, streak, decks, voiceProfile] = await Promise.all([
-    prisma.card.findMany({
-      select: { interval: true, repetitions: true },
-    }),
+  const [streak, decks, voiceProfile] = await Promise.all([
     prisma.streak.findFirst(),
     prisma.deck.findMany({
       orderBy: { createdAt: "asc" },
@@ -52,6 +49,7 @@ async function getDashboardData() {
     0,
   );
 
+  const allCards = decks.flatMap((d: typeof decks[number]) => d.cards);
   const mastery = computeDistribution(allCards);
 
   return {

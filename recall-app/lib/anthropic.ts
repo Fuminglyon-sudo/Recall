@@ -1,5 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 
+const client = process.env.ANTHROPIC_API_KEY
+  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : null;
+
+function extractText(content: Anthropic.ContentBlock[]): string {
+  return content
+    .filter((item): item is Anthropic.TextBlock => item.type === "text")
+    .map((item) => item.text)
+    .join("\n");
+}
+
 export type DraftRequest = {
   front: string;
   deckName: string;
@@ -31,11 +42,8 @@ export type FounderBatchCard = {
 };
 
 export async function generateCardDraft(input: DraftRequest): Promise<DraftResponse> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return fallbackDraft(input);
-  }
+  if (!client) return fallbackDraft(input);
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const prompt = `You are helping one person save a memory or vocabulary card. Return strict JSON with keys definition, partOfSpeech, example, hook, synonyms. The front of the card is: ${input.front}. The deck is ${input.deckName}. Optional deck context: ${input.deckDescription ?? "none"}. Keep tone plain, concrete, and warm. If this is founder/product language, explain it so the user can articulate what they built.`;
 
   const response = await client.messages.create({
@@ -46,13 +54,8 @@ export async function generateCardDraft(input: DraftRequest): Promise<DraftRespo
     messages: [{ role: "user", content: prompt }],
   });
 
-  const text = response.content
-    .filter((item): item is Anthropic.TextBlock => item.type === "text")
-    .map((item) => item.text)
-    .join("\n");
-
   try {
-    const parsed = JSON.parse(text) as DraftResponse;
+    const parsed = JSON.parse(extractText(response.content)) as DraftResponse;
     return {
       definition: parsed.definition ?? "",
       partOfSpeech: parsed.partOfSpeech ?? "",
@@ -66,11 +69,8 @@ export async function generateCardDraft(input: DraftRequest): Promise<DraftRespo
 }
 
 export async function generateFounderBatch(input: FounderBatchRequest): Promise<FounderBatchCard[]> {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return fallbackFounderBatch(input);
-  }
+  if (!client) return fallbackFounderBatch(input);
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const prompt = `You are helping a solo founder build practical vocabulary for speeches, product demos, investor conversations, networking, and founder storytelling. Return strict JSON as an array of 3 to 5 objects with keys front, definition, partOfSpeech, example, hook, synonyms, sourceContext. The product focus is ${input.product}. The target deck is ${input.deckName}. Use this context: ${input.context}. Choose words or short phrases that are useful in real conversation, not obscure academic vocabulary. Keep definitions plain-English and examples spoken, natural, and founder-relevant.`;
 
   const response = await client.messages.create({
@@ -81,20 +81,13 @@ export async function generateFounderBatch(input: FounderBatchRequest): Promise<
     messages: [{ role: "user", content: prompt }],
   });
 
-  const text = response.content
-    .filter((item): item is Anthropic.TextBlock => item.type === "text")
-    .map((item) => item.text)
-    .join("\n");
-
   try {
-    const parsed = JSON.parse(text) as FounderBatchCard[];
-    if (!Array.isArray(parsed)) {
-      return fallbackFounderBatch(input);
-    }
+    const parsed = JSON.parse(extractText(response.content)) as FounderBatchCard[];
+    if (!Array.isArray(parsed)) return fallbackFounderBatch(input);
 
     return parsed.slice(0, 5).map((card) => ({
-      front: card.front ?? "",
-      definition: card.definition ?? "",
+      front: card.front?.trim() || "Founder term",
+      definition: card.definition?.trim() || "Definition to be completed.",
       partOfSpeech: card.partOfSpeech ?? "",
       example: card.example ?? "",
       hook: card.hook ?? "",
@@ -104,6 +97,24 @@ export async function generateFounderBatch(input: FounderBatchRequest): Promise<
   } catch {
     return fallbackFounderBatch(input);
   }
+}
+
+export async function phraseInVoice(text: string, tone: string): Promise<string> {
+  if (!client) return text;
+
+  const systemPrompt = tone
+    ? `You are a ghostwriter who matches a person's exact voice. Return only the rephrased text — no explanations, no quotes, no preamble, no markdown.\n\nHere is how they sound:\n${tone}`
+    : "You are a ghostwriter. Rephrase the text to be clear, direct, and confident. Return only the rephrased text — no explanations, no quotes, no preamble.";
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 400,
+    temperature: 0.6,
+    system: systemPrompt,
+    messages: [{ role: "user", content: text }],
+  });
+
+  return extractText(response.content).trim();
 }
 
 function fallbackDraft(input: DraftRequest): DraftResponse {

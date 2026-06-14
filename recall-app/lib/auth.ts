@@ -10,6 +10,7 @@ export function createSessionToken(): string {
 export function checkCredentials(username: string, password: string): boolean {
   const validUser = process.env.AUTH_USERNAME ?? "";
   const validPass = process.env.AUTH_PASSWORD ?? "";
+  if (!validUser || !validPass) return false;
   return username === validUser && password === validPass;
 }
 

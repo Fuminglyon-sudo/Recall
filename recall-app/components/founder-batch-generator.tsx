@@ -39,10 +39,12 @@ export function FounderBatchGenerator({
   const [cards, setCards] = useState<SuggestedCard[]>([]);
   const [selected, setSelected] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function generateCards() {
     if (!context.trim() || !deckId) return;
     setLoading(true);
+    setError(null);
     try {
       const selectedDeck = decks.find((deck) => deck.id === deckId);
       const response = await fetch("/api/founder-cards", {
@@ -55,10 +57,18 @@ export function FounderBatchGenerator({
         }),
       });
 
-      const data = await response.json();
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({})) as { error?: string };
+        setError(err.error ?? "Generation failed. Try again.");
+        return;
+      }
+
+      const data = await response.json() as { cards?: SuggestedCard[] };
       const nextCards: SuggestedCard[] = Array.isArray(data.cards) ? data.cards : [];
       setCards(nextCards);
       setSelected(Object.fromEntries(nextCards.map((_, index) => [index, true])));
+    } catch {
+      setError("Something went wrong. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -114,6 +124,12 @@ export function FounderBatchGenerator({
         </button>
         <p className="self-center text-sm text-slate-400">You will get 3 to 5 editable suggestions before anything is saved.</p>
       </div>
+
+      {error ? (
+        <div className="mt-3 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
+          {error}
+        </div>
+      ) : null}
 
       {cards.length > 0 ? (
         <form action={saveAction} className="mt-8 space-y-5">
