@@ -41,6 +41,14 @@ export type FounderBatchCard = {
   sourceContext: string;
 };
 
+export async function transcribeFounderAudio(file: File): Promise<string> {
+  if (!client) {
+    return "Audio transcription is unavailable without an Anthropic API key. Please paste a short founder context manually.";
+  }
+
+  return `Audio received: ${file.name}. Automatic transcription is not enabled in the current Anthropic messages setup yet, so please paste or lightly edit the spoken founder context manually before generating cards.`;
+}
+
 export async function generateCardDraft(input: DraftRequest): Promise<DraftResponse> {
   if (!client) return fallbackDraft(input);
 

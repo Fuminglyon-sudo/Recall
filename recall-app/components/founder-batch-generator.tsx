@@ -27,9 +27,11 @@ const PRODUCT_OPTIONS = [
 export function FounderBatchGenerator({
   decks,
   saveAction,
+  mode = "inline",
 }: {
   decks: Deck[];
   saveAction: (formData: FormData) => void;
+  mode?: "inline" | "daily";
 }) {
   const founderDeck = useMemo(() => decks.find((deck) => deck.name === "Founder Vocabulary") ?? decks[0], [decks]);
 
@@ -39,6 +41,8 @@ export function FounderBatchGenerator({
   const [cards, setCards] = useState<SuggestedCard[]>([]);
   const [selected, setSelected] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(false);
+  const [audioLoading, setAudioLoading] = useState(false);
+  const [audioError, setAudioError] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   async function generateCards() {
@@ -86,10 +90,37 @@ export function FounderBatchGenerator({
     );
   }
 
+  async function handleAudioUpload(file: File) {
+    setAudioLoading(true);
+    setAudioError("");
+    try {
+      const formData = new FormData();
+      formData.append("audio", file);
+
+      const response = await fetch("/api/founder-audio", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to transcribe audio");
+      }
+
+      setContext(data.transcript ?? "");
+    } catch (error) {
+      setAudioError(error instanceof Error ? error.message : "Failed to transcribe audio.");
+    } finally {
+      setAudioLoading(false);
+    }
+  }
+
   return (
     <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
       <p className="text-sm font-medium text-emerald-300">Founder vocabulary lab</p>
-      <h2 className="mt-3 text-2xl font-semibold text-white">Generate a small batch of speech-ready cards from your product context.</h2>
+      <h2 className="mt-3 text-2xl font-semibold text-white">
+        {mode === "daily" ? "Generate fresh founder words for today." : "Generate a small batch of speech-ready cards from your product context."}
+      </h2>
       <p className="mt-3 text-sm leading-7 text-slate-300">
         Paste something you want to say better — a pitch, intro, product explanation, or networking summary — and Recall will draft useful founder vocabulary cards for review.
       </p>
@@ -117,6 +148,26 @@ export function FounderBatchGenerator({
         <span className="text-sm font-medium text-slate-200">Founder context</span>
         <textarea value={context} onChange={(event) => setContext(event.target.value)} rows={6} placeholder="Paste a speech draft, product explanation, or the way you want to introduce what you built." className="input-base" />
       </label>
+
+      <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/35 p-4">
+        <p className="text-sm font-medium text-slate-200">Or use audio</p>
+        <p className="mt-2 text-sm leading-6 text-slate-400">Record or upload a voice note about your product, then Recall will transcribe it into founder context before generating new cards.</p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <label className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+            <input
+              type="file"
+              accept="audio/*"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void handleAudioUpload(file);
+              }}
+            />
+            {audioLoading ? "Transcribing audio..." : "Upload audio"}
+          </label>
+          {audioError ? <span className="text-sm text-amber-200">{audioError}</span> : null}
+        </div>
+      </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
         <button type="button" onClick={generateCards} disabled={loading || !context.trim() || !deckId} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
