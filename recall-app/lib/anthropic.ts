@@ -14,6 +14,22 @@ export type DraftResponse = {
   synonyms: string[];
 };
 
+export type FounderBatchRequest = {
+  product: "japa-reality" | "sharpen" | "custom";
+  context: string;
+  deckName: string;
+};
+
+export type FounderBatchCard = {
+  front: string;
+  definition: string;
+  partOfSpeech: string;
+  example: string;
+  hook: string;
+  synonyms: string[];
+  sourceContext: string;
+};
+
 export async function generateCardDraft(input: DraftRequest): Promise<DraftResponse> {
   if (!process.env.ANTHROPIC_API_KEY) {
     return fallbackDraft(input);
@@ -49,6 +65,47 @@ export async function generateCardDraft(input: DraftRequest): Promise<DraftRespo
   }
 }
 
+export async function generateFounderBatch(input: FounderBatchRequest): Promise<FounderBatchCard[]> {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return fallbackFounderBatch(input);
+  }
+
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const prompt = `You are helping a solo founder build practical vocabulary for speeches, product demos, investor conversations, networking, and founder storytelling. Return strict JSON as an array of 3 to 5 objects with keys front, definition, partOfSpeech, example, hook, synonyms, sourceContext. The product focus is ${input.product}. The target deck is ${input.deckName}. Use this context: ${input.context}. Choose words or short phrases that are useful in real conversation, not obscure academic vocabulary. Keep definitions plain-English and examples spoken, natural, and founder-relevant.`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 1400,
+    temperature: 0.5,
+    system: "Return only valid JSON. No markdown.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const text = response.content
+    .filter((item): item is Anthropic.TextBlock => item.type === "text")
+    .map((item) => item.text)
+    .join("\n");
+
+  try {
+    const parsed = JSON.parse(text) as FounderBatchCard[];
+    if (!Array.isArray(parsed)) {
+      return fallbackFounderBatch(input);
+    }
+
+    return parsed.slice(0, 5).map((card) => ({
+      front: card.front ?? "",
+      definition: card.definition ?? "",
+      partOfSpeech: card.partOfSpeech ?? "",
+      example: card.example ?? "",
+      hook: card.hook ?? "",
+      synonyms: Array.isArray(card.synonyms) ? card.synonyms : [],
+      sourceContext: card.sourceContext ?? input.context,
+    }));
+  } catch {
+    return fallbackFounderBatch(input);
+  }
+}
+
 function fallbackDraft(input: DraftRequest): DraftResponse {
   return {
     definition: `A clear explanation of ${input.front} in simple language.`,
@@ -57,4 +114,38 @@ function fallbackDraft(input: DraftRequest): DraftResponse {
     hook: `Link ${input.front} to a recent moment so it is easier to recall later.`,
     synonyms: input.deckName === "People I care about" ? [] : ["related idea", "plain meaning"],
   };
+}
+
+function fallbackFounderBatch(input: FounderBatchRequest): FounderBatchCard[] {
+  const label = input.product === "japa-reality" ? "Japa Reality" : input.product === "sharpen" ? "Sharpen" : "your founder context";
+
+  return [
+    {
+      front: "positioning",
+      definition: "How you clearly place your product in the mind of the listener so they understand what it is, who it is for, and why it matters.",
+      partOfSpeech: "noun",
+      example: `When I explain ${label}, I lead with clear positioning so people quickly understand the value.`,
+      hook: "Positioning is the mental shelf your product occupies.",
+      synonyms: ["framing", "market placement"],
+      sourceContext: input.context,
+    },
+    {
+      front: "traction",
+      definition: "Evidence that people are responding to the product in a meaningful way, such as usage, retention, revenue, or strong interest.",
+      partOfSpeech: "noun",
+      example: `I talk about traction to show that the product is not just an idea but something users are actually leaning into.`,
+      hook: "Traction means the wheels are gripping the road.",
+      synonyms: ["momentum", "adoption"],
+      sourceContext: input.context,
+    },
+    {
+      front: "credibility",
+      definition: "The quality of sounding trustworthy, grounded, and believable when describing what you built and why it works.",
+      partOfSpeech: "noun",
+      example: `Specific examples and clear product language increase my credibility when I speak about the company.`,
+      hook: "Credibility is earned clarity.",
+      synonyms: ["trustworthiness", "authority"],
+      sourceContext: input.context,
+    },
+  ];
 }

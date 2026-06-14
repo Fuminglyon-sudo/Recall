@@ -11,6 +11,7 @@ import {
   PlusCircle,
   Menu,
   X,
+  LogOut,
 } from "lucide-react";
 
 const LINKS = [
@@ -80,8 +81,15 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
       <NavItems onClose={onClose} />
 
-      <div className="border-t border-white/8 px-5 py-4">
+      <div className="border-t border-white/8 px-5 py-4 space-y-3">
         <p className="text-xs text-slate-600">One thing at a time.</p>
+        <a
+          href="/api/logout"
+          className="flex items-center gap-2 text-xs text-slate-500 transition hover:text-slate-300"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          Sign out
+        </a>
       </div>
     </div>
   );
