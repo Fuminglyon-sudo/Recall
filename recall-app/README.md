@@ -1,6 +1,6 @@
 # Recall
 
-Recall is a small local-first vocabulary and memory app built with Next.js, TypeScript, Tailwind, Prisma, SQLite, and server-side Anthropic drafting.
+Recall is a small vocabulary and memory app built with Next.js, TypeScript, Tailwind, Prisma, PostgreSQL, and server-side Anthropic drafting.
 
 ## What it does
 
@@ -28,11 +28,19 @@ Copy [`.env.example`](.env.example) to [`.env`](.env) and set your values.
 cp .env.example .env
 ```
 
+Use a PostgreSQL connection string for [`DATABASE_URL`](prisma/schema.prisma:7). For Vercel, this should be your hosted Postgres URL.
+
 ## Prisma migrate + seed
 
 ```bash
 npx prisma migrate dev --name init
 npm run db:seed
+```
+
+For Vercel production, run a deploy migration after your environment variables are set:
+
+```bash
+npx prisma migrate deploy
 ```
 
 ## Run locally
@@ -42,6 +50,8 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+For local development with PostgreSQL, point [`DATABASE_URL`](prisma/schema.prisma:7) to your local or hosted Postgres instance before running migrations.
 
 ## Demo script
 
