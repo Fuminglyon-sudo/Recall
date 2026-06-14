@@ -55,3 +55,9 @@ model Streak {
   currentStreak  Int      @default(0)
   lastReviewDate DateTime?
 }
+
+model VoiceProfile {
+  id        String   @id @default(cuid())
+  tone      String   @default("")
+  updatedAt DateTime @updatedAt
+}

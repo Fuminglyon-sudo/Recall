@@ -8,6 +8,8 @@ import { DeckList } from "@/components/deck-list";
 import { computeDistribution, getMastery, MASTERY, type MasteryLevel } from "@/lib/mastery";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { HowToUse } from "@/components/how-to-use";
+import { PhraseItPanel } from "@/components/phrase-it-panel";
+import { saveTone } from "@/app/voice/actions";
 
 async function getDashboardData() {
   const today = new Date();
@@ -23,11 +25,12 @@ async function getDashboardData() {
       currentStreak: 0,
       reviewedToday: false,
       mastery: computeDistribution([]),
+      voiceTone: "",
       decks: [],
     };
   }
 
-  const [allCards, streak, decks] = await Promise.all([
+  const [allCards, streak, decks, voiceProfile] = await Promise.all([
     prisma.card.findMany({
       select: { interval: true, repetitions: true },
     }),
@@ -41,6 +44,7 @@ async function getDashboardData() {
         },
       },
     }),
+    prisma.voiceProfile.findFirst(),
   ]);
 
   const dueTodayCount = decks.reduce(
@@ -56,6 +60,7 @@ async function getDashboardData() {
     currentStreak: streak?.currentStreak ?? 0,
     reviewedToday: streak?.lastReviewDate ? isSameCalendarDay(streak.lastReviewDate, todayStart) : false,
     mastery,
+    voiceTone: voiceProfile?.tone ?? "",
     decks: decks.map((deck) => ({
       id: deck.id,
       name: deck.name,
@@ -93,6 +98,8 @@ export default async function HomePage() {
           <StatCard label="Total cards" value={String(data.totalCards)} helper="Every saved card counts." />
           <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
         </div>
+
+        <PhraseItPanel initialTone={data.voiceTone} saveToneAction={saveTone} />
 
         <HowToUse />
 

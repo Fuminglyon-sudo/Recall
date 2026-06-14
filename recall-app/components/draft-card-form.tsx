@@ -11,15 +11,19 @@ type Deck = {
 export function DraftCardForm({
   decks,
   createCardAction,
+  initialFront = "",
+  initialBack = "",
   submitButton,
 }: {
   decks: Deck[];
   createCardAction: (formData: FormData) => void;
+  initialFront?: string;
+  initialBack?: string;
   submitButton: React.ReactNode;
 }) {
-  const [front, setFront] = useState("");
+  const [front, setFront] = useState(initialFront);
   const [deckId, setDeckId] = useState(decks[0]?.id ?? "");
-  const [back, setBack] = useState("");
+  const [back, setBack] = useState(initialBack);
   const [partOfSpeech, setPartOfSpeech] = useState("");
   const [example, setExample] = useState("");
   const [hook, setHook] = useState("");
