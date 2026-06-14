@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { Mic, Upload } from "lucide-react";
 
 type Deck = {
   id: string;
@@ -43,6 +44,69 @@ export function FounderBatchGenerator({
   const [loading, setLoading] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
   const [audioError, setAudioError] = useState("");
+  const [recording, setRecording] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+
+  async function startRecording() {
+    setAudioError("");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    if (SR) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recognition = new SR() as any;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+      let final = "";
+      recognition.onresult = (event: { resultIndex: number; results: { isFinal: boolean; 0: { transcript: string } }[] }) => {
+        let interim = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) final += event.results[i][0].transcript + " ";
+          else interim += event.results[i][0].transcript;
+        }
+        setContext(final + interim);
+      };
+      recognition.onerror = () => setAudioError("Microphone access denied or speech recognition unavailable.");
+      recognition.onend = () => setRecording(false);
+      recognition.start();
+      recognitionRef.current = recognition;
+      setRecording(true);
+      return;
+    }
+
+    // Fallback: MediaRecorder → upload to /api/founder-audio
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+      mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        await handleAudioUpload(new File([blob], "recording.webm", { type: "audio/webm" }));
+      };
+      mediaRecorder.start();
+      mediaRecorderRef.current = mediaRecorder;
+      setRecording(true);
+    } catch {
+      setAudioError("Could not access microphone. Please allow microphone permission and try again.");
+    }
+  }
+
+  function stopRecording() {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
+    setRecording(false);
+  }
   const [error, setError] = useState<string | null>(null);
 
   async function generateCards() {
@@ -150,23 +214,46 @@ export function FounderBatchGenerator({
       </label>
 
       <div className="mt-4 rounded-3xl border border-white/10 bg-slate-950/35 p-4">
-        <p className="text-sm font-medium text-slate-200">Or use audio</p>
-        <p className="mt-2 text-sm leading-6 text-slate-400">Record or upload a voice note about your product, then Recall will transcribe it into founder context before generating new cards.</p>
+        <p className="text-sm font-medium text-slate-200">Or speak it</p>
+        <p className="mt-1 text-sm leading-6 text-slate-400">
+          Tap record and describe your product out loud. Your words fill the context box automatically.
+        </p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <label className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10">
+          {recording ? (
+            <button
+              type="button"
+              onClick={stopRecording}
+              className="flex items-center gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm font-semibold text-red-300 transition hover:bg-red-400/20"
+            >
+              <span className="h-2 w-2 animate-pulse rounded-full bg-red-400" />
+              Stop recording
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void startRecording()}
+              disabled={audioLoading}
+              className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Mic className="h-4 w-4 text-emerald-300" />
+              {audioLoading ? "Transcribing…" : "Record"}
+            </button>
+          )}
+
+          <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-slate-400 transition hover:bg-white/5 hover:text-slate-200">
+            <Upload className="h-4 w-4" />
+            Upload file
             <input
               type="file"
               accept="audio/*"
               className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void handleAudioUpload(file);
-              }}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleAudioUpload(f); }}
             />
-            {audioLoading ? "Transcribing audio..." : "Upload audio"}
           </label>
-          {audioError ? <span className="text-sm text-amber-200">{audioError}</span> : null}
         </div>
+        {audioError ? (
+          <p className="mt-3 text-sm text-amber-300">{audioError}</p>
+        ) : null}
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
