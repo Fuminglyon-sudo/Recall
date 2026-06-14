@@ -1,0 +1,131 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Brain,
+  LayoutDashboard,
+  CalendarCheck2,
+  Layers3,
+  PlusCircle,
+  Menu,
+  X,
+} from "lucide-react";
+
+const LINKS = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
+  { href: "/decks", label: "Decks", icon: Layers3, exact: false },
+  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
+];
+
+function NavItems({ onClose }: { onClose?: () => void }) {
+  const pathname = usePathname();
+
+  return (
+    <nav className="flex-1 space-y-0.5 px-3 py-4">
+      {LINKS.map(({ href, label, icon: Icon, exact }) => {
+        const active = exact ? pathname === href : pathname.startsWith(href);
+        return (
+          <Link
+            key={href}
+            href={href}
+            onClick={onClose}
+            className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors ${
+              active
+                ? "bg-white/10 font-medium text-white"
+                : "text-slate-400 hover:bg-white/8 hover:text-slate-200"
+            }`}
+          >
+            <Icon
+              className={`h-4 w-4 shrink-0 transition-colors ${
+                active ? "text-emerald-300" : "group-hover:text-slate-300"
+              }`}
+            />
+            {label}
+            {active ? (
+              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            ) : null}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
+function SidebarContent({ onClose }: { onClose?: () => void }) {
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between p-5 pb-2">
+        <Link href="/" className="flex items-center gap-3" onClick={onClose}>
+          <div className="rounded-2xl bg-emerald-400/15 p-2.5 text-emerald-300">
+            <Brain className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">Recall</p>
+            <p className="text-xs text-slate-500">Small, calm, local.</p>
+          </div>
+        </Link>
+        {onClose ? (
+          <button
+            onClick={onClose}
+            className="rounded-xl p-2 text-slate-500 transition hover:bg-white/8 hover:text-slate-300 lg:hidden"
+            aria-label="Close menu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        ) : null}
+      </div>
+
+      <NavItems onClose={onClose} />
+
+      <div className="border-t border-white/8 px-5 py-4">
+        <p className="text-xs text-slate-600">One thing at a time.</p>
+      </div>
+    </div>
+  );
+}
+
+export function Sidebar() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {/* Desktop sidebar — fixed left */}
+      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col lg:border-r lg:border-white/8 lg:bg-slate-950/90 lg:backdrop-blur-xl">
+        <SidebarContent />
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-white/8 bg-slate-950/90 px-4 backdrop-blur-xl lg:hidden">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300">
+            <Brain className="h-4 w-4" />
+          </div>
+          <p className="text-sm font-semibold text-white">Recall</p>
+        </Link>
+        <button
+          onClick={() => setOpen(true)}
+          className="rounded-xl p-2 text-slate-400 transition hover:bg-white/8 hover:text-white"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Mobile drawer */}
+      {open ? (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <aside className="fixed inset-y-0 left-0 z-50 w-72 border-r border-white/10 bg-slate-950 lg:hidden">
+            <SidebarContent onClose={() => setOpen(false)} />
+          </aside>
+        </>
+      ) : null}
+    </>
+  );
+}

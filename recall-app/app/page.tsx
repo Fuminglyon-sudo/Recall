@@ -7,6 +7,7 @@ import { CalmCard } from "@/components/calm-card";
 import { DeckList } from "@/components/deck-list";
 import { computeDistribution, getMastery, MASTERY, type MasteryLevel } from "@/lib/mastery";
 import { isDatabaseReady } from "@/lib/db-ready";
+import { HowToUse } from "@/components/how-to-use";
 
 async function getDashboardData() {
   const today = new Date();
@@ -92,6 +93,8 @@ export default async function HomePage() {
           <StatCard label="Total cards" value={String(data.totalCards)} helper="Every saved card counts." />
           <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
         </div>
+
+        <HowToUse />
 
         {/* Mastery distribution */}
         <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
