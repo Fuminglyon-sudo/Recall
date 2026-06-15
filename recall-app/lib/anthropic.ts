@@ -107,67 +107,115 @@ export async function generateFounderBatch(input: FounderBatchRequest): Promise<
   }
 }
 
-export type PitchGradeRequest = {
+function pitchAppContext(app: "japa-reality" | "sharpen" | "both"): string {
+  if (app === "japa-reality")
+    return 'Japa Reality is an app that helps Nigerians and Africans navigate the process of relocating abroad. "Japa" is Nigerian slang for leaving or escaping. The app covers visa processes, housing, jobs, community connections, and life abroad.';
+  if (app === "sharpen")
+    return "Sharpen is a vocabulary and professional-skills learning app that uses spaced repetition to help users retain and deploy words confidently in real conversations.";
+  return "The founder is building two apps: Japa Reality (helps Africans navigate relocation abroad) and Sharpen (a spaced-repetition vocabulary and skills app).";
+}
+
+export type ConversationMessage = {
+  role: "interviewer" | "founder";
+  content: string;
+};
+
+export type ConversationRequest = {
   app: "japa-reality" | "sharpen" | "both";
   scenario: string;
-  question: string;
-  answer: string;
+  messages: ConversationMessage[];
+  exchangeCount: number;
+  forceEnd?: boolean;
 };
 
-export type PitchGradeResponse = {
-  score: number;
-  strongPoints: string[];
-  improvements: string[];
-  modelAnswer: string;
-};
+export type ConversationStep =
+  | { type: "followup"; followupQuestion: string }
+  | { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string };
 
-export async function gradePitchAnswer(input: PitchGradeRequest): Promise<PitchGradeResponse> {
-  if (!client) return fallbackGrade();
+export async function conductPitchConversation(input: ConversationRequest): Promise<ConversationStep> {
+  if (!client) return fallbackStep(input.exchangeCount);
 
-  const appContext =
-    input.app === "japa-reality"
-      ? 'Japa Reality is an app that helps Nigerians and Africans navigate the process of relocating abroad. "Japa" is Nigerian slang for leaving/escaping. The app covers visa processes, housing, jobs, community connections, and life abroad.'
-      : input.app === "sharpen"
-      ? "Sharpen is a vocabulary and professional-skills learning app that uses spaced repetition to help users retain and deploy words confidently in real conversations."
-      : 'The founder is building two apps: Japa Reality (helps Africans navigate relocation abroad) and Sharpen (a spaced-repetition vocabulary and skills app).';
+  const appContext = pitchAppContext(input.app);
+  const history = input.messages
+    .map((m) => `${m.role === "interviewer" ? "Interviewer" : "Founder"}: ${m.content}`)
+    .join("\n\n");
 
-  const prompt = `You are evaluating a founder's spoken pitch answer. Context about their products: ${appContext}
+  const mustEnd = input.forceEnd === true || input.exchangeCount >= 5;
 
-Scenario setting: ${input.scenario}
-Question asked: ${input.question}
-Founder's answer: ${input.answer}
+  const decisionBlock = mustEnd
+    ? `This is the final exchange. You must return type "final" with a full evaluation.`
+    : `Exchange count so far: ${input.exchangeCount} of 5 maximum.
 
-Score the answer on: clarity, specificity, confidence, differentiation, and memorability.
+Decide whether to ask ONE follow-up question or wrap up and evaluate.
+Ask a follow-up if the last founder answer:
+  - contained a vague or unsubstantiated claim worth probing ("we help people" — who exactly?)
+  - skipped a key topic: the problem, differentiation, traction, or how it actually works
+  - invited a natural "tell me more" (e.g., mentioned a feature without explaining the impact)
 
-Return strict JSON with these exact keys:
-- score: integer 1 to 10 (10 = polished, investor-ready; 1 = unclear or very incomplete)
-- strongPoints: array of 1 to 3 short strings describing what they did well (be specific, cite their words)
-- improvements: array of 1 to 4 short strings describing what to sharpen (be constructive and direct)
-- modelAnswer: a 4 to 6 sentence model answer that is natural, confident, specific, and founder-authentic — write it in first person as if the founder is speaking`;
+Do NOT ask a follow-up if:
+  - the answer was specific, clear, and covered the topic well
+  - you have already asked 3 or more follow-ups
+  - the conversation feels naturally complete`;
+
+  const prompt = `You are the person described in this scenario: ${input.scenario}
+
+Product context for evaluation: ${appContext}
+
+Conversation so far:
+${history}
+
+${decisionBlock}
+
+Return strict JSON. Include ALL fields relevant to your chosen type:
+
+If type is "followup":
+  { "type": "followup", "followupQuestion": "short direct question you would naturally ask next, staying in character" }
+
+If type is "final":
+  {
+    "type": "final",
+    "score": integer 1–10 based on the WHOLE conversation (clarity, specificity, confidence, differentiation, memorability),
+    "strongPoints": array of 1–3 short strings citing specific things they did well,
+    "improvements": array of 1–4 short strings on what to sharpen,
+    "modelAnswer": "4–6 sentence first-person model answer showing how the opening question could have been answered ideally, incorporating the best threads from the conversation"
+  }`;
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 700,
-    temperature: 0.4,
+    temperature: 0.5,
     system: "Return only valid JSON. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
   });
 
   try {
-    const parsed = JSON.parse(extractText(response.content)) as PitchGradeResponse;
+    const parsed = JSON.parse(extractText(response.content)) as ConversationStep;
+    if (!mustEnd && parsed.type === "followup") {
+      const q = (parsed as { type: "followup"; followupQuestion: string }).followupQuestion;
+      return { type: "followup", followupQuestion: q ?? "Tell me more about that." };
+    }
+    const p = parsed as { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string };
     return {
-      score: Math.min(10, Math.max(1, Math.round(Number(parsed.score)))),
-      strongPoints: Array.isArray(parsed.strongPoints) ? parsed.strongPoints : [],
-      improvements: Array.isArray(parsed.improvements) ? parsed.improvements : [],
-      modelAnswer: parsed.modelAnswer ?? "",
+      type: "final",
+      score: Math.min(10, Math.max(1, Math.round(Number(p.score)))),
+      strongPoints: Array.isArray(p.strongPoints) ? p.strongPoints : [],
+      improvements: Array.isArray(p.improvements) ? p.improvements : [],
+      modelAnswer: p.modelAnswer ?? "",
     };
   } catch {
-    return fallbackGrade();
+    return fallbackStep(input.exchangeCount);
   }
 }
 
-function fallbackGrade(): PitchGradeResponse {
+function fallbackStep(exchangeCount: number): ConversationStep {
+  if (exchangeCount < 2) {
+    return {
+      type: "followup",
+      followupQuestion: "That's interesting — can you tell me more specifically who your core user is and what they struggle with before finding your app?",
+    };
+  }
   return {
+    type: "final",
     score: 5,
     strongPoints: ["You gave an answer — that takes practice and courage."],
     improvements: [

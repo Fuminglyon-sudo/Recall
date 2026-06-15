@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Mic, ArrowLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag } from "lucide-react";
 
 type App = "japa-reality" | "sharpen" | "both";
 
@@ -11,6 +11,11 @@ type Scenario = {
   tag: string;
   setting: string;
   question: string;
+};
+
+type Message = {
+  role: "interviewer" | "founder";
+  content: string;
 };
 
 type GradeResult = {
@@ -58,7 +63,7 @@ const SCENARIOS: Scenario[] = [
   {
     id: "jr-technical",
     app: "japa-reality",
-    tag: "Technical founder",
+    tag: "Technical deep dive",
     setting:
       "You are at a startup networking event and meet a technical co-founder from a logistics company. They are curious about how you built it and ask:",
     question:
@@ -132,23 +137,23 @@ const APP_COLORS: Record<App, string> = {
   both: "border-sky-300/20 bg-sky-400/10 text-sky-200",
 };
 
-function scoreLabel(score: number): string {
-  if (score >= 9) return "Investor-ready";
-  if (score >= 7) return "Strong pitch";
-  if (score >= 5) return "Solid foundation";
-  if (score >= 3) return "Getting there";
+function scoreLabel(s: number) {
+  if (s >= 9) return "Investor-ready";
+  if (s >= 7) return "Strong pitch";
+  if (s >= 5) return "Solid foundation";
+  if (s >= 3) return "Getting there";
   return "Needs work";
 }
 
-function scoreColor(score: number): string {
-  if (score >= 8) return "text-emerald-300";
-  if (score >= 5) return "text-amber-300";
+function scoreColor(s: number) {
+  if (s >= 8) return "text-emerald-300";
+  if (s >= 5) return "text-amber-300";
   return "text-red-300";
 }
 
-function scoreBorder(score: number): string {
-  if (score >= 8) return "border-emerald-400/25 bg-emerald-400/8";
-  if (score >= 5) return "border-amber-400/25 bg-amber-400/8";
+function scoreBorder(s: number) {
+  if (s >= 8) return "border-emerald-400/25 bg-emerald-400/8";
+  if (s >= 5) return "border-amber-400/25 bg-amber-400/8";
   return "border-red-400/25 bg-red-400/8";
 }
 
@@ -157,7 +162,9 @@ type Filter = App | "all";
 export function PitchPracticeClient() {
   const [filter, setFilter] = useState<Filter>("all");
   const [active, setActive] = useState<Scenario | null>(null);
-  const [answer, setAnswer] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [draft, setDraft] = useState("");
+  const [exchangeCount, setExchangeCount] = useState(0);
   const [recording, setRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GradeResult | null>(null);
@@ -167,23 +174,31 @@ export function PitchPracticeClient() {
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const threadEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   const filtered = filter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.app === filter);
 
   function selectScenario(scenario: Scenario) {
     setActive(scenario);
-    setAnswer("");
+    setMessages([{ role: "interviewer", content: scenario.question }]);
+    setDraft("");
+    setExchangeCount(0);
     setResult(null);
     setError(null);
-    setRecording(false);
   }
 
   function reset() {
     setActive(null);
-    setAnswer("");
+    setMessages([]);
+    setDraft("");
+    setExchangeCount(0);
     setResult(null);
     setError(null);
-    setRecording(false);
+    stopRecording();
   }
 
   async function startRecording() {
@@ -206,16 +221,16 @@ export function PitchPracticeClient() {
           if (event.results[i].isFinal) final += event.results[i][0].transcript + " ";
           else interim += event.results[i][0].transcript;
         }
-        setAnswer(final + interim);
+        setDraft(final + interim);
       };
-      recognition.onerror = () => setError("Microphone access denied or speech recognition unavailable.");
+      recognition.onerror = () =>
+        setError("Microphone access denied or speech recognition unavailable.");
       recognition.onend = () => setRecording(false);
       recognition.start();
       recognitionRef.current = recognition;
       setRecording(true);
       return;
     }
-
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
@@ -247,10 +262,18 @@ export function PitchPracticeClient() {
     setRecording(false);
   }
 
-  async function submitAnswer() {
-    if (!active || !answer.trim()) return;
+  async function submitAnswer(forceEnd = false) {
+    if (!active || !draft.trim()) return;
+    stopRecording();
+
+    const newMessages: Message[] = [...messages, { role: "founder", content: draft.trim() }];
+    const newExchangeCount = exchangeCount + 1;
+    setMessages(newMessages);
+    setDraft("");
+    setExchangeCount(newExchangeCount);
     setLoading(true);
     setError(null);
+
     try {
       const response = await fetch("/api/pitch-grade", {
         method: "POST",
@@ -258,17 +281,32 @@ export function PitchPracticeClient() {
         body: JSON.stringify({
           app: active.app,
           scenario: active.setting,
-          question: active.question,
-          answer: answer.trim(),
+          messages: newMessages,
+          exchangeCount: newExchangeCount,
+          forceEnd,
         }),
       });
+
       if (!response.ok) {
         const err = (await response.json().catch(() => ({}))) as { error?: string };
-        setError(err.error ?? "Grading failed. Try again.");
+        setError(err.error ?? "Request failed. Try again.");
         return;
       }
-      const data = (await response.json()) as GradeResult;
-      setResult(data);
+
+      const data = (await response.json()) as
+        | { type: "followup"; followupQuestion: string }
+        | { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string };
+
+      if (data.type === "followup") {
+        setMessages((prev) => [...prev, { role: "interviewer", content: data.followupQuestion }]);
+      } else {
+        setResult({
+          score: data.score,
+          strongPoints: data.strongPoints,
+          improvements: data.improvements,
+          modelAnswer: data.modelAnswer,
+        });
+      }
     } catch {
       setError("Something went wrong. Check your connection and try again.");
     } finally {
@@ -280,7 +318,6 @@ export function PitchPracticeClient() {
   if (!active) {
     return (
       <div className="space-y-6">
-        {/* Filter tabs */}
         <div className="flex flex-wrap gap-2">
           {(["all", "japa-reality", "sharpen", "both"] as const).map((f) => (
             <button
@@ -297,7 +334,6 @@ export function PitchPracticeClient() {
           ))}
         </div>
 
-        {/* Scenario grid */}
         <div className="grid gap-4 sm:grid-cols-2">
           {filtered.map((scenario) => (
             <button
@@ -329,7 +365,6 @@ export function PitchPracticeClient() {
   if (result) {
     return (
       <div className="space-y-5">
-        {/* Score */}
         <div className={`rounded-[2rem] border p-6 sm:p-8 ${scoreBorder(result.score)}`}>
           <div className="flex items-center gap-5">
             <div className={`text-5xl font-bold tabular-nums ${scoreColor(result.score)}`}>
@@ -338,12 +373,13 @@ export function PitchPracticeClient() {
             </div>
             <div>
               <p className={`text-lg font-semibold ${scoreColor(result.score)}`}>{scoreLabel(result.score)}</p>
-              <p className="text-sm text-slate-400">{active.tag} · {APP_LABELS[active.app]}</p>
+              <p className="text-sm text-slate-400">
+                {active.tag} · {APP_LABELS[active.app]} · {exchangeCount} exchange{exchangeCount !== 1 ? "s" : ""}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Feedback */}
         <div className="grid gap-4 sm:grid-cols-2">
           {result.strongPoints.length > 0 ? (
             <div className="rounded-[2rem] border border-emerald-400/20 bg-emerald-400/5 p-5">
@@ -358,7 +394,6 @@ export function PitchPracticeClient() {
               </ul>
             </div>
           ) : null}
-
           {result.improvements.length > 0 ? (
             <div className="rounded-[2rem] border border-amber-400/20 bg-amber-400/5 p-5">
               <p className="text-xs font-semibold uppercase tracking-widest text-amber-300">What to sharpen</p>
@@ -374,26 +409,26 @@ export function PitchPracticeClient() {
           ) : null}
         </div>
 
-        {/* Model answer */}
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Model answer</p>
           <p className="mt-4 text-sm leading-8 text-slate-100">{result.modelAnswer}</p>
         </div>
 
-        {/* Your answer recap */}
-        <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Your answer</p>
-          <p className="mt-3 text-sm leading-7 text-slate-400">{answer}</p>
+        {/* Full conversation replay */}
+        <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Full conversation</p>
+          {messages.map((msg, i) => (
+            <ConversationBubble key={i} msg={msg} />
+          ))}
         </div>
 
-        {/* Actions */}
         <div className="flex flex-wrap gap-3">
           <button
-            onClick={() => { setResult(null); setAnswer(""); }}
+            onClick={() => { setResult(null); setDraft(""); setMessages([{ role: "interviewer", content: active.question }]); setExchangeCount(0); }}
             className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
           >
             <RotateCcw className="h-4 w-4" />
-            Try this scenario again
+            Try again
           </button>
           <button
             onClick={reset}
@@ -407,7 +442,7 @@ export function PitchPracticeClient() {
     );
   }
 
-  // ── Practice view ───────────────────────────────────────────────────────────
+  // ── Practice / conversation view ─────────────────────────────────────────────
   return (
     <div className="space-y-5">
       <button
@@ -418,71 +453,125 @@ export function PitchPracticeClient() {
         All scenarios
       </button>
 
-      {/* Scenario context */}
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 sm:p-8">
-        <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${APP_COLORS[active.app]}`}>
-          {APP_LABELS[active.app]}
-        </span>
-        <p className="mt-4 text-sm font-semibold text-slate-200">{active.tag}</p>
+      {/* Scenario header */}
+      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 sm:p-6">
+        <div className="flex items-center gap-3">
+          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${APP_COLORS[active.app]}`}>
+            {APP_LABELS[active.app]}
+          </span>
+          <span className="text-sm text-slate-400">{active.tag}</span>
+        </div>
         <p className="mt-3 text-sm leading-7 text-slate-300">{active.setting}</p>
-        <div className="mt-5 rounded-3xl border border-emerald-300/15 bg-slate-950/60 p-5">
-          <p className="text-xs uppercase tracking-[0.24em] text-emerald-300">They ask</p>
-          <p className="mt-2 text-lg font-semibold text-white">&ldquo;{active.question}&rdquo;</p>
-        </div>
       </div>
 
-      {/* Recording */}
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
-        <p className="text-sm font-medium text-slate-200">Your answer</p>
-        <p className="mt-1 text-sm text-slate-400">
-          Hit Record and speak naturally. Your words fill the box below in real time. Edit before submitting.
-        </p>
+      {/* Conversation thread */}
+      <div className="space-y-3">
+        {messages.map((msg, i) => (
+          <ConversationBubble key={i} msg={msg} />
+        ))}
 
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          {recording ? (
+        {/* "Thinking" indicator while API processes */}
+        {loading ? (
+          <div className="flex items-center gap-3 rounded-[2rem] border border-emerald-300/15 bg-emerald-400/5 px-5 py-4">
+            <div className="flex gap-1">
+              <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:0ms]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:150ms]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:300ms]" />
+            </div>
+            <p className="text-sm text-emerald-300/70">Thinking…</p>
+          </div>
+        ) : null}
+
+        <div ref={threadEndRef} />
+      </div>
+
+      {/* Recording area — only shown when waiting for founder to answer */}
+      {!loading ? (
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
+          <p className="text-sm font-medium text-slate-200">Your response</p>
+          <p className="mt-1 text-sm text-slate-400">
+            Hit Record and speak. Your words appear in the box in real time.
+            {exchangeCount > 0 ? ` (exchange ${exchangeCount + 1})` : ""}
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            {recording ? (
+              <button
+                type="button"
+                onClick={stopRecording}
+                className="flex items-center gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm font-semibold text-red-300 transition hover:bg-red-400/20"
+              >
+                <span className="h-2 w-2 animate-pulse rounded-full bg-red-400" />
+                Stop recording
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void startRecording()}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                <Mic className="h-4 w-4 text-emerald-300" />
+                Record
+              </button>
+            )}
+          </div>
+
+          {error ? <p className="mt-3 text-sm text-amber-300">{error}</p> : null}
+
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={5}
+            placeholder="Speak your answer above, or type it here."
+            className="input-base mt-4"
+          />
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <button
-              type="button"
-              onClick={stopRecording}
-              className="flex items-center gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm font-semibold text-red-300 transition hover:bg-red-400/20"
+              onClick={() => void submitAnswer(false)}
+              disabled={!draft.trim()}
+              className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <span className="h-2 w-2 animate-pulse rounded-full bg-red-400" />
-              Stop recording
+              {exchangeCount === 0 ? "Send answer" : "Send reply"}
             </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => void startRecording()}
-              disabled={loading}
-              className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Mic className="h-4 w-4 text-emerald-300" />
-              Record
-            </button>
-          )}
+
+            {exchangeCount >= 1 ? (
+              <button
+                onClick={() => void submitAnswer(true)}
+                disabled={!draft.trim()}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-60"
+              >
+                <Flag className="h-4 w-4 text-slate-400" />
+                Get feedback now
+              </button>
+            ) : null}
+          </div>
         </div>
+      ) : null}
+    </div>
+  );
+}
 
-        {error ? <p className="mt-3 text-sm text-amber-300">{error}</p> : null}
-
-        <textarea
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          rows={6}
-          placeholder="Speak your answer above, or type it here directly."
-          className="input-base mt-4"
-        />
-      </div>
-
-      {/* Submit */}
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={() => void submitAnswer()}
-          disabled={loading || !answer.trim()}
-          className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {loading ? "Grading your answer…" : "Submit for feedback"}
-        </button>
-        <p className="text-sm text-slate-500">You will get a score, specific feedback, and a model answer.</p>
-      </div>
+function ConversationBubble({ msg }: { msg: Message }) {
+  const isInterviewer = msg.role === "interviewer";
+  return (
+    <div
+      className={`rounded-[2rem] border px-5 py-4 ${
+        isInterviewer
+          ? "border-emerald-300/15 bg-emerald-400/5"
+          : "border-white/8 bg-white/[0.03]"
+      }`}
+    >
+      <p
+        className={`mb-2 text-[10px] font-semibold uppercase tracking-widest ${
+          isInterviewer ? "text-emerald-400" : "text-slate-500"
+        }`}
+      >
+        {isInterviewer ? "They ask" : "You"}
+      </p>
+      <p className={`text-sm leading-7 ${isInterviewer ? "font-medium text-white" : "text-slate-300"}`}>
+        {isInterviewer ? `"${msg.content}"` : msg.content}
+      </p>
     </div>
   );
 }
