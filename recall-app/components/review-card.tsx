@@ -14,6 +14,7 @@ const GRADES = [
 
 export function ReviewCard({
   card,
+  stale = false,
   onGrade,
 }: {
   card: {
@@ -28,13 +29,21 @@ export function ReviewCard({
     interval: number;
     repetitions: number;
   };
+  stale?: boolean;
   onGrade: (formData: FormData) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
-      <p className="text-xs uppercase tracking-[0.24em] text-emerald-300">{card.deckName}</p>
+    <div className={`rounded-[2rem] border p-6 backdrop-blur ${stale ? "border-amber-400/20 bg-amber-400/5" : "border-white/10 bg-white/5"}`}>
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs uppercase tracking-[0.24em] text-emerald-300">{card.deckName}</p>
+        {stale ? (
+          <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-amber-300">
+            Overdue
+          </span>
+        ) : null}
+      </div>
 
       {/* Front — styled like the deck-detail preview block */}
       <div className="mt-3 rounded-3xl border border-emerald-300/15 bg-slate-950/60 p-5">
