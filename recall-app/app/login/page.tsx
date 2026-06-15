@@ -1,4 +1,4 @@
-import { loginAction } from "./actions";
+import { LoginForm } from "./login-form";
 
 export default async function LoginPage({
   searchParams,
@@ -17,45 +17,7 @@ export default async function LoginPage({
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">Welcome back</h1>
           <p className="mt-1 text-sm text-slate-400">Sign in to access your cards.</p>
         </div>
-
-        <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-          {error && (
-            <div className="mb-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-              Incorrect username or password.
-            </div>
-          )}
-          <form action={loginAction} className="space-y-4">
-            <input type="hidden" name="from" value={from} />
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-200">Username</span>
-              <input
-                name="username"
-                type="text"
-                autoComplete="username"
-                required
-                className="input-base"
-                placeholder="Enter username"
-              />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-200">Password</span>
-              <input
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="input-base"
-                placeholder="Enter password"
-              />
-            </label>
-            <button
-              type="submit"
-              className="w-full rounded-2xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 active:scale-95"
-            >
-              Sign in
-            </button>
-          </form>
-        </div>
+        <LoginForm error={error} from={from} />
       </div>
     </div>
   );
