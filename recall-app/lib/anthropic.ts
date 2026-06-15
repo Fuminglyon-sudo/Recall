@@ -107,6 +107,79 @@ export async function generateFounderBatch(input: FounderBatchRequest): Promise<
   }
 }
 
+export type PitchGradeRequest = {
+  app: "japa-reality" | "sharpen" | "both";
+  scenario: string;
+  question: string;
+  answer: string;
+};
+
+export type PitchGradeResponse = {
+  score: number;
+  strongPoints: string[];
+  improvements: string[];
+  modelAnswer: string;
+};
+
+export async function gradePitchAnswer(input: PitchGradeRequest): Promise<PitchGradeResponse> {
+  if (!client) return fallbackGrade();
+
+  const appContext =
+    input.app === "japa-reality"
+      ? 'Japa Reality is an app that helps Nigerians and Africans navigate the process of relocating abroad. "Japa" is Nigerian slang for leaving/escaping. The app covers visa processes, housing, jobs, community connections, and life abroad.'
+      : input.app === "sharpen"
+      ? "Sharpen is a vocabulary and professional-skills learning app that uses spaced repetition to help users retain and deploy words confidently in real conversations."
+      : 'The founder is building two apps: Japa Reality (helps Africans navigate relocation abroad) and Sharpen (a spaced-repetition vocabulary and skills app).';
+
+  const prompt = `You are evaluating a founder's spoken pitch answer. Context about their products: ${appContext}
+
+Scenario setting: ${input.scenario}
+Question asked: ${input.question}
+Founder's answer: ${input.answer}
+
+Score the answer on: clarity, specificity, confidence, differentiation, and memorability.
+
+Return strict JSON with these exact keys:
+- score: integer 1 to 10 (10 = polished, investor-ready; 1 = unclear or very incomplete)
+- strongPoints: array of 1 to 3 short strings describing what they did well (be specific, cite their words)
+- improvements: array of 1 to 4 short strings describing what to sharpen (be constructive and direct)
+- modelAnswer: a 4 to 6 sentence model answer that is natural, confident, specific, and founder-authentic — write it in first person as if the founder is speaking`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 700,
+    temperature: 0.4,
+    system: "Return only valid JSON. No markdown. No preamble.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as PitchGradeResponse;
+    return {
+      score: Math.min(10, Math.max(1, Math.round(Number(parsed.score)))),
+      strongPoints: Array.isArray(parsed.strongPoints) ? parsed.strongPoints : [],
+      improvements: Array.isArray(parsed.improvements) ? parsed.improvements : [],
+      modelAnswer: parsed.modelAnswer ?? "",
+    };
+  } catch {
+    return fallbackGrade();
+  }
+}
+
+function fallbackGrade(): PitchGradeResponse {
+  return {
+    score: 5,
+    strongPoints: ["You gave an answer — that takes practice and courage."],
+    improvements: [
+      "Open with the specific problem you solve, not the product name.",
+      "Add one concrete detail: a number, a user story, or a clear before/after.",
+      "Close with a memorable hook or a statement of momentum.",
+    ],
+    modelAnswer:
+      "We build [product] for [specific person] who is frustrated by [specific problem]. What makes us different is [key differentiator]. We have already [early traction or proof]. The reason I built this is [personal conviction or insight].",
+  };
+}
+
 export async function phraseInVoice(text: string, tone: string): Promise<string> {
   if (!client) return text;
 

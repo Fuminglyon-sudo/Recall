@@ -13,11 +13,13 @@ import {
   X,
   LogOut,
   Sparkles,
+  Mic2,
 } from "lucide-react";
 
 const LINKS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
+  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false },
   { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false },
   { href: "/decks", label: "Decks", icon: Layers3, exact: false },
   { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
