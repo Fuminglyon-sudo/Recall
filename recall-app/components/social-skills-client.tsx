@@ -186,6 +186,18 @@ const CHARACTER_TYPES: CharacterType[] = [
   },
 ];
 
+function difficultyColor(d: string) {
+  if (d === "easy") return "text-emerald-300";
+  if (d === "hard") return "text-rose-300";
+  return "text-amber-300";
+}
+
+function difficultyBadge(d: string) {
+  if (d === "easy") return "border-emerald-300/20 bg-emerald-400/10 text-emerald-200";
+  if (d === "hard") return "border-rose-300/20 bg-rose-400/10 text-rose-200";
+  return "border-amber-300/20 bg-amber-400/10 text-amber-200";
+}
+
 function scoreLabel(s: number) {
   if (s >= 9) return "Natural connector";
   if (s >= 7) return "Confident conversationalist";
@@ -242,9 +254,9 @@ export function SocialSkillsClient() {
     categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
 
   const DIFFICULTY_MODIFIER: Record<Difficulty, string> = {
-    easy: " Be warm, receptive, and actively engaging. Give the person every opportunity to connect — respond generously and ask follow-up questions.",
-    medium: "",
-    hard: " Be demanding and hard to impress. Give very brief responses. Only open up if the person says something genuinely interesting or asks a truly thoughtful question. Make them work for it.",
+    easy: " DIFFICULTY: Easy. You are warm, patient, and actively encouraging. Smile and nod along. Ask follow-up questions readily. Give generous responses that help the conversation flow. Make it easy for the other person to feel comfortable and keep going.",
+    medium: " DIFFICULTY: Medium. Behave as a realistic stranger would — neither unusually helpful nor particularly hard to engage. Respond naturally to what is said, show moderate interest, and give the conversation a realistic social dynamic with natural variation.",
+    hard: " DIFFICULTY: Hard. You are guarded, reserved, and hard to impress. Give short, minimal responses unless something genuinely catches your attention. Do not volunteer information, do not ask follow-up questions unless compelled to. Make the other person work to earn your engagement. Only open up meaningfully if they say something truly thoughtful or interesting.",
   };
 
   function characterPromptWithDifficulty() {
@@ -627,8 +639,11 @@ export function SocialSkillsClient() {
                 {scoreLabel(feedback.score)}
               </p>
               <p className="text-sm text-slate-400">
-                {activeScenario.tag} · {activeCharacter.label} · {exchangeCount} exchange
-                {exchangeCount !== 1 ? "s" : ""}
+                {activeScenario.tag} · {activeCharacter.label} ·{" "}
+                <span className={difficultyColor(difficulty)}>
+                  {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                </span>{" "}
+                · {exchangeCount} exchange{exchangeCount !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
@@ -772,6 +787,9 @@ export function SocialSkillsClient() {
           </span>
           <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium text-slate-400">
             {activeCharacter.label}
+          </span>
+          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${difficultyBadge(difficulty)}`}>
+            {difficulty}
           </span>
         </div>
         <p className="mt-3 text-sm leading-7 text-slate-300">{activeScenario.context}</p>
