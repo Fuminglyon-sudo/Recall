@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { MasteryBadge } from "./mastery-badge";
 
 const GRADES = [
@@ -33,6 +33,16 @@ export function ReviewCard({
   onGrade: (formData: FormData) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
+  const [pendingGrade, setPendingGrade] = useState<number | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  function handleGrade(value: number) {
+    setPendingGrade(value);
+    const formData = new FormData();
+    formData.set("cardId", card.id);
+    formData.set("grade", String(value));
+    startTransition(() => { onGrade(formData); });
+  }
 
   return (
     <div className={`rounded-[2rem] border p-6 backdrop-blur ${stale ? "border-amber-400/20 bg-amber-400/5" : "border-white/10 bg-white/5"}`}>
@@ -84,24 +94,30 @@ export function ReviewCard({
 
           {card.synonyms ? <TagList label="Synonyms" value={card.synonyms} /> : null}
 
-          <form action={onGrade} className="space-y-3 pt-3 border-t border-white/8">
-            <input type="hidden" name="cardId" value={card.id} />
+          <div className="space-y-3 pt-3 border-t border-white/8">
             <p className="text-sm font-medium text-slate-300">How well did you recall it?</p>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-              {GRADES.map(({ value, label, style }) => (
-                <button
-                  key={value}
-                  type="submit"
-                  name="grade"
-                  value={value}
-                  className={`flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-semibold transition ${style}`}
-                >
-                  <span className="text-base">{value}</span>
-                  <span className="text-[10px] font-normal opacity-70">{label}</span>
-                </button>
-              ))}
+              {GRADES.map(({ value, label, style }) => {
+                const isThis = pendingGrade === value && isPending;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => handleGrade(value)}
+                    disabled={isPending}
+                    className={`flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-semibold transition ${style} ${isPending ? "cursor-not-allowed opacity-50" : ""}`}
+                  >
+                    {isThis ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    ) : (
+                      <span className="text-base">{value}</span>
+                    )}
+                    <span className="text-[10px] font-normal opacity-70">{label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </form>
+          </div>
         </div>
       )}
     </div>
