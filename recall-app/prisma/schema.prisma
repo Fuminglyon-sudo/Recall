@@ -61,3 +61,22 @@ model VoiceProfile {
   tone      String   @default("")
   updatedAt DateTime @updatedAt
 }
+
+model SocialSession {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  scenarioTag       String
+  scenarioEmoji     String
+  scenarioContext   String
+  characterLabel    String
+  difficulty        String
+  exchangeCount     Int
+  score             Int
+  strongPoints      Json
+  improvements      Json
+  powerMove         String
+  messages          Json
+  modelConversation Json?
+
+  @@index([createdAt])
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag } from "lucide-react";
+import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag, Bookmark, BookmarkCheck } from "lucide-react";
 
 type Category = "all" | "professional" | "social" | "everyday";
 type Difficulty = "easy" | "medium" | "hard";
@@ -221,6 +221,8 @@ export function SocialSkillsClient() {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -256,6 +258,7 @@ export function SocialSkillsClient() {
     setExchangeCount(0);
     setFeedback(null);
     setError(null);
+    setSaved(false);
   }
 
   function startCustomScenario() {
@@ -453,6 +456,34 @@ export function SocialSkillsClient() {
       setError("Something went wrong. Check your connection and try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function saveSession() {
+    if (!activeScenario || !feedback || saved || saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch("/api/social-sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenarioTag: activeScenario.tag,
+          scenarioEmoji: activeScenario.emoji,
+          scenarioContext: activeScenario.context,
+          characterLabel: activeCharacter.label,
+          difficulty,
+          exchangeCount,
+          score: feedback.score,
+          strongPoints: feedback.strongPoints,
+          improvements: feedback.improvements,
+          powerMove: feedback.powerMove,
+          messages,
+          modelConversation: feedback.modelConversation ?? undefined,
+        }),
+      });
+      if (res.ok) setSaved(true);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -672,11 +703,33 @@ export function SocialSkillsClient() {
 
         <div className="flex flex-wrap gap-3">
           <button
+            onClick={() => void saveSession()}
+            disabled={saving || saved}
+            className={`flex items-center gap-2 rounded-2xl border px-5 py-3 text-sm font-semibold transition ${
+              saved
+                ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300 cursor-default"
+                : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+            } disabled:opacity-60`}
+          >
+            {saved ? (
+              <>
+                <BookmarkCheck className="h-4 w-4" />
+                Saved
+              </>
+            ) : (
+              <>
+                <Bookmark className="h-4 w-4" />
+                {saving ? "Saving…" : "Save session"}
+              </>
+            )}
+          </button>
+          <button
             onClick={() => {
               setFeedback(null);
               setMessages([]);
               setDraft("");
               setExchangeCount(0);
+              setSaved(false);
             }}
             className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
           >
