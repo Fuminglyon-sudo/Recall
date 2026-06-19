@@ -100,10 +100,10 @@ async function getDashboardData() {
       }
     : null;
 
-  const dueTodayCount = decks.reduce(
-    (sum, d) => sum + d.cards.filter((c) => c.dueAt <= today).length,
-    0,
-  );
+  const allDueCards = decks.flatMap((d) => d.cards).filter((c) => c.dueAt <= today);
+  const reviewsDue = allDueCards.filter((c) => c.repetitions > 0).length;
+  const newDue = Math.min(allDueCards.filter((c) => c.repetitions === 0).length, 6);
+  const dueTodayCount = reviewsDue + newDue;
 
   const allCards = decks.flatMap((d: typeof decks[number]) => d.cards);
   const mastery = computeDistribution(allCards);
@@ -152,7 +152,7 @@ export default async function HomePage() {
 
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard label="Current streak" value={String(data.currentStreak)} helper={data.reviewedToday ? "You showed up today." : "Your rhythm resumes today."} />
-          <StatCard label="Total cards" value={String(data.totalCards)} helper="Every saved card counts." />
+          <StatCard label="Mastered" value={String(data.mastery.mastered)} helper={data.mastery.mastered > 0 ? "Cards that have earned long intervals." : "Your first mastered card is closer than it looks."} />
           <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
         </div>
 
