@@ -1,0 +1,729 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag } from "lucide-react";
+
+type Category = "all" | "professional" | "social" | "everyday";
+
+type Scenario = {
+  id: string;
+  category: "professional" | "social" | "everyday";
+  tag: string;
+  emoji: string;
+  context: string;
+  prompt: string;
+};
+
+type CharacterType = {
+  id: string;
+  label: string;
+  description: string;
+  aiPrompt: string;
+};
+
+type Message = {
+  role: "user" | "character";
+  content: string;
+};
+
+type FeedbackResult = {
+  score: number;
+  strongPoints: string[];
+  improvements: string[];
+  powerMove: string;
+};
+
+const CATEGORY_LABELS: Record<Category, string> = {
+  all: "All scenarios",
+  professional: "Professional",
+  social: "Social events",
+  everyday: "Everyday life",
+};
+
+const CATEGORY_COLORS: Record<Exclude<Category, "all">, string> = {
+  professional: "border-violet-300/20 bg-violet-400/10 text-violet-200",
+  social: "border-sky-300/20 bg-sky-400/10 text-sky-200",
+  everyday: "border-emerald-300/20 bg-emerald-400/10 text-emerald-200",
+};
+
+const SCENARIOS: Scenario[] = [
+  {
+    id: "airplane",
+    category: "everyday",
+    tag: "Long-haul flight",
+    emoji: "✈️",
+    context:
+      "You are on a 6-hour flight. You settle into your window seat and the stranger next to you glances up briefly, nods, then goes back to what they were doing. You have hours ahead of you.",
+    prompt: "Break the ice. Say whatever feels natural to start a conversation.",
+  },
+  {
+    id: "networking",
+    category: "professional",
+    tag: "Professional mixer",
+    emoji: "🥂",
+    context:
+      "You are at a professional networking event — name tags on, drinks in hand, soft background music. You spot someone standing alone near the edge of the room, looking around.",
+    prompt: "You walk over. Start the conversation.",
+  },
+  {
+    id: "wedding",
+    category: "social",
+    tag: "Wedding reception",
+    emoji: "💒",
+    context:
+      "You are at a wedding reception. You know the couple well but almost nobody else at your table. The person sitting next to you has been quietly eating while the speeches played. The speeches just ended.",
+    prompt: "The room relaxes. Say something to get the conversation going.",
+  },
+  {
+    id: "coffee",
+    category: "everyday",
+    tag: "Coffee shop queue",
+    emoji: "☕",
+    context:
+      "You are waiting in a long queue at a busy coffee shop. The person ahead of you has been waiting just as long. You have both been quietly watching the baristas scramble during the morning rush.",
+    prompt: "You decide to say something. What comes out?",
+  },
+  {
+    id: "conference",
+    category: "professional",
+    tag: "Conference hallway",
+    emoji: "🎤",
+    context:
+      "A keynote just ended at a conference in your industry. You end up next to someone at the water station in the hallway — both of you reaching for a cup at the same moment.",
+    prompt: "You both laugh at the awkward reach. Break the silence.",
+  },
+  {
+    id: "gym",
+    category: "everyday",
+    tag: "Gym regular",
+    emoji: "💪",
+    context:
+      "You have seen this person at the gym for months. You always nod to each other but have never spoken. Today you end up on adjacent machines during a quiet period — just the two of you in that section.",
+    prompt: "Finally say something.",
+  },
+  {
+    id: "dinner-party",
+    category: "social",
+    tag: "Dinner party newcomer",
+    emoji: "🍽️",
+    context:
+      "You are new to this city and your friend invited you to their dinner party. You do not know most people there. Someone comes to refill their drink in the kitchen at the same moment as you.",
+    prompt: "You both reach for the drinks at the same time. What do you say?",
+  },
+  {
+    id: "elevator",
+    category: "everyday",
+    tag: "Building neighbor",
+    emoji: "🏢",
+    context:
+      "You have lived in the same building for over a year. You always see this neighbor but only exchange nods. Tonight you step into an empty elevator together — just the two of you, eight floors to go.",
+    prompt: "The doors close. Say something.",
+  },
+  {
+    id: "mutual-friend",
+    category: "social",
+    tag: "Friend of a friend",
+    emoji: "🤝",
+    context:
+      "A mutual friend just introduced you to this person at a casual hangout, then immediately got pulled away to another conversation, leaving the two of you standing there with your drinks.",
+    prompt: "Your friend just walked away. Keep it going.",
+  },
+  {
+    id: "industry-event",
+    category: "professional",
+    tag: "Senior figure in your field",
+    emoji: "⭐",
+    context:
+      "You are at an industry dinner and end up seated next to someone clearly more experienced and established in your field. They are approachable — but you can tell they have met a lot of people in their time.",
+    prompt: "Dinner has just started. You go first.",
+  },
+];
+
+const CHARACTER_TYPES: CharacterType[] = [
+  {
+    id: "introvert",
+    label: "The Introvert",
+    description: "Thoughtful, short answers, needs warming up",
+    aiPrompt:
+      "You are a reserved, introverted person. You give short, genuine answers and do not volunteer much. You are not unfriendly — just private. You need real warmth before you open up. You rarely initiate follow-up questions first.",
+  },
+  {
+    id: "extrovert",
+    label: "The Extrovert",
+    description: "Warm, talkative, easy to connect with",
+    aiPrompt:
+      "You are naturally warm and talkative. You respond with genuine enthusiasm, expand on topics naturally, and make people feel at ease quickly. You enjoy conversation and it shows.",
+  },
+  {
+    id: "executive",
+    label: "The Busy Executive",
+    description: "Direct, no-nonsense, values substance",
+    aiPrompt:
+      "You are a successful, busy professional. Polite but direct. You do not do small talk for long and you appreciate when someone says something genuinely interesting or gets to a real point quickly. Your responses are brief unless something earns more.",
+  },
+  {
+    id: "guarded",
+    label: "The Hard to Read",
+    description: "Neutral, cautious, takes real effort to open up",
+    aiPrompt:
+      "You are measured and a bit guarded. You respond politely but briefly and do not volunteer information easily. You are not rude — just not an easy person to draw out. The other person has to genuinely earn your openness.",
+  },
+  {
+    id: "traveler",
+    label: "The Worldly Traveler",
+    description: "Has great stories, genuinely curious about people",
+    aiPrompt:
+      "You have traveled widely and lived in several countries. You are warm, curious, and a natural conversationalist. You often share a brief anecdote but you are equally interested in the other person's world. You find almost everyone interesting.",
+  },
+  {
+    id: "random",
+    label: "Surprise me",
+    description: "Random personality — the realistic challenge",
+    aiPrompt:
+      "Choose your own personality type that feels completely realistic and natural for this scenario. Be authentic and slightly unpredictable. The person practicing should not be able to easily predict how you will respond.",
+  },
+];
+
+function scoreLabel(s: number) {
+  if (s >= 9) return "Natural connector";
+  if (s >= 7) return "Confident conversationalist";
+  if (s >= 5) return "Getting comfortable";
+  if (s >= 3) return "Building the skill";
+  return "Needs more practice";
+}
+
+function scoreColor(s: number) {
+  if (s >= 8) return "text-emerald-300";
+  if (s >= 5) return "text-amber-300";
+  return "text-red-300";
+}
+
+function scoreBorder(s: number) {
+  if (s >= 8) return "border-emerald-400/25 bg-emerald-400/8";
+  if (s >= 5) return "border-amber-400/25 bg-amber-400/8";
+  return "border-red-400/25 bg-red-400/8";
+}
+
+export function SocialSkillsClient() {
+  const [categoryFilter, setCategoryFilter] = useState<Category>("all");
+  const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
+  const [activeCharacter, setActiveCharacter] = useState<CharacterType>(CHARACTER_TYPES[5]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [draft, setDraft] = useState("");
+  const [exchangeCount, setExchangeCount] = useState(0);
+  const [recording, setRecording] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<FeedbackResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const threadEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  const filteredScenarios =
+    categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
+
+  function startScenario(scenario: Scenario) {
+    setActiveScenario(scenario);
+    setMessages([]);
+    setDraft("");
+    setExchangeCount(0);
+    setFeedback(null);
+    setError(null);
+  }
+
+  function reset() {
+    setActiveScenario(null);
+    setMessages([]);
+    setDraft("");
+    setExchangeCount(0);
+    setFeedback(null);
+    setError(null);
+    stopRecording();
+  }
+
+  async function startRecording() {
+    setError(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    if (SR) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recognition = new SR() as any;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+      let final = "";
+      recognition.onresult = (event: {
+        resultIndex: number;
+        results: { isFinal: boolean; 0: { transcript: string } }[];
+      }) => {
+        let interim = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) final += event.results[i][0].transcript + " ";
+          else interim += event.results[i][0].transcript;
+        }
+        setDraft(final + interim);
+      };
+      recognition.onerror = () =>
+        setError("Microphone access denied or speech recognition unavailable.");
+      recognition.onend = () => setRecording(false);
+      recognition.start();
+      recognitionRef.current = recognition;
+      setRecording(true);
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+      mediaRecorder.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        setRecording(false);
+      };
+      mediaRecorder.start();
+      mediaRecorderRef.current = mediaRecorder;
+      setRecording(true);
+    } catch {
+      setError("Could not access microphone. Please allow microphone permission and try again.");
+    }
+  }
+
+  function stopRecording() {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
+    setRecording(false);
+  }
+
+  async function sendReply() {
+    if (!activeScenario || !draft.trim()) return;
+    stopRecording();
+
+    const newMessages: Message[] = [...messages, { role: "user", content: draft.trim() }];
+    const newExchangeCount = exchangeCount + 1;
+    setMessages(newMessages);
+    setDraft("");
+    setExchangeCount(newExchangeCount);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/social-conversation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenarioContext: activeScenario.context,
+          characterType: activeCharacter.label,
+          characterPrompt: activeCharacter.aiPrompt,
+          messages: newMessages,
+          exchangeCount: newExchangeCount,
+          forceEnd: false,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = (await response.json().catch(() => ({}))) as { error?: string };
+        setError(err.error ?? "Request failed. Try again.");
+        return;
+      }
+
+      const data = (await response.json()) as
+        | { type: "response"; message: string }
+        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string };
+
+      if (data.type === "response") {
+        setMessages((prev) => [...prev, { role: "character", content: data.message }]);
+      } else {
+        setFeedback(data);
+      }
+    } catch {
+      setError("Something went wrong. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function endSession() {
+    if (!activeScenario) return;
+    stopRecording();
+
+    const finalMessages: Message[] = draft.trim()
+      ? [...messages, { role: "user", content: draft.trim() }]
+      : messages;
+    const finalCount = draft.trim() ? exchangeCount + 1 : exchangeCount;
+
+    if (draft.trim()) setMessages(finalMessages);
+    setDraft("");
+    setExchangeCount(finalCount);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/social-conversation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenarioContext: activeScenario.context,
+          characterType: activeCharacter.label,
+          characterPrompt: activeCharacter.aiPrompt,
+          messages: finalMessages,
+          exchangeCount: finalCount,
+          forceEnd: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const err = (await response.json().catch(() => ({}))) as { error?: string };
+        setError(err.error ?? "Request failed. Try again.");
+        return;
+      }
+
+      const data = (await response.json()) as {
+        type: "feedback";
+        score: number;
+        strongPoints: string[];
+        improvements: string[];
+        powerMove: string;
+      };
+
+      setFeedback(data);
+    } catch {
+      setError("Something went wrong. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Phase 1: Setup ──────────────────────────────────────────────────────────
+  if (!activeScenario) {
+    return (
+      <div className="space-y-8">
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-2">
+          {(["all", "professional", "social", "everyday"] as Category[]).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                categoryFilter === cat
+                  ? "border-emerald-300/30 bg-emerald-400/15 text-emerald-200"
+                  : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/8 hover:text-slate-200"
+              }`}
+            >
+              {CATEGORY_LABELS[cat]}
+            </button>
+          ))}
+        </div>
+
+        {/* Character picker */}
+        <div>
+          <p className="mb-3 text-sm font-medium text-slate-300">Who are you talking to?</p>
+          <div className="flex flex-wrap gap-2">
+            {CHARACTER_TYPES.map((char) => (
+              <button
+                key={char.id}
+                onClick={() => setActiveCharacter(char)}
+                className={`rounded-2xl border px-4 py-2.5 text-left transition ${
+                  activeCharacter.id === char.id
+                    ? "border-emerald-300/30 bg-emerald-400/10 text-emerald-200"
+                    : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/8 hover:text-slate-200"
+                }`}
+              >
+                <span className="block text-sm font-medium">{char.label}</span>
+                <span className="block text-[11px] text-slate-500">{char.description}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Scenario grid */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          {filteredScenarios.map((scenario) => (
+            <button
+              key={scenario.id}
+              onClick={() => startScenario(scenario)}
+              className="group rounded-[2rem] border border-white/10 bg-white/5 p-5 text-left transition hover:border-white/20 hover:bg-white/8"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{scenario.emoji}</span>
+                  <span
+                    className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${
+                      CATEGORY_COLORS[scenario.category]
+                    }`}
+                  >
+                    {scenario.category === "professional"
+                      ? "Professional"
+                      : scenario.category === "social"
+                        ? "Social"
+                        : "Everyday"}
+                  </span>
+                </div>
+                <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-slate-400" />
+              </div>
+              <p className="mt-3 text-sm font-semibold text-white">{scenario.tag}</p>
+              <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-400">{scenario.context}</p>
+              <p className="mt-3 text-xs italic text-slate-500">{scenario.prompt}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Phase 3: Feedback ────────────────────────────────────────────────────────
+  if (feedback) {
+    return (
+      <div className="space-y-5">
+        <div className={`rounded-[2rem] border p-6 sm:p-8 ${scoreBorder(feedback.score)}`}>
+          <div className="flex items-center gap-5">
+            <div className={`text-5xl font-bold tabular-nums ${scoreColor(feedback.score)}`}>
+              {feedback.score}
+              <span className="text-2xl text-slate-500">/10</span>
+            </div>
+            <div>
+              <p className={`text-lg font-semibold ${scoreColor(feedback.score)}`}>
+                {scoreLabel(feedback.score)}
+              </p>
+              <p className="text-sm text-slate-400">
+                {activeScenario.tag} · {activeCharacter.label} · {exchangeCount} exchange
+                {exchangeCount !== 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {feedback.strongPoints.length > 0 ? (
+            <div className="rounded-[2rem] border border-emerald-400/20 bg-emerald-400/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300">
+                What worked
+              </p>
+              <ul className="mt-3 space-y-2">
+                {feedback.strongPoints.map((point, i) => (
+                  <li key={i} className="flex gap-2.5 text-sm leading-6 text-slate-200">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {feedback.improvements.length > 0 ? (
+            <div className="rounded-[2rem] border border-amber-400/20 bg-amber-400/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-amber-300">
+                What to sharpen
+              </p>
+              <ul className="mt-3 space-y-2">
+                {feedback.improvements.map((point, i) => (
+                  <li key={i} className="flex gap-2.5 text-sm leading-6 text-slate-200">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+
+        {feedback.powerMove ? (
+          <div className="rounded-[2rem] border border-emerald-300/15 bg-emerald-400/5 p-6">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+              Power move to try next time
+            </p>
+            <p className="mt-3 text-sm leading-7 text-slate-200">{feedback.powerMove}</p>
+          </div>
+        ) : null}
+
+        <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+            Full conversation
+          </p>
+          {messages.map((msg, i) => (
+            <SocialBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => {
+              setFeedback(null);
+              setMessages([]);
+              setDraft("");
+              setExchangeCount(0);
+            }}
+            className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Try again
+          </button>
+          <button
+            onClick={reset}
+            className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Pick a different scenario
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Phase 2: Conversation ────────────────────────────────────────────────────
+  return (
+    <div className="space-y-5">
+      <button
+        onClick={reset}
+        className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-slate-200"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        All scenarios
+      </button>
+
+      {/* Scenario context */}
+      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 sm:p-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xl">{activeScenario.emoji}</span>
+          <span
+            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${
+              CATEGORY_COLORS[activeScenario.category]
+            }`}
+          >
+            {activeScenario.tag}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium text-slate-400">
+            {activeCharacter.label}
+          </span>
+        </div>
+        <p className="mt-3 text-sm leading-7 text-slate-300">{activeScenario.context}</p>
+        <p className="mt-2 text-xs italic text-slate-500">{activeScenario.prompt}</p>
+      </div>
+
+      {/* Conversation thread */}
+      {messages.length > 0 ? (
+        <div className="space-y-3">
+          {messages.map((msg, i) => (
+            <SocialBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
+          ))}
+          {loading ? (
+            <div className="flex items-center gap-3 rounded-[2rem] border border-emerald-300/15 bg-emerald-400/5 px-5 py-4">
+              <div className="flex gap-1">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:0ms]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:150ms]" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-emerald-400 [animation-delay:300ms]" />
+              </div>
+              <p className="text-sm text-emerald-300/70">They are thinking…</p>
+            </div>
+          ) : null}
+          <div ref={threadEndRef} />
+        </div>
+      ) : null}
+
+      {/* Input area */}
+      {!loading ? (
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
+          <p className="text-sm font-medium text-slate-200">
+            {exchangeCount === 0 ? "Your opening line" : "Your reply"}
+          </p>
+          <p className="mt-1 text-sm text-slate-400">
+            {exchangeCount === 0
+              ? "Say whatever you would actually say in this moment."
+              : `Exchange ${exchangeCount} — keep it going naturally.`}
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            {recording ? (
+              <button
+                type="button"
+                onClick={stopRecording}
+                className="flex items-center gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm font-semibold text-red-300 transition hover:bg-red-400/20"
+              >
+                <span className="h-2 w-2 animate-pulse rounded-full bg-red-400" />
+                Stop recording
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void startRecording()}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                <Mic className="h-4 w-4 text-emerald-300" />
+                Record
+              </button>
+            )}
+          </div>
+
+          {error ? <p className="mt-3 text-sm text-amber-300">{error}</p> : null}
+
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={4}
+            placeholder={
+              exchangeCount === 0
+                ? "Type what you would say to open this conversation…"
+                : "Type your reply…"
+            }
+            className="input-base mt-4"
+          />
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => void sendReply()}
+              disabled={!draft.trim()}
+              className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {exchangeCount === 0 ? "Open with this" : "Send reply"}
+            </button>
+
+            {exchangeCount >= 2 ? (
+              <button
+                onClick={() => void endSession()}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                <Flag className="h-4 w-4 text-slate-400" />
+                {draft.trim() ? "Send & end session" : "End & get coaching"}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function SocialBubble({ msg, characterLabel }: { msg: Message; characterLabel: string }) {
+  const isUser = msg.role === "user";
+  return (
+    <div
+      className={`rounded-[2rem] border px-5 py-4 ${
+        isUser ? "border-white/8 bg-white/[0.03]" : "border-emerald-300/15 bg-emerald-400/5"
+      }`}
+    >
+      <p
+        className={`mb-2 text-[10px] font-semibold uppercase tracking-widest ${
+          isUser ? "text-slate-500" : "text-emerald-400"
+        }`}
+      >
+        {isUser ? "You" : `Them (${characterLabel})`}
+      </p>
+      <p className={`text-sm leading-7 ${isUser ? "text-slate-300" : "font-medium text-white"}`}>
+        {msg.content}
+      </p>
+    </div>
+  );
+}

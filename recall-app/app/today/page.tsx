@@ -77,9 +77,7 @@ export default async function TodayPage() {
 
         {held > 0 ? (
           <div className="rounded-[2rem] border border-slate-400/20 bg-white/[0.03] px-6 py-4">
-            <p className="text-sm font-semibold text-slate-300">
-              {held} more {held === 1 ? "card" : "cards"} waiting
-            </p>
+            <p className="text-sm font-semibold text-slate-300">More cards are waiting</p>
             <p className="mt-1 text-sm leading-6 text-slate-400">
               Clear these {MAX_TODAY} first. The rest unlock once your current queue is empty.
             </p>

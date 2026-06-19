@@ -228,6 +228,144 @@ function fallbackStep(exchangeCount: number): ConversationStep {
   };
 }
 
+// ── Social skills conversation ────────────────────────────────────────────────
+
+export type SocialMessage = {
+  role: "user" | "character";
+  content: string;
+};
+
+export type SocialConversationRequest = {
+  scenarioContext: string;
+  characterType: string;
+  characterPrompt: string;
+  messages: SocialMessage[];
+  exchangeCount: number;
+  forceEnd?: boolean;
+};
+
+export type SocialConversationStep =
+  | { type: "response"; message: string }
+  | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string };
+
+export async function conductSocialConversation(
+  input: SocialConversationRequest
+): Promise<SocialConversationStep> {
+  if (!client) return fallbackSocialStep(input.exchangeCount);
+
+  const history = input.messages
+    .map((m) =>
+      m.role === "user"
+        ? `Person practicing: ${m.content}`
+        : `You (${input.characterType}): ${m.content}`
+    )
+    .join("\n\n");
+
+  const mustEnd = input.forceEnd === true || input.exchangeCount >= 7;
+
+  if (mustEnd) {
+    const prompt = `You were playing this character in a social scenario.
+
+Character: ${input.characterType}
+Character traits: ${input.characterPrompt}
+Scenario: ${input.scenarioContext}
+
+Full conversation:
+${history}
+
+Now break character and give coaching feedback on how the person handled this social interaction.
+Evaluate across: how they opened, showed genuine curiosity, kept it going naturally, built rapport, and came across as confident and interesting.
+
+Return strict JSON:
+{
+  "type": "feedback",
+  "score": integer 1-10 (1 = very uncomfortable, 10 = effortlessly natural),
+  "strongPoints": ["1-3 specific things they did well in this conversation"],
+  "improvements": ["1-3 specific things to work on"],
+  "powerMove": "one concrete technique or phrase they can try next time to immediately level up their conversation game"
+}`;
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 600,
+      temperature: 0.4,
+      system: "Return only valid JSON. No markdown. No preamble.",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    try {
+      const parsed = JSON.parse(extractText(response.content)) as {
+        type: "feedback";
+        score: number;
+        strongPoints: string[];
+        improvements: string[];
+        powerMove: string;
+      };
+      return {
+        type: "feedback",
+        score: Math.min(10, Math.max(1, Math.round(Number(parsed.score)))),
+        strongPoints: Array.isArray(parsed.strongPoints) ? parsed.strongPoints : [],
+        improvements: Array.isArray(parsed.improvements) ? parsed.improvements : [],
+        powerMove:
+          parsed.powerMove ??
+          "Try the observation + question formula: make a genuine comment about something in the shared moment, then ask one open question that can't be answered with just yes or no.",
+      };
+    } catch {
+      return fallbackSocialStep(input.exchangeCount);
+    }
+  }
+
+  const prompt = `You are playing this character in a social scenario.
+
+Character type: ${input.characterType}
+Your personality: ${input.characterPrompt}
+Scenario: ${input.scenarioContext}
+
+Conversation so far:
+${history}
+
+Respond naturally as this character would right now.
+- Keep your reply to 1-3 sentences
+- Be realistic — not overly helpful or warm unless that is your character
+- React specifically to what was just said, not generically
+- Occasionally ask a natural follow-up question back (real conversations go both ways)
+- Remember: this person is a stranger to you
+
+Return strict JSON: { "type": "response", "message": "your in-character reply" }`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 200,
+    temperature: 0.7,
+    system: "Return only valid JSON. No markdown. No preamble.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as { type: "response"; message: string };
+    return { type: "response", message: parsed.message ?? "Mm. Interesting." };
+  } catch {
+    return { type: "response", message: "Interesting. Tell me more." };
+  }
+}
+
+function fallbackSocialStep(exchangeCount: number): SocialConversationStep {
+  if (exchangeCount < 7) {
+    return { type: "response", message: "That's interesting. What brings you here?" };
+  }
+  return {
+    type: "feedback",
+    score: 6,
+    strongPoints: ["You initiated the conversation — that is always the hardest step."],
+    improvements: [
+      "Ask open questions that invite more than a yes or no answer.",
+      "Find a natural reason to share something about yourself after asking about them.",
+    ],
+    powerMove:
+      "Try the observation + question formula: make a genuine comment about something in the shared moment, then ask one open question about the other person.",
+  };
+}
+
 export async function phraseInVoice(text: string, tone: string): Promise<string> {
   if (!client) return text;
 
