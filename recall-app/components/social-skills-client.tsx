@@ -226,6 +226,10 @@ export function SocialSkillsClient() {
     threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  useEffect(() => {
+    setDraft("");
+  }, [exchangeCount]);
+
   const filteredScenarios =
     categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
 
@@ -299,6 +303,7 @@ export function SocialSkillsClient() {
 
   function stopRecording() {
     if (recognitionRef.current) {
+      recognitionRef.current.onresult = null;
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
