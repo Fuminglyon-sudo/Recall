@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag } from "lucide-react";
 
 type Category = "all" | "professional" | "social" | "everyday";
+type Difficulty = "easy" | "medium" | "hard";
 
 type Scenario = {
   id: string;
@@ -207,8 +208,12 @@ function scoreBorder(s: number) {
 
 export function SocialSkillsClient() {
   const [categoryFilter, setCategoryFilter] = useState<Category>("all");
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
   const [activeCharacter, setActiveCharacter] = useState<CharacterType>(CHARACTER_TYPES[5]);
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customContext, setCustomContext] = useState("");
+  const [customPrompt, setCustomPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [exchangeCount, setExchangeCount] = useState(0);
@@ -234,6 +239,16 @@ export function SocialSkillsClient() {
   const filteredScenarios =
     categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
 
+  const DIFFICULTY_MODIFIER: Record<Difficulty, string> = {
+    easy: " Be warm, receptive, and actively engaging. Give the person every opportunity to connect — respond generously and ask follow-up questions.",
+    medium: "",
+    hard: " Be demanding and hard to impress. Give very brief responses. Only open up if the person says something genuinely interesting or asks a truly thoughtful question. Make them work for it.",
+  };
+
+  function characterPromptWithDifficulty() {
+    return activeCharacter.aiPrompt + DIFFICULTY_MODIFIER[difficulty];
+  }
+
   function startScenario(scenario: Scenario) {
     setActiveScenario(scenario);
     setMessages([]);
@@ -243,6 +258,21 @@ export function SocialSkillsClient() {
     setError(null);
   }
 
+  function startCustomScenario() {
+    if (!customContext.trim() || !customPrompt.trim()) return;
+    startScenario({
+      id: "custom",
+      category: "everyday",
+      tag: "Custom scenario",
+      emoji: "✏️",
+      context: customContext.trim(),
+      prompt: customPrompt.trim(),
+    });
+    setShowCustomForm(false);
+    setCustomContext("");
+    setCustomPrompt("");
+  }
+
   function reset() {
     setActiveScenario(null);
     setMessages([]);
@@ -250,6 +280,9 @@ export function SocialSkillsClient() {
     setExchangeCount(0);
     setFeedback(null);
     setError(null);
+    setShowCustomForm(false);
+    setCustomContext("");
+    setCustomPrompt("");
     stopRecording();
   }
 
@@ -334,7 +367,7 @@ export function SocialSkillsClient() {
         body: JSON.stringify({
           scenarioContext: activeScenario.context,
           characterType: activeCharacter.label,
-          characterPrompt: activeCharacter.aiPrompt,
+          characterPrompt: characterPromptWithDifficulty(),
           messages: newMessages,
           exchangeCount: newExchangeCount,
           forceEnd: false,
@@ -385,7 +418,7 @@ export function SocialSkillsClient() {
         body: JSON.stringify({
           scenarioContext: activeScenario.context,
           characterType: activeCharacter.label,
-          characterPrompt: activeCharacter.aiPrompt,
+          characterPrompt: characterPromptWithDifficulty(),
           messages: finalMessages,
           exchangeCount: finalCount,
           forceEnd: true,
@@ -457,6 +490,26 @@ export function SocialSkillsClient() {
           </div>
         </div>
 
+        {/* Difficulty */}
+        <div>
+          <p className="mb-3 text-sm font-medium text-slate-300">Difficulty</p>
+          <div className="flex gap-2">
+            {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+              <button key={d} onClick={() => setDifficulty(d)}
+                className={`rounded-2xl border px-4 py-2 text-sm font-medium transition ${difficulty === d ? "border-emerald-300/30 bg-emerald-400/10 text-emerald-200" : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/8 hover:text-slate-200"}`}>
+                {d.charAt(0).toUpperCase() + d.slice(1)}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            {difficulty === "easy"
+              ? "The person is warm and engaging — good for building confidence."
+              : difficulty === "medium"
+                ? "Realistic social dynamics with natural variation."
+                : "A demanding partner who gives little away — make them work to open up."}
+          </p>
+        </div>
+
         {/* Scenario grid */}
         <div className="grid gap-4 sm:grid-cols-2">
           {filteredScenarios.map((scenario) => (
@@ -488,6 +541,34 @@ export function SocialSkillsClient() {
             </button>
           ))}
         </div>
+
+        {/* Custom scenario */}
+        {showCustomForm ? (
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-white">✏️ Custom scenario</p>
+              <button onClick={() => setShowCustomForm(false)} className="text-xs text-slate-500 hover:text-slate-300 transition">Cancel</button>
+            </div>
+            <div>
+              <p className="mb-1.5 text-xs text-slate-400">Set the scene — where are you, who is this person?</p>
+              <textarea value={customContext} onChange={(e) => setCustomContext(e.target.value)} rows={3} placeholder="You are at your cousin's birthday party and there is someone you have never met sitting next to you at the table…" className="input-base" />
+            </div>
+            <div>
+              <p className="mb-1.5 text-xs text-slate-400">What do you need to do to start?</p>
+              <textarea value={customPrompt} onChange={(e) => setCustomPrompt(e.target.value)} rows={2} placeholder="The music stops briefly. Say something." className="input-base" />
+            </div>
+            <button onClick={startCustomScenario} disabled={!customContext.trim() || !customPrompt.trim()}
+              className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed">
+              Start conversation
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowCustomForm(true)}
+            className="w-full rounded-[2rem] border border-dashed border-white/10 p-5 text-left transition hover:border-white/20">
+            <p className="text-sm font-medium text-slate-300">+ Write your own scenario</p>
+            <p className="mt-1 text-xs text-slate-500">Practice for a specific real situation you are navigating.</p>
+          </button>
+        )}
       </div>
     );
   }

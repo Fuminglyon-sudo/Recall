@@ -169,6 +169,10 @@ export function PitchPracticeClient() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GradeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customApp, setCustomApp] = useState<App>("japa-reality");
+  const [customSetting, setCustomSetting] = useState("");
+  const [customQuestion, setCustomQuestion] = useState("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -198,7 +202,21 @@ export function PitchPracticeClient() {
     setExchangeCount(0);
     setResult(null);
     setError(null);
+    setShowCustomForm(false);
+    setCustomSetting("");
+    setCustomQuestion("");
     stopRecording();
+  }
+
+  function startCustomScenario() {
+    if (!customSetting.trim() || !customQuestion.trim()) return;
+    selectScenario({
+      id: "custom",
+      app: customApp,
+      tag: "Custom scenario",
+      setting: customSetting.trim(),
+      question: customQuestion.trim(),
+    });
   }
 
   async function startRecording() {
@@ -357,6 +375,45 @@ export function PitchPracticeClient() {
             </button>
           ))}
         </div>
+
+        {/* Custom scenario */}
+        {showCustomForm ? (
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-white">Write your own scenario</p>
+              <button onClick={() => setShowCustomForm(false)} className="text-xs text-slate-500 hover:text-slate-300 transition">Cancel</button>
+            </div>
+            <div>
+              <p className="mb-2 text-xs text-slate-400">App</p>
+              <div className="flex flex-wrap gap-2">
+                {(["japa-reality", "sharpen", "both"] as App[]).map((a) => (
+                  <button key={a} onClick={() => setCustomApp(a)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${customApp === a ? "border-emerald-300/30 bg-emerald-400/15 text-emerald-200" : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/8"}`}>
+                    {APP_LABELS[a]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="mb-1.5 text-xs text-slate-400">Setting — who you are talking to and where</p>
+              <textarea value={customSetting} onChange={(e) => setCustomSetting(e.target.value)} rows={3} placeholder="You are meeting a seed investor at a café after an intro from a mutual contact…" className="input-base" />
+            </div>
+            <div>
+              <p className="mb-1.5 text-xs text-slate-400">Their question</p>
+              <textarea value={customQuestion} onChange={(e) => setCustomQuestion(e.target.value)} rows={2} placeholder="What problem does your app solve and why are you the right person to solve it?" className="input-base" />
+            </div>
+            <button onClick={startCustomScenario} disabled={!customSetting.trim() || !customQuestion.trim()}
+              className="rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:opacity-50 disabled:cursor-not-allowed">
+              Start practice
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowCustomForm(true)}
+            className="w-full rounded-[2rem] border border-dashed border-white/10 p-5 text-left transition hover:border-white/20">
+            <p className="text-sm font-medium text-slate-300">+ Write your own scenario</p>
+            <p className="mt-1 text-xs text-slate-500">Practice for a specific upcoming pitch or meeting.</p>
+          </button>
+        )}
       </div>
     );
   }

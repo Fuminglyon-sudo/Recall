@@ -7,11 +7,14 @@ import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
 import { CalmCard } from "@/components/calm-card";
 import { DeckList } from "@/components/deck-list";
-import { computeDistribution, getMastery, MASTERY, type MasteryLevel } from "@/lib/mastery";
+import { computeDistribution, MASTERY, type MasteryLevel } from "@/lib/mastery";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { HowToUse } from "@/components/how-to-use";
 import { PhraseItPanel } from "@/components/phrase-it-panel";
 import { saveTone } from "@/app/voice/actions";
+import { StreakCalendar } from "@/components/streak-calendar";
+import { UpcomingReviews } from "@/components/upcoming-reviews";
+import { WordOfTheDay } from "@/components/word-of-the-day";
 
 async function getDashboardData() {
   const today = new Date();
@@ -29,10 +32,24 @@ async function getDashboardData() {
       mastery: computeDistribution([]),
       voiceTone: "",
       decks: [],
+      reviewDays: [] as string[],
+      upcomingByDay: {} as Record<string, number>,
+      wordOfDay: null,
     };
   }
 
-  const [streak, decks, voiceProfile] = await Promise.all([
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 27);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const tomorrowStart = new Date(today);
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+  tomorrowStart.setHours(0, 0, 0, 0);
+
+  const in8Days = new Date(tomorrowStart);
+  in8Days.setDate(in8Days.getDate() + 7);
+
+  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates] = await Promise.all([
     prisma.streak.findFirst(),
     prisma.deck.findMany({
       orderBy: { createdAt: "asc" },
@@ -44,7 +61,44 @@ async function getDashboardData() {
       },
     }),
     prisma.voiceProfile.findFirst(),
+    prisma.reviewLog.findMany({
+      where: { reviewedAt: { gte: thirtyDaysAgo } },
+      select: { reviewedAt: true },
+    }),
+    prisma.card.findMany({
+      where: { dueAt: { gte: tomorrowStart, lt: in8Days } },
+      select: { dueAt: true },
+    }),
+    prisma.card.findMany({
+      where: { repetitions: { gte: 1 } },
+      include: { deck: { select: { id: true, name: true } } },
+      orderBy: { createdAt: "asc" },
+    }),
   ]);
+
+  const reviewDays = [...new Set(reviewLogsRaw.map((l) => l.reviewedAt.toISOString().split("T")[0]))];
+
+  const upcomingByDay: Record<string, number> = {};
+  for (const card of upcomingRaw) {
+    const key = card.dueAt.toISOString().split("T")[0];
+    upcomingByDay[key] = (upcomingByDay[key] ?? 0) + 1;
+  }
+
+  const dayIndex = Math.floor(Date.now() / 86400000);
+  const wordOfDayRaw = wordCandidates.length > 0 ? wordCandidates[dayIndex % wordCandidates.length] : null;
+  const wordOfDay = wordOfDayRaw
+    ? {
+        id: wordOfDayRaw.id,
+        front: wordOfDayRaw.front,
+        back: wordOfDayRaw.back,
+        partOfSpeech: wordOfDayRaw.partOfSpeech,
+        example: wordOfDayRaw.example,
+        interval: wordOfDayRaw.interval,
+        repetitions: wordOfDayRaw.repetitions,
+        deckId: wordOfDayRaw.deck.id,
+        deckName: wordOfDayRaw.deck.name,
+      }
+    : null;
 
   const dueTodayCount = decks.reduce(
     (sum, d) => sum + d.cards.filter((c) => c.dueAt <= today).length,
@@ -70,6 +124,9 @@ async function getDashboardData() {
       createdAt: deck.createdAt,
       mastery: computeDistribution(deck.cards),
     })),
+    reviewDays,
+    upcomingByDay,
+    wordOfDay,
   };
 }
 
@@ -98,6 +155,8 @@ export default async function HomePage() {
           <StatCard label="Total cards" value={String(data.totalCards)} helper="Every saved card counts." />
           <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
         </div>
+
+        <WordOfTheDay card={data.wordOfDay} />
 
         <PhraseItPanel initialTone={data.voiceTone} saveToneAction={saveTone} />
 
@@ -153,6 +212,11 @@ export default async function HomePage() {
               );
             })}
           </div>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <StreakCalendar reviewDays={data.reviewDays} />
+          <UpcomingReviews byDay={data.upcomingByDay} />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1.35fr_0.9fr]">

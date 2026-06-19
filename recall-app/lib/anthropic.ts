@@ -228,6 +228,92 @@ function fallbackStep(exchangeCount: number): ConversationStep {
   };
 }
 
+// ── Sentence challenge ────────────────────────────────────────────────────────
+
+export type SentenceScenario = { scenario: string };
+
+export type SentenceGrade = {
+  score: number;
+  correct: boolean;
+  feedback: string;
+  betterSentence: string;
+};
+
+export async function generateSentenceScenario(
+  word: string,
+  definition: string
+): Promise<SentenceScenario> {
+  if (!client) {
+    return { scenario: `You are in a professional conversation where using the word "${word}" would fit naturally.` };
+  }
+
+  const prompt = `Write a 2-3 sentence realistic scenario (a professional or social situation) where someone would naturally use the word "${word}" (meaning: ${definition}). The scenario should feel grounded — like an investor pitch, networking event, product meeting, or startup conversation. End with one short prompt asking the person to write a sentence using "${word}". Return strict JSON: { "scenario": "..." }`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 200,
+    temperature: 0.6,
+    system: "Return only valid JSON. No markdown.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as SentenceScenario;
+    return { scenario: parsed.scenario ?? `Use "${word}" naturally in a sentence below.` };
+  } catch {
+    return { scenario: `You are explaining your product to a potential partner. Use the word "${word}" in your explanation.` };
+  }
+}
+
+export async function gradeSentenceUsage(input: {
+  word: string;
+  definition: string;
+  scenario: string;
+  userSentence: string;
+}): Promise<SentenceGrade> {
+  if (!client) {
+    return { score: 3, correct: true, feedback: "Your sentence looks reasonable. Keep practising.", betterSentence: `A strong sentence would use "${input.word}" clearly and in natural context.` };
+  }
+
+  const prompt = `Grade how well this person used the word "${input.word}" (definition: ${input.definition}).
+
+Scenario given to them:
+${input.scenario}
+
+Their sentence:
+"${input.userSentence}"
+
+Evaluate: correct meaning, natural fit in the scenario, confidence and clarity of usage.
+
+Return strict JSON:
+{
+  "score": integer 1-5 (1 = incorrect, 3 = correct but awkward, 5 = excellent natural usage),
+  "correct": boolean (true if the core meaning is used correctly),
+  "feedback": "1-2 sentences: what they did well or what went wrong",
+  "betterSentence": "a model sentence showing ideal usage of the word in this scenario"
+}`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 300,
+    temperature: 0.3,
+    system: "Return only valid JSON. No markdown.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as SentenceGrade;
+    return {
+      score: Math.min(5, Math.max(1, Math.round(Number(parsed.score)))),
+      correct: Boolean(parsed.correct),
+      feedback: parsed.feedback ?? "Good attempt.",
+      betterSentence: parsed.betterSentence ?? `A strong sentence uses "${input.word}" with clear intent.`,
+    };
+  } catch {
+    return { score: 3, correct: true, feedback: "Your sentence looks reasonable.", betterSentence: `Use "${input.word}" clearly in context to show command of the word.` };
+  }
+}
+
 // ── Social skills conversation ────────────────────────────────────────────────
 
 export type SocialMessage = {
