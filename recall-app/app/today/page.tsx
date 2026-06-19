@@ -21,7 +21,31 @@ export default async function TodayPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const shown = allDue.slice(0, MAX_TODAY);
+  // Round-robin across decks so the 5 cards always mix subjects.
+  // Build a queue per deck (already sorted oldest-due first), then
+  // take one card per deck in turn until MAX_TODAY is filled.
+  const deckQueues = new Map<string, typeof allDue>();
+  for (const card of allDue) {
+    if (!deckQueues.has(card.deckId)) deckQueues.set(card.deckId, []);
+    deckQueues.get(card.deckId)!.push(card);
+  }
+  // Sort decks by their oldest due card so the most overdue deck goes first
+  const sortedQueues = [...deckQueues.values()].sort(
+    (a, b) => a[0].dueAt.getTime() - b[0].dueAt.getTime()
+  );
+  const shown: typeof allDue = [];
+  let progress = true;
+  while (shown.length < MAX_TODAY && progress) {
+    progress = false;
+    for (const queue of sortedQueues) {
+      if (shown.length >= MAX_TODAY) break;
+      if (queue.length > 0) {
+        shown.push(queue.shift()!);
+        progress = true;
+      }
+    }
+  }
+
   const held = allDue.length - shown.length;
   const staleCount = shown.filter((c) => c.dueAt < today).length;
 
