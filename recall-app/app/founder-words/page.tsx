@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { FounderBatchGenerator } from "@/components/founder-batch-generator";

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { ReviewCard } from "@/components/review-card";
