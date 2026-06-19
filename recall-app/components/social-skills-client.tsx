@@ -376,7 +376,11 @@ export function SocialSkillsClient() {
 
       if (!response.ok) {
         const err = (await response.json().catch(() => ({}))) as { error?: string };
-        setError(err.error ?? "Request failed. Try again.");
+        if (response.status === 401) {
+          setError("Your session has expired. Please refresh the page and log in again.");
+        } else {
+          setError(err.error ?? "Request failed. Try again.");
+        }
         return;
       }
 
@@ -427,7 +431,11 @@ export function SocialSkillsClient() {
 
       if (!response.ok) {
         const err = (await response.json().catch(() => ({}))) as { error?: string };
-        setError(err.error ?? "Request failed. Try again.");
+        if (response.status === 401) {
+          setError("Your session has expired. Please refresh the page and log in again.");
+        } else {
+          setError(err.error ?? "Request failed. Try again.");
+        }
         return;
       }
 

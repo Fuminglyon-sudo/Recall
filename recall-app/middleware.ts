@@ -43,6 +43,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "Session expired. Please refresh the page and log in again." }, { status: 401 });
+  }
+
   const loginUrl = req.nextUrl.clone();
   loginUrl.pathname = "/login";
   loginUrl.searchParams.set("from", pathname);

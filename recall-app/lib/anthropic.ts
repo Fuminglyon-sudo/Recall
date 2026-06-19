@@ -381,7 +381,7 @@ Return strict JSON with ALL of these fields:
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 600,
+      max_tokens: 1600,
       temperature: 0.4,
       system: "Return only valid JSON. No markdown. No preamble.",
       messages: [{ role: "user", content: prompt }],
