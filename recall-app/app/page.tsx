@@ -102,7 +102,7 @@ async function getDashboardData() {
 
   const allDueCards = decks.flatMap((d) => d.cards).filter((c) => c.dueAt <= today);
   const reviewsDue = allDueCards.filter((c) => c.repetitions > 0).length;
-  const newDue = Math.min(allDueCards.filter((c) => c.repetitions === 0).length, 6);
+  const newDue = Math.min(allDueCards.filter((c) => c.repetitions === 0).length, 3);
   const dueTodayCount = reviewsDue + newDue;
 
   const allCards = decks.flatMap((d: typeof decks[number]) => d.cards);

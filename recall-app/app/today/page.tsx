@@ -6,7 +6,7 @@ import { ReviewCard } from "@/components/review-card";
 import { gradeCard } from "./actions";
 import { isDatabaseReady } from "@/lib/db-ready";
 
-const MAX_NEW = 6;
+const MAX_NEW = 3;
 
 export default async function TodayPage() {
   const ready = await isDatabaseReady();

@@ -6,7 +6,7 @@
  */
 import { PrismaClient } from "@prisma/client";
 
-const PER_DAY = 6;
+const PER_DAY = 3;
 const prisma = new PrismaClient();
 
 async function main() {
