@@ -31,6 +31,7 @@ type FeedbackResult = {
   strongPoints: string[];
   improvements: string[];
   powerMove: string;
+  modelConversation?: Array<{ role: "user" | "character"; content: string }>;
 };
 
 const CATEGORY_LABELS: Record<Category, string> = {
@@ -348,7 +349,7 @@ export function SocialSkillsClient() {
 
       const data = (await response.json()) as
         | { type: "response"; message: string }
-        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string };
+        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string; modelConversation?: Array<{ role: "user" | "character"; content: string }> };
 
       if (data.type === "response") {
         setMessages((prev) => [...prev, { role: "character", content: data.message }]);
@@ -403,6 +404,7 @@ export function SocialSkillsClient() {
         strongPoints: string[];
         improvements: string[];
         powerMove: string;
+        modelConversation?: Array<{ role: "user" | "character"; content: string }>;
       };
 
       setFeedback(data);
@@ -554,9 +556,25 @@ export function SocialSkillsClient() {
           </div>
         ) : null}
 
+        {feedback.modelConversation && feedback.modelConversation.length > 0 ? (
+          <div className="rounded-[2rem] border border-violet-300/20 bg-violet-400/5 p-5 space-y-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-violet-300">
+                How it could have gone
+              </p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                A full rewrite showing one natural way this conversation could have flowed from start to finish.
+              </p>
+            </div>
+            {feedback.modelConversation.map((msg, i) => (
+              <ModelBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
+            ))}
+          </div>
+        ) : null}
+
         <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            Full conversation
+            Your conversation
           </p>
           {messages.map((msg, i) => (
             <SocialBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
@@ -707,6 +725,36 @@ export function SocialSkillsClient() {
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function ModelBubble({
+  msg,
+  characterLabel,
+}: {
+  msg: { role: "user" | "character"; content: string };
+  characterLabel: string;
+}) {
+  const isUser = msg.role === "user";
+  return (
+    <div
+      className={`rounded-[2rem] border px-5 py-4 ${
+        isUser
+          ? "border-violet-300/20 bg-violet-400/8"
+          : "border-white/8 bg-white/[0.03]"
+      }`}
+    >
+      <p
+        className={`mb-2 text-[10px] font-semibold uppercase tracking-widest ${
+          isUser ? "text-violet-300" : "text-slate-500"
+        }`}
+      >
+        {isUser ? "You (model)" : `Them (${characterLabel})`}
+      </p>
+      <p className={`text-sm leading-7 ${isUser ? "font-medium text-white" : "text-slate-300"}`}>
+        {msg.content}
+      </p>
     </div>
   );
 }

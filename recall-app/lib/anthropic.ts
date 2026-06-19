@@ -246,7 +246,14 @@ export type SocialConversationRequest = {
 
 export type SocialConversationStep =
   | { type: "response"; message: string }
-  | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string };
+  | {
+      type: "feedback";
+      score: number;
+      strongPoints: string[];
+      improvements: string[];
+      powerMove: string;
+      modelConversation?: Array<{ role: "user" | "character"; content: string }>;
+    };
 
 export async function conductSocialConversation(
   input: SocialConversationRequest
@@ -276,13 +283,14 @@ ${history}
 Now break character and give coaching feedback on how the person handled this social interaction.
 Evaluate across: how they opened, showed genuine curiosity, kept it going naturally, built rapport, and came across as confident and interesting.
 
-Return strict JSON:
+Return strict JSON with ALL of these fields:
 {
   "type": "feedback",
   "score": integer 1-10 (1 = very uncomfortable, 10 = effortlessly natural),
   "strongPoints": ["1-3 specific things they did well in this conversation"],
   "improvements": ["1-3 specific things to work on"],
-  "powerMove": "one concrete technique or phrase they can try next time to immediately level up their conversation game"
+  "powerMove": "one concrete technique or phrase they can try next time to immediately level up their conversation game",
+  "modelConversation": only include this field if score is 8 or below — an array of message objects showing how this conversation could have ideally gone from start to finish. Write the user lines showing confident, natural, curious conversation. Write the character lines as they would realistically respond to those better inputs. Keep each message 1-3 sentences. Aim for 4-8 exchanges total showing a natural arc. Format: [{ "role": "user", "content": "..." }, { "role": "character", "content": "..." }, ...]. If score is 9 or 10, omit this field entirely.
 }`;
 
     const response = await client.messages.create({
@@ -300,15 +308,21 @@ Return strict JSON:
         strongPoints: string[];
         improvements: string[];
         powerMove: string;
+        modelConversation?: Array<{ role: "user" | "character"; content: string }>;
       };
+      const score = Math.min(10, Math.max(1, Math.round(Number(parsed.score))));
       return {
         type: "feedback",
-        score: Math.min(10, Math.max(1, Math.round(Number(parsed.score)))),
+        score,
         strongPoints: Array.isArray(parsed.strongPoints) ? parsed.strongPoints : [],
         improvements: Array.isArray(parsed.improvements) ? parsed.improvements : [],
         powerMove:
           parsed.powerMove ??
           "Try the observation + question formula: make a genuine comment about something in the shared moment, then ask one open question that can't be answered with just yes or no.",
+        modelConversation:
+          score <= 8 && Array.isArray(parsed.modelConversation)
+            ? parsed.modelConversation
+            : undefined,
       };
     } catch {
       return fallbackSocialStep(input.exchangeCount);
