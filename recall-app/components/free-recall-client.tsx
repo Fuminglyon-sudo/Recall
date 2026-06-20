@@ -11,8 +11,13 @@ type DeckOption = {
   fronts: string[];
 };
 
+type RememberedItem = {
+  correct: string;
+  typed?: string; // present when the user's spelling differed
+};
+
 type Results = {
-  remembered: string[];
+  remembered: RememberedItem[];
   missed: string[];
   unrecognised: string[];
 };
@@ -71,7 +76,8 @@ function scoreResults(typed: string, fronts: string[]): Results {
 
   const normalFronts = fronts.map(normalize);
 
-  const remembered: string[] = [];
+  const remembered: RememberedItem[] = [];
+  const rememberedKeys = new Set<string>();
   const missedSet = new Set(fronts);
   const unrecognised: string[] = [];
 
@@ -80,8 +86,10 @@ function scoreResults(typed: string, fronts: string[]): Results {
     const matchIndex = normalFronts.findIndex((f) => fuzzyMatch(norm, f));
     if (matchIndex !== -1) {
       const matched = fronts[matchIndex];
-      if (!remembered.includes(matched)) {
-        remembered.push(matched);
+      if (!rememberedKeys.has(matched)) {
+        const corrected = normalize(matched) !== norm;
+        remembered.push(corrected ? { correct: matched, typed: line.trim() } : { correct: matched });
+        rememberedKeys.add(matched);
         missedSet.delete(matched);
       }
     } else {
@@ -146,9 +154,32 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
 
   // ── Phase 1: Pick deck ───────────────────────────────────────────────────
   if (phase === "pick") {
+    const [allDecks, ...perDeck] = decks;
     return (
       <div className="space-y-3">
-        {decks.map((d) => (
+        {/* All decks — prominent top option */}
+        <button
+          key={allDecks.id}
+          onClick={() => startSession(allDecks)}
+          className="group w-full rounded-[2rem] border border-emerald-400/30 bg-emerald-400/5 p-5 text-left transition hover:border-emerald-400/50 hover:bg-emerald-400/10"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-white">{allDecks.name}</p>
+              <p className="mt-1 text-xs text-emerald-300/70">
+                {allDecks.seenCards} reviewed across all decks · {allDecks.totalCards} total
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-emerald-300 tabular-nums">{allDecks.seenCards}</p>
+              <p className="text-[10px] uppercase tracking-widest text-emerald-400/60">to recall</p>
+            </div>
+          </div>
+        </button>
+
+        <p className="px-1 pt-1 text-[11px] uppercase tracking-widest text-slate-600">Or pick a deck</p>
+
+        {perDeck.map((d) => (
           <button
             key={d.id}
             onClick={() => startSession(d)}
@@ -239,7 +270,9 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
               <p className={`text-lg font-semibold ${scoreColor}`}>
                 {pctScore >= 75 ? "Strong recall" : pctScore >= 45 ? "Getting there" : "Room to grow"}
               </p>
-              <p className="text-sm text-slate-400">{pctScore}% of reviewed cards recalled · {deck.name}</p>
+              <p className="text-sm text-slate-400">
+                {pctScore}% of reviewed cards recalled · {deck.id === "all" ? "All decks" : deck.name}
+              </p>
             </div>
           </div>
         </div>
@@ -252,10 +285,17 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
                 Remembered ({results.remembered.length})
               </p>
               <ul className="mt-3 space-y-1.5">
-                {results.remembered.map((w) => (
-                  <li key={w} className="flex gap-2 text-sm leading-6 text-slate-200">
+                {results.remembered.map((item) => (
+                  <li key={item.correct} className="flex gap-2 text-sm leading-6 text-slate-200">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-                    {w}
+                    <span>
+                      {item.correct}
+                      {item.typed ? (
+                        <span className="ml-2 text-xs text-amber-300/80">
+                          ← you wrote &quot;{item.typed}&quot;
+                        </span>
+                      ) : null}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -285,7 +325,7 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
         {results.unrecognised.length > 0 ? (
           <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-              Not in this deck ({results.unrecognised.length})
+              {deck.id === "all" ? "Not in any deck" : "Not in this deck"} ({results.unrecognised.length})
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {results.unrecognised.map((w) => (

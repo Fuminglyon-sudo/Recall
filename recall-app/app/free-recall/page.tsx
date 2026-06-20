@@ -13,7 +13,7 @@ export default async function FreeRecallPage() {
     },
   });
 
-  const deckData = decks
+  const perDeck = decks
     .filter((d) => d._count.cards > 0)
     .map((d) => ({
       id: d.id,
@@ -22,6 +22,21 @@ export default async function FreeRecallPage() {
       seenCards: d.cards.filter((c) => c.repetitions > 0).length,
       fronts: d.cards.map((c) => c.front),
     }));
+
+  const allFronts = [...new Set(perDeck.flatMap((d) => d.fronts))];
+  const allSeen = [...new Set(
+    decks.flatMap((d) => d.cards.filter((c) => c.repetitions > 0).map((c) => c.front))
+  )];
+
+  const allDecksOption = {
+    id: "all",
+    name: "All decks",
+    totalCards: allFronts.length,
+    seenCards: allSeen.length,
+    fronts: allFronts,
+  };
+
+  const deckData = [allDecksOption, ...perDeck];
 
   return (
     <AppShell>
