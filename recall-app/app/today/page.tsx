@@ -127,6 +127,7 @@ export default async function TodayPage() {
                   example: card.example,
                   hook: card.hook,
                   synonyms: card.synonyms,
+                  association: card.association,
                   deckName: card.deck.name,
                   interval: card.interval,
                   repetitions: card.repetitions,

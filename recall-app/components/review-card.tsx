@@ -25,6 +25,7 @@ export function ReviewCard({
     example: string | null;
     hook: string | null;
     synonyms: string | null;
+    association: string | null;
     deckName: string;
     interval: number;
     repetitions: number;
@@ -33,14 +34,20 @@ export function ReviewCard({
   onGrade: (formData: FormData) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
+  const [association, setAssociation] = useState("");
   const [pendingGrade, setPendingGrade] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const isFirstReview = card.repetitions === 0;
 
   function handleGrade(value: number) {
     setPendingGrade(value);
     const formData = new FormData();
     formData.set("cardId", card.id);
     formData.set("grade", String(value));
+    if (isFirstReview && association.trim()) {
+      formData.set("association", association.trim());
+    }
     startTransition(() => { onGrade(formData); });
   }
 
@@ -55,7 +62,6 @@ export function ReviewCard({
         ) : null}
       </div>
 
-      {/* Front — styled like the deck-detail preview block */}
       <div className="mt-3 rounded-3xl border border-emerald-300/15 bg-slate-950/60 p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -93,6 +99,31 @@ export function ReviewCard({
           </div>
 
           {card.synonyms ? <TagList label="Synonyms" value={card.synonyms} /> : null}
+
+          {/* Returning review: show saved personal anchor */}
+          {!isFirstReview && card.association ? (
+            <div className="rounded-3xl border border-violet-300/20 bg-violet-400/5 p-4">
+              <p className="text-xs uppercase tracking-[0.24em] text-violet-400">Your anchor</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">{card.association}</p>
+            </div>
+          ) : null}
+
+          {/* First review: prompt for a personal association */}
+          {isFirstReview ? (
+            <div className="rounded-3xl border border-violet-300/20 bg-violet-400/5 p-4 space-y-2">
+              <p className="text-xs uppercase tracking-[0.24em] text-violet-400">Build your anchor</p>
+              <p className="text-xs leading-5 text-slate-400">
+                What does <span className="font-semibold text-white">{card.front}</span> remind you of? A person, a moment, an image. One line — your brain will hold this.
+              </p>
+              <textarea
+                value={association}
+                onChange={(e) => setAssociation(e.target.value)}
+                rows={2}
+                placeholder="e.g. flywheel → the spinning wheel on my old bicycle that never stopped once going…"
+                className="input-base text-sm"
+              />
+            </div>
+          ) : null}
 
           <div className="space-y-3 pt-3 border-t border-white/8">
             <p className="text-sm font-medium text-slate-300">How well did you recall it?</p>
@@ -139,9 +170,7 @@ function TagList({ label, value }: { label: string; value: string }) {
     .map((item) => item.trim())
     .filter(Boolean);
 
-  if (tags.length === 0) {
-    return null;
-  }
+  if (tags.length === 0) return null;
 
   return (
     <div className="rounded-3xl border border-white/8 bg-white/[0.02] p-4">

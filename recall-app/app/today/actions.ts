@@ -19,6 +19,8 @@ export async function gradeCard(formData: FormData) {
     grade,
   });
 
+  const association = String(formData.get("association") ?? "").trim();
+
   await prisma.$transaction(async (tx) => {
     await tx.reviewLog.create({ data: { cardId, grade } });
     await tx.card.update({
@@ -28,6 +30,8 @@ export async function gradeCard(formData: FormData) {
         interval: next.interval,
         repetitions: next.repetitions,
         dueAt: next.dueAt,
+        // Save association only on the very first review
+        ...(association && card.repetitions === 0 ? { association } : {}),
       },
     });
 

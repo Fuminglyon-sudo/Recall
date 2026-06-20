@@ -19,6 +19,7 @@ import {
   Search,
   PenLine,
   BookmarkCheck,
+  BrainCircuit,
 } from "lucide-react";
 
 const LINKS = [
@@ -27,6 +28,7 @@ const LINKS = [
   { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false },
   { href: "/social-skills", label: "Social skills", icon: Users, exact: false },
   { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false },
+  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false },
   { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false },
   { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false },
   { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false },

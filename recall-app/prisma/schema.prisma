@@ -24,6 +24,7 @@ model Card {
   example        String?
   hook           String?
   synonyms       String?
+  association    String?
   kind           String      @default("VOCABULARY")
   sourceContext  String?
   easeFactor     Float       @default(2.5)
