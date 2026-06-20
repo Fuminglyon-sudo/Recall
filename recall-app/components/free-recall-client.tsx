@@ -23,6 +23,46 @@ function normalize(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().replace(/\s+/g, " ");
 }
 
+// Levenshtein distance — allows catching common misspellings
+function levenshtein(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+  );
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+// Max allowed edit distance based on word length
+function maxDistance(len: number): number {
+  if (len >= 8) return 2;
+  if (len >= 5) return 1;
+  return 0;
+}
+
+function fuzzyMatch(typed: string, front: string): boolean {
+  if (typed === front) return true;
+  // prefix match (typed the start of a multi-word card front)
+  if (front.startsWith(typed) && typed.length >= 4) return true;
+  if (typed.startsWith(front) && front.length >= 4) return true;
+  // levenshtein on the first word of the card front vs typed (handles single-word typos)
+  const firstWord = front.split(" ")[0];
+  const threshold = maxDistance(Math.max(typed.length, firstWord.length));
+  if (threshold > 0 && levenshtein(typed, firstWord) <= threshold) return true;
+  // full front levenshtein for short multi-word phrases
+  if (front.split(" ").length <= 2) {
+    const threshold2 = maxDistance(Math.max(typed.length, front.length));
+    if (threshold2 > 0 && levenshtein(typed, front) <= threshold2) return true;
+  }
+  return false;
+}
+
 function scoreResults(typed: string, fronts: string[]): Results {
   const typedLines = typed
     .split(/[\n,]+/)
@@ -37,9 +77,7 @@ function scoreResults(typed: string, fronts: string[]): Results {
 
   for (const line of typedLines) {
     const norm = normalize(line);
-    const matchIndex = normalFronts.findIndex(
-      (f) => f === norm || f.startsWith(norm) || norm.startsWith(f)
-    );
+    const matchIndex = normalFronts.findIndex((f) => fuzzyMatch(norm, f));
     if (matchIndex !== -1) {
       const matched = fronts[matchIndex];
       if (!remembered.includes(matched)) {
