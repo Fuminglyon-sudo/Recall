@@ -81,3 +81,28 @@ model SocialSession {
 
   @@index([createdAt])
 }
+
+model Country {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  flag             String
+  capital          String
+  continent        String
+  population       String?
+  currency         String?
+  languages        String
+  nationalFood     String?
+  phraseLanguage   String?
+  phraseHi         String?
+  phraseMorning    String?
+  phraseAfternoon  String?
+  funFact          String?
+  interval         Int      @default(1)
+  repetitions      Int      @default(0)
+  easeFactor       Float    @default(2.5)
+  dueAt            DateTime @default(now())
+  createdAt        DateTime @default(now())
+
+  @@index([dueAt])
+  @@index([continent])
+}

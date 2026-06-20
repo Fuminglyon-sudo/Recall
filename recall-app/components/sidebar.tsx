@@ -20,11 +20,13 @@ import {
   PenLine,
   BookmarkCheck,
   BrainCircuit,
+  Globe,
 } from "lucide-react";
 
 const LINKS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
+  { href: "/countries", label: "Countries", icon: Globe, exact: false },
   { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false },
   { href: "/social-skills", label: "Social skills", icon: Users, exact: false },
   { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false },
