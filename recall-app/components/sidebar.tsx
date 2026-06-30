@@ -81,7 +81,7 @@ function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean
 function SidebarContent({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between p-5 pb-2">
+      <div className="flex shrink-0 items-center justify-between p-5 pb-2">
         <Link href="/" className="flex items-center gap-3" onClick={onClose}>
           <div className="rounded-2xl bg-emerald-400/15 p-2.5 text-emerald-300">
             <Brain className="h-5 w-5" />
@@ -102,9 +102,11 @@ function SidebarContent({ onClose, isAdmin }: { onClose?: () => void; isAdmin: b
         ) : null}
       </div>
 
-      <NavItems onClose={onClose} isAdmin={isAdmin} />
+      <div className="flex-1 overflow-y-auto">
+        <NavItems onClose={onClose} isAdmin={isAdmin} />
+      </div>
 
-      <div className="border-t border-white/8 px-5 py-4 space-y-3">
+      <div className="shrink-0 border-t border-white/8 px-5 py-4 space-y-3">
         <p className="text-xs text-slate-600">One thing at a time.</p>
         <a
           href="/api/logout"
