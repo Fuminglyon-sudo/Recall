@@ -45,9 +45,14 @@ export async function middleware(req: NextRequest) {
   }
 
   // ── Path 2: Google OAuth (NextAuth JWT cookie) ───────────────────────────
+  // getToken() defaults secureCookie to false (looking for the unprefixed
+  // "authjs.session-token" cookie) unless told otherwise, but Auth.js sets
+  // the "__Secure-" prefixed cookie on HTTPS — mismatch here silently
+  // returns null and bounces every authenticated request back to /login.
   const nextAuthToken = await getToken({
     req,
     secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+    secureCookie: req.nextUrl.protocol === "https:",
   });
   if (nextAuthToken) {
     return NextResponse.next();
