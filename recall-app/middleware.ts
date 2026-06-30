@@ -49,7 +49,7 @@ export async function middleware(req: NextRequest) {
     req,
     secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   });
-  if (nextAuthToken?.userId) {
+  if (nextAuthToken) {
     return NextResponse.next();
   }
 
