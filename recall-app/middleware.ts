@@ -37,7 +37,7 @@ export async function middleware(req: NextRequest) {
   // ── Path 2: Google OAuth (NextAuth JWT cookie) ───────────────────────────
   const nextAuthToken = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   });
   if (nextAuthToken?.userId) {
     return NextResponse.next();
