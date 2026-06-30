@@ -1,9 +1,9 @@
 import { ImageResponse } from "next/og";
 
-export const size = { width: 512, height: 512 };
+export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default function AppleIcon() {
   return new ImageResponse(
     <div
       style={{
@@ -16,20 +16,18 @@ export default function Icon() {
         borderRadius: "22%",
       }}
     >
-      {/* Glow */}
       <div
         style={{
           position: "absolute",
-          width: 320,
-          height: 320,
+          width: 110,
+          height: 110,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(52,211,153,0.2) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(52,211,153,0.22) 0%, transparent 70%)",
         }}
       />
-      {/* R mark */}
       <div
         style={{
-          fontSize: 320,
+          fontSize: 112,
           fontWeight: 800,
           color: "#34d399",
           lineHeight: 1,
