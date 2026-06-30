@@ -1,11 +1,8 @@
-"use client";
-
-import { signIn } from "next-auth/react";
-
 export function GoogleSignInButton({ from }: { from: string }) {
+  const callbackUrl = encodeURIComponent(from || "/");
   return (
-    <button
-      onClick={() => signIn("google", { callbackUrl: from || "/" })}
+    <a
+      href={`/api/auth/signin/google?callbackUrl=${callbackUrl}`}
       className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 active:scale-95"
     >
       {/* Google G logo */}
@@ -16,6 +13,6 @@ export function GoogleSignInButton({ from }: { from: string }) {
         <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
       </svg>
       Continue with Google
-    </button>
+    </a>
   );
 }
