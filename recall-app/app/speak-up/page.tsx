@@ -12,7 +12,7 @@ export default function SpeakUpPage() {
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">
             Pick a real-life situation — a job interview, a toast, defending a decision, explaining what you do.
-            Choose who you're talking to and how much pressure you want. Say your answer, get honest feedback, and see a stronger version.
+            Choose who you&rsquo;re talking to and how much pressure you want. Say your answer, get honest feedback, and see a stronger version.
           </p>
         </section>
 

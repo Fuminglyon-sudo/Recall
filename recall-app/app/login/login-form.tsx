@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { loginAction } from "./actions";
 
-export function LoginForm({ error, from }: { error: boolean; from: string }) {
+export function LoginForm({ from }: { from: string }) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (

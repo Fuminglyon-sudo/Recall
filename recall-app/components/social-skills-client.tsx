@@ -246,10 +246,6 @@ export function SocialSkillsClient() {
     threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  useEffect(() => {
-    setDraft("");
-  }, [exchangeCount]);
-
   const filteredScenarios =
     categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
 

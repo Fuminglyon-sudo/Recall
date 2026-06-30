@@ -100,7 +100,7 @@ export function HowToUse() {
 
           {/* What's in the app */}
           <div>
-            <p className="mb-3 text-xs uppercase tracking-[0.2em] text-slate-500">What's in the app</p>
+            <p className="mb-3 text-xs uppercase tracking-[0.2em] text-slate-500">What&apos;s in the app</p>
             <div className="space-y-2">
               {TABS.map(({ name, desc }) => (
                 <div key={name} className="rounded-2xl border border-white/8 bg-white/[0.02] p-4">

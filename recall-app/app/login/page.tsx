@@ -44,7 +44,7 @@ export default async function LoginPage({
                   Incorrect username or password.
                 </div>
               )}
-              <LoginForm error={error} from={from} />
+              <LoginForm from={from} />
             </div>
           </details>
         </div>

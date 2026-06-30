@@ -28,7 +28,7 @@ export function SearchClient() {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (query.trim().length < 2) { setResults([]); return; }
+    if (query.trim().length < 2) return;
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
@@ -43,6 +43,8 @@ export function SearchClient() {
     }, 300);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query]);
+
+  const visibleResults = query.trim().length < 2 ? [] : results;
 
   return (
     <div className="space-y-4">
@@ -66,9 +68,9 @@ export function SearchClient() {
       {/* Status line */}
       {query.trim().length >= 2 && !loading ? (
         <p className="text-sm text-slate-500">
-          {results.length === 0
+          {visibleResults.length === 0
             ? `No results for "${query}"`
-            : `${results.length} result${results.length !== 1 ? "s" : ""} for "${query}"`}
+            : `${visibleResults.length} result${visibleResults.length !== 1 ? "s" : ""} for "${query}"`}
         </p>
       ) : query.trim().length > 0 && query.trim().length < 2 ? (
         <p className="text-sm text-slate-600">Type at least 2 characters to search.</p>
@@ -76,7 +78,7 @@ export function SearchClient() {
 
       {/* Results */}
       <div className="space-y-2">
-        {results.map((card) => {
+        {visibleResults.map((card) => {
           const level = getMastery(card.interval, card.repetitions);
           const meta = MASTERY[level];
           const isOpen = openId === card.id;

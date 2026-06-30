@@ -385,7 +385,7 @@ export function SpeakUpClient() {
           <span className="text-2xl">{active.emoji}</span>
           <p className="mt-2 font-semibold text-white">{active.tag}</p>
           <p className="mt-2 text-sm leading-6 text-slate-300">{active.setting}</p>
-          <p className="mt-3 text-sm font-medium text-emerald-300">"{active.question}"</p>
+          <p className="mt-3 text-sm font-medium text-emerald-300">&quot;{active.question}&quot;</p>
         </div>
 
         {/* Difficulty */}
@@ -478,7 +478,7 @@ export function SpeakUpClient() {
         {result.modelAnswer && (
           <div className="rounded-[2rem] border border-violet-300/20 bg-violet-400/8 p-5">
             <p className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3">A stronger version</p>
-            <p className="text-sm leading-7 text-violet-100 italic">"{result.modelAnswer}"</p>
+            <p className="text-sm leading-7 text-violet-100 italic">&quot;{result.modelAnswer}&quot;</p>
           </div>
         )}
 
@@ -489,7 +489,7 @@ export function SpeakUpClient() {
             <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/8 p-3">
               <p className="text-xs text-emerald-300 mb-1 font-medium">Scenario</p>
               <p className="text-sm text-slate-300">{active.setting}</p>
-              <p className="mt-2 text-sm font-medium text-emerald-200">"{active.question}"</p>
+              <p className="mt-2 text-sm font-medium text-emerald-200">&quot;{active.question}&quot;</p>
             </div>
             {messages.map((m, i) => (
               <div key={i} className={`rounded-2xl border p-3 ${m.role === "speaker" ? "border-white/10 bg-white/5" : "border-slate-500/20 bg-slate-800/40"}`}>
@@ -528,7 +528,7 @@ export function SpeakUpClient() {
       <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 p-5">
         <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">{active.emoji} {active.tag}</p>
         <p className="text-sm leading-6 text-slate-300">{active.setting}</p>
-        <p className="mt-3 text-sm font-semibold text-emerald-200">"{active.question}"</p>
+        <p className="mt-3 text-sm font-semibold text-emerald-200">&quot;{active.question}&quot;</p>
       </div>
 
       {/* Message history */}

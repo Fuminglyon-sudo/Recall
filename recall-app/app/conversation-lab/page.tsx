@@ -12,7 +12,7 @@ export default function ConversationLabPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
             Pick a scenario — a flight, a gym, a dinner party where you know nobody, a coffee shop queue.
-            Choose the kind of person you're talking to and the difficulty. Start the conversation yourself,
+            Choose the kind of person you&rsquo;re talking to and the difficulty. Start the conversation yourself,
             keep it going, then get honest coaching on what worked and one move to try next time.
           </p>
         </section>

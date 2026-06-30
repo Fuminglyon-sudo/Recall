@@ -7,9 +7,6 @@ export function StreakCalendar({ reviewDays }: { reviewDays: string[] }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Find the most recent Sunday so we end on a complete week
-  const endDay = new Date(today);
-  // Walk back to end of a Sunday-ending 4-week window
   const days: Date[] = [];
   for (let i = 27; i >= 0; i--) {
     const d = new Date(today);
