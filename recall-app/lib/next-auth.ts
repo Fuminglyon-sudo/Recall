@@ -30,4 +30,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/login",
   },
+  logger: {
+    error(error) {
+      console.error(
+        "AUTH_ERROR_DETAIL",
+        JSON.stringify(
+          {
+            name: error.name,
+            message: error.message,
+            cause: error.cause instanceof Error
+              ? { name: error.cause.name, message: error.cause.message }
+              : error.cause,
+            stack: error.stack,
+          },
+          null,
+          2,
+        ),
+      );
+    },
+  },
 });
