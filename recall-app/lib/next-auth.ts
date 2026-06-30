@@ -5,8 +5,9 @@ import { prisma } from "./prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  // JWT strategy: session lives in a signed cookie, not the Session table.
-  // This lets middleware verify sessions without hitting the database.
+  // Trust the host header from Vercel's reverse proxy so NextAuth can
+  // construct the correct callback URL without requiring NEXTAUTH_URL.
+  trustHost: true,
   session: { strategy: "jwt" },
   providers: [
     Google({
