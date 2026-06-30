@@ -1,13 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createHmac } from "crypto";
 import { getToken } from "next-auth/jwt";
 
 const ADMIN_COOKIE = "recall_session";
 
-function verifyAdminToken(token: string): boolean {
+async function verifyAdminToken(token: string): Promise<boolean> {
   if (!token) return false;
   const secret = process.env.AUTH_SECRET ?? "fallback-dev-secret";
-  const expected = createHmac("sha256", secret).update("authenticated").digest("hex");
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode("authenticated"));
+  const expected = Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   return token === expected;
 }
 
@@ -30,7 +40,7 @@ export async function middleware(req: NextRequest) {
 
   // ── Path 1: Admin (env-var HMAC cookie) ─────────────────────────────────
   const adminToken = req.cookies.get(ADMIN_COOKIE)?.value ?? "";
-  if (verifyAdminToken(adminToken)) {
+  if (await verifyAdminToken(adminToken)) {
     return NextResponse.next();
   }
 
