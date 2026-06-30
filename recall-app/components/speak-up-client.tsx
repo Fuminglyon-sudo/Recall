@@ -1,0 +1,603 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { ArrowLeft, ChevronRight, RotateCcw, Mic } from "lucide-react";
+
+type Category = "career" | "life" | "social";
+type Difficulty = "easy" | "medium" | "hard";
+
+type Scenario = {
+  id: string;
+  category: Category;
+  tag: string;
+  emoji: string;
+  setting: string;
+  question: string;
+};
+
+type Persona = {
+  id: string;
+  label: string;
+  description: string;
+  aiPrompt: string;
+};
+
+type Message = {
+  role: "speaker" | "listener";
+  content: string;
+};
+
+type GradeResult = {
+  score: number;
+  strongPoints: string[];
+  improvements: string[];
+  modelAnswer: string;
+};
+
+const CATEGORY_LABELS: Record<Category, string> = {
+  career: "Career",
+  life: "Life",
+  social: "Social",
+};
+
+const CATEGORY_COLORS: Record<Category, string> = {
+  career: "border-violet-300/20 bg-violet-400/10 text-violet-200",
+  life: "border-amber-300/20 bg-amber-400/10 text-amber-200",
+  social: "border-sky-300/20 bg-sky-400/10 text-sky-200",
+};
+
+const SCENARIOS: Scenario[] = [
+  // Career
+  {
+    id: "interview-intro",
+    category: "career",
+    tag: "Job interview",
+    emoji: "💼",
+    setting: "You are in a job interview for a role you genuinely want. After the usual hellos, the interviewer settles in and asks the classic opener:",
+    question: "Tell me about yourself — who you are, what you've been doing, and why you want this role.",
+  },
+  {
+    id: "raise",
+    category: "career",
+    tag: "Asking for a raise",
+    emoji: "📈",
+    setting: "Your manager has just given you positive feedback in your quarterly review. There's a natural pause. You have prepared for this moment for weeks. They look at you and say:",
+    question: "Is there anything else on your mind that you'd like to discuss?",
+  },
+  {
+    id: "idea-pitch",
+    category: "career",
+    tag: "Pitch an idea at work",
+    emoji: "💡",
+    setting: "Your team is in a standing meeting and your manager turns to you. You've been thinking about an idea that could genuinely help the team, and today is the day you finally bring it up:",
+    question: "You mentioned you had something you wanted to share — go ahead, the floor is yours.",
+  },
+  {
+    id: "career-pivot",
+    category: "career",
+    tag: "Explaining a career change",
+    emoji: "🔄",
+    setting: "You are at a work dinner, seated next to someone senior in your industry. They seem genuinely curious when they find out about your background. They look up and ask:",
+    question: "So you moved from [previous field] into this? What made you make that leap?",
+  },
+  // Life
+  {
+    id: "what-do-you-do",
+    category: "life",
+    tag: "\"What do you do?\"",
+    emoji: "🍽️",
+    setting: "You are at a dinner party. Someone you've just met is genuinely curious — not making small talk. They lean in and say:",
+    question: "So what do you actually do? Like, walk me through it — what does a typical day look like for you?",
+  },
+  {
+    id: "big-decision",
+    category: "life",
+    tag: "Defending a big decision",
+    emoji: "🧭",
+    setting: "Someone who cares about you — a parent, a close friend, a sibling — is worried about a significant decision you've made (moving, quitting, starting something, changing plans). They are not attacking you, but they are skeptical:",
+    question: "I just don't understand — why would you do that? Help me understand what you are thinking.",
+  },
+  {
+    id: "toast",
+    category: "life",
+    tag: "Making a toast",
+    emoji: "🥂",
+    setting: "You have been asked to give a short toast at your close friend's birthday or wedding. The room quiets, glasses raised, all eyes on you. Your friend smiles and nods:",
+    question: "Say a few words about them.",
+  },
+  {
+    id: "passion",
+    category: "life",
+    tag: "Explaining your passion",
+    emoji: "🎨",
+    setting: "You're at a casual dinner and you mention something you care about deeply — a hobby, a side project, a cause. The person next to you has never heard of it and seems genuinely curious:",
+    question: "Wait, what does that even mean? What do you actually do when you do that?",
+  },
+  // Social
+  {
+    id: "cold-start",
+    category: "social",
+    tag: "Starting a conversation",
+    emoji: "🤝",
+    setting: "You are at a social event — a party, a community gathering, an event — where you know only the host, who just walked away. Someone nearby makes eye contact and smiles but says nothing. The silence settles:",
+    question: "(They're waiting for you to say something.)",
+  },
+  {
+    id: "awkward-question",
+    category: "social",
+    tag: "Handling a tough personal question",
+    emoji: "😬",
+    setting: "You are at a family gathering or social event. Someone asks a direct question about your personal life that catches you completely off guard — about relationships, money, career, or a life choice. They mean well but the question stings a little:",
+    question: "So are you still [doing that thing / with that person / in that situation]? What's happening with all that?",
+  },
+  {
+    id: "reconnect",
+    category: "social",
+    tag: "Reconnecting with an old friend",
+    emoji: "🫂",
+    setting: "You run into someone you were once very close to but drifted away from — an old friend, a former colleague, someone who mattered to you. The surprise of seeing them is mutual. They say:",
+    question: "Oh wow, it's been years. Catch me up — what's been going on with you?",
+  },
+  {
+    id: "share-opinion",
+    category: "social",
+    tag: "Sharing a strong opinion",
+    emoji: "💬",
+    setting: "A group conversation has arrived at a topic where you have a clear point of view — one that not everyone might agree with. You've stayed quiet long enough. Someone turns to you and says:",
+    question: "You've been quiet — what do you actually think about this?",
+  },
+];
+
+const PERSONAS: Persona[] = [
+  {
+    id: "friend",
+    label: "A close friend",
+    description: "Warm, supportive, will ask genuine follow-ups",
+    aiPrompt: "You are a warm, close friend. You care about this person and listen genuinely. You ask follow-up questions naturally and are encouraging — but you also notice when something feels rehearsed or doesn't quite ring true.",
+  },
+  {
+    id: "manager",
+    label: "Your manager",
+    description: "Professional, measured, values clarity",
+    aiPrompt: "You are a composed, experienced manager. You are fair and not intimidating — but you are looking for clarity, specificity, and confidence. Vague answers prompt you to dig a little deeper. You appreciate directness.",
+  },
+  {
+    id: "stranger",
+    label: "A curious stranger",
+    description: "Open-minded, no context, needs things explained simply",
+    aiPrompt: "You are a friendly, curious stranger with no background in what this person does or the choices they've made. You ask the kinds of questions a genuinely curious outsider would ask — and you notice when something doesn't quite make sense from the outside.",
+  },
+  {
+    id: "skeptic",
+    label: "A skeptic",
+    description: "Not hostile, but needs to be genuinely convinced",
+    aiPrompt: "You are thoughtful and a little skeptical — not unfriendly, but not easily impressed either. You need specific, real answers to be satisfied. If something sounds vague or too polished, you gently push back. You want to believe them — but they have to earn it.",
+  },
+  {
+    id: "senior",
+    label: "A senior figure",
+    description: "Experienced, has heard it all before, needs something memorable",
+    aiPrompt: "You are a senior, accomplished person who has had many conversations like this one. You are not dismissive — but you've heard every generic answer. You respond better to something honest and specific than to something polished and safe. You notice when someone is performing versus when they're actually present.",
+  },
+  {
+    id: "loved-one",
+    label: "A worried loved one",
+    description: "Cares deeply, asks hard questions from love not judgment",
+    aiPrompt: "You are a family member or close friend who genuinely loves this person. Your questions come from care and sometimes worry. You're not trying to be harsh — but you are honest, and you notice when something doesn't add up. You want to understand, not judge.",
+  },
+];
+
+const DIFFICULTY_LABELS: Record<Difficulty, string> = {
+  easy: "Warm-up",
+  medium: "Moderate",
+  hard: "Challenging",
+};
+
+const DIFFICULTY_COLORS: Record<Difficulty, string> = {
+  easy: "border-emerald-300/20 bg-emerald-400/10 text-emerald-200",
+  medium: "border-amber-300/20 bg-amber-400/10 text-amber-200",
+  hard: "border-rose-300/20 bg-rose-400/10 text-rose-200",
+};
+
+function scoreLabel(s: number): string {
+  if (s >= 9) return "Crystal clear";
+  if (s >= 7) return "Strong delivery";
+  if (s >= 5) return "Solid foundation";
+  if (s >= 3) return "Getting warmer";
+  return "Keep practising";
+}
+
+function scoreColor(s: number): string {
+  if (s >= 8) return "text-emerald-300";
+  if (s >= 5) return "text-amber-300";
+  return "text-red-300";
+}
+
+function scoreBorder(s: number): string {
+  if (s >= 8) return "border-emerald-400/25 bg-emerald-400/8";
+  if (s >= 5) return "border-amber-400/25 bg-amber-400/8";
+  return "border-red-400/25 bg-red-400/8";
+}
+
+export function SpeakUpClient() {
+  const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
+  const [active, setActive] = useState<Scenario | null>(null);
+  const [persona, setPersona] = useState<Persona | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [draft, setDraft] = useState("");
+  const [exchangeCount, setExchangeCount] = useState(0);
+  const [recording, setRecording] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<GradeResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+
+  // ── Reset ──────────────────────────────────────────────────────────────────
+  function reset() {
+    setActive(null);
+    setPersona(null);
+    setMessages([]);
+    setDraft("");
+    setExchangeCount(0);
+    setResult(null);
+    setError(null);
+    setRecording(false);
+  }
+
+  // ── Voice recording ────────────────────────────────────────────────────────
+  function startRecording() {
+    const SpeechRecognition = (window as unknown as { webkitSpeechRecognition?: new () => unknown }).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    const recognition = new SpeechRecognition() as { lang: string; continuous: boolean; interimResults: boolean; onresult: (e: unknown) => void; onend: () => void; start: () => void; stop: () => void };
+    recognitionRef.current = recognition;
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.onresult = (e: unknown) => {
+      const ev = e as { results: { [key: number]: { [key: number]: { transcript: string } } } };
+      const transcript = Array.from({ length: Object.keys(ev.results).length }, (_, i) => ev.results[i][0].transcript).join(" ");
+      setDraft((prev) => (prev ? prev + " " + transcript : transcript));
+    };
+    recognition.onend = () => setRecording(false);
+    recognition.start();
+    setRecording(true);
+  }
+
+  function stopRecording() {
+    recognitionRef.current?.stop();
+    setRecording(false);
+  }
+
+  // ── Send message ───────────────────────────────────────────────────────────
+  async function sendMessage(force = false) {
+    if (!active || !persona || (!draft.trim() && !force)) return;
+
+    const userMessage: Message = { role: "speaker", content: draft.trim() };
+    const nextMessages = draft.trim() ? [...messages, userMessage] : messages;
+    const nextExchange = exchangeCount + (draft.trim() ? 1 : 0);
+
+    if (draft.trim()) {
+      setMessages(nextMessages);
+      setDraft("");
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/speak-grade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenario: `${active.setting}\n\nQuestion asked: "${active.question}"`,
+          personaPrompt: persona.aiPrompt,
+          difficulty,
+          messages: nextMessages,
+          exchangeCount: nextExchange,
+          forceEnd: force,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Request failed");
+      const data = (await res.json()) as { type: string; followupQuestion?: string; score?: number; strongPoints?: string[]; improvements?: string[]; modelAnswer?: string };
+
+      if (data.type === "followup" && data.followupQuestion) {
+        setMessages((prev) => [...prev, { role: "listener", content: data.followupQuestion! }]);
+        setExchangeCount(nextExchange);
+      } else if (data.type === "final") {
+        setResult({
+          score: data.score ?? 5,
+          strongPoints: data.strongPoints ?? [],
+          improvements: data.improvements ?? [],
+          modelAnswer: data.modelAnswer ?? "",
+        });
+        setExchangeCount(nextExchange);
+      }
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── SETUP: pick scenario ───────────────────────────────────────────────────
+  if (!active) {
+    const visible = categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
+
+    return (
+      <div className="space-y-6">
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-2">
+          {(["all", "career", "life", "social"] as const).map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                categoryFilter === cat
+                  ? "border-emerald-400/40 bg-emerald-400/15 text-emerald-200"
+                  : "border-white/10 bg-white/5 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {cat === "all" ? "All scenarios" : CATEGORY_LABELS[cat]}
+            </button>
+          ))}
+        </div>
+
+        {/* Scenario grid */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          {visible.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => setActive(s)}
+              className="rounded-3xl border border-white/10 bg-white/5 p-5 text-left transition hover:border-emerald-300/30 hover:bg-white/8"
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{s.emoji}</span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${CATEGORY_COLORS[s.category]}`}>
+                      {CATEGORY_LABELS[s.category]}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 font-semibold text-white">{s.tag}</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-400 line-clamp-2">{s.setting}</p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── SETUP: pick persona + difficulty ──────────────────────────────────────
+  if (!persona) {
+    return (
+      <div className="space-y-6">
+        <button onClick={reset} className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+          <ArrowLeft className="h-4 w-4" /> Back to scenarios
+        </button>
+
+        {/* Selected scenario recap */}
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
+          <span className="text-2xl">{active.emoji}</span>
+          <p className="mt-2 font-semibold text-white">{active.tag}</p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">{active.setting}</p>
+          <p className="mt-3 text-sm font-medium text-emerald-300">"{active.question}"</p>
+        </div>
+
+        {/* Difficulty */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Difficulty</p>
+          <div className="flex gap-3">
+            {(["easy", "medium", "hard"] as const).map((d) => (
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
+                className={`flex-1 rounded-2xl border px-3 py-3 text-sm font-medium transition ${
+                  difficulty === d ? DIFFICULTY_COLORS[d] : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
+                }`}
+              >
+                {DIFFICULTY_LABELS[d]}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            {difficulty === "easy" && "Receptive and warm — great for building confidence."}
+            {difficulty === "medium" && "Engaged and honest — will probe when something is vague."}
+            {difficulty === "hard" && "Discerning — needs specifics and authenticity to be satisfied."}
+          </p>
+        </div>
+
+        {/* Persona picker */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Who are you talking to?</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {PERSONAS.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => setPersona(p)}
+                className="rounded-3xl border border-white/10 bg-white/5 p-4 text-left transition hover:border-emerald-300/30 hover:bg-white/8"
+              >
+                <p className="font-semibold text-white text-sm">{p.label}</p>
+                <p className="mt-1 text-xs text-slate-400">{p.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── RESULTS ────────────────────────────────────────────────────────────────
+  if (result) {
+    return (
+      <div className="space-y-5">
+        {/* Score */}
+        <div className={`rounded-[2rem] border p-6 text-center ${scoreBorder(result.score)}`}>
+          <p className={`text-5xl font-bold tabular-nums ${scoreColor(result.score)}`}>{result.score}/10</p>
+          <p className={`mt-2 text-lg font-semibold ${scoreColor(result.score)}`}>{scoreLabel(result.score)}</p>
+          <p className="mt-1 text-sm text-slate-400">
+            {active.emoji} {active.tag} · talking to {persona.label.toLowerCase()} · {DIFFICULTY_LABELS[difficulty].toLowerCase()}
+          </p>
+        </div>
+
+        {/* Strong points */}
+        {result.strongPoints.length > 0 && (
+          <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-3">What landed well</p>
+            <ul className="space-y-2">
+              {result.strongPoints.map((point, i) => (
+                <li key={i} className="flex gap-2 text-sm text-emerald-100">
+                  <span className="text-emerald-400 shrink-0">✓</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Improvements */}
+        {result.improvements.length > 0 && (
+          <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/8 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-amber-400 mb-3">Sharpen this</p>
+            <ul className="space-y-2">
+              {result.improvements.map((point, i) => (
+                <li key={i} className="flex gap-2 text-sm text-amber-100">
+                  <span className="text-amber-400 shrink-0">→</span>
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Model answer */}
+        {result.modelAnswer && (
+          <div className="rounded-[2rem] border border-violet-300/20 bg-violet-400/8 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-violet-400 mb-3">A stronger version</p>
+            <p className="text-sm leading-7 text-violet-100 italic">"{result.modelAnswer}"</p>
+          </div>
+        )}
+
+        {/* Conversation review */}
+        <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">Conversation</p>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/8 p-3">
+              <p className="text-xs text-emerald-300 mb-1 font-medium">Scenario</p>
+              <p className="text-sm text-slate-300">{active.setting}</p>
+              <p className="mt-2 text-sm font-medium text-emerald-200">"{active.question}"</p>
+            </div>
+            {messages.map((m, i) => (
+              <div key={i} className={`rounded-2xl border p-3 ${m.role === "speaker" ? "border-white/10 bg-white/5" : "border-slate-500/20 bg-slate-800/40"}`}>
+                <p className="text-xs text-slate-500 mb-1 font-medium">{m.role === "speaker" ? "You" : persona.label}</p>
+                <p className="text-sm text-slate-300">{m.content}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={reset}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/8 hover:text-white"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Try another scenario
+        </button>
+      </div>
+    );
+  }
+
+  // ── CONVERSATION ───────────────────────────────────────────────────────────
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <button onClick={reset} className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+          <ArrowLeft className="h-4 w-4" /> Back
+        </button>
+        <div className="flex items-center gap-3 text-xs text-slate-500">
+          <span className={`rounded-full border px-2 py-0.5 ${DIFFICULTY_COLORS[difficulty]}`}>{DIFFICULTY_LABELS[difficulty]}</span>
+          <span>Talking to: {persona.label}</span>
+        </div>
+      </div>
+
+      {/* Scenario */}
+      <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 p-5">
+        <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">{active.emoji} {active.tag}</p>
+        <p className="text-sm leading-6 text-slate-300">{active.setting}</p>
+        <p className="mt-3 text-sm font-semibold text-emerald-200">"{active.question}"</p>
+      </div>
+
+      {/* Message history */}
+      {messages.length > 0 && (
+        <div className="space-y-3">
+          {messages.map((m, i) => (
+            <div key={i} className={`rounded-2xl border p-4 ${m.role === "speaker" ? "border-white/10 bg-white/5" : "border-slate-500/20 bg-slate-800/40"}`}>
+              <p className="text-xs text-slate-500 mb-1.5 font-medium">{m.role === "speaker" ? "You" : persona.label}</p>
+              <p className="text-sm leading-6 text-slate-200">{m.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Loading */}
+      {loading && (
+        <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+          <div className="flex gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="h-1.5 w-1.5 rounded-full bg-slate-500 animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Input */}
+      {!loading && (
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-4">
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder={messages.length === 0 ? "Type your answer..." : "Continue the conversation..."}
+            rows={4}
+            className="w-full resize-none bg-transparent text-sm text-white placeholder-slate-500 outline-none leading-7"
+            onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendMessage(); }}
+          />
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              onClick={recording ? stopRecording : startRecording}
+              className={`flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium transition ${
+                recording
+                  ? "border-rose-400/40 bg-rose-400/15 text-rose-300"
+                  : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
+              }`}
+            >
+              <Mic className="h-3.5 w-3.5" />
+              {recording ? "Stop" : "Voice"}
+            </button>
+            <div className="flex-1" />
+            {exchangeCount >= 2 && (
+              <button
+                onClick={() => sendMessage(true)}
+                className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs text-slate-400 hover:text-white transition"
+              >
+                End & get feedback
+              </button>
+            )}
+            <button
+              onClick={() => sendMessage()}
+              disabled={!draft.trim()}
+              className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:opacity-40"
+            >
+              Send <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {error && <p className="text-sm text-red-400">{error}</p>}
+    </div>
+  );
+}

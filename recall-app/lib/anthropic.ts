@@ -466,6 +466,109 @@ function fallbackSocialStep(exchangeCount: number): SocialConversationStep {
   };
 }
 
+// ── Speak Up (everyday communication practice) ───────────────────────────────
+
+export type SpeakUpRequest = {
+  scenario: string;
+  personaPrompt: string;
+  difficulty: "easy" | "medium" | "hard";
+  messages: Array<{ role: "speaker" | "listener"; content: string }>;
+  exchangeCount: number;
+  forceEnd?: boolean;
+};
+
+export async function conductSpeakUpConversation(input: SpeakUpRequest): Promise<ConversationStep> {
+  if (!client) return speakUpFallback(input.exchangeCount);
+
+  const difficultyGuide = {
+    easy: "Be warm and receptive. Accept their first answer and gently invite them to say more. Be encouraging.",
+    medium: "Be engaged but honest. If something is vague or unclear, ask for a bit more. Push gently when the answer could be stronger.",
+    hard: "Be discerning. You need specifics and authenticity to be satisfied. Push back when answers are too vague or feel rehearsed. Not harsh — just real.",
+  }[input.difficulty];
+
+  const history = input.messages
+    .map((m) => `${m.role === "speaker" ? "Them" : "You"}: ${m.content}`)
+    .join("\n\n");
+
+  const mustEnd = input.forceEnd === true || input.exchangeCount >= 4;
+
+  const decisionBlock = mustEnd
+    ? `This is the final exchange. Return type "final" with a complete evaluation.`
+    : `Exchange ${input.exchangeCount} of 4 maximum.
+
+Decide: respond naturally (type "followup") OR wrap up with feedback (type "final").
+Ask a follow-up if their answer was vague, skipped the core point, or could go deeper with one more prompt.
+Wrap up if they gave a clear, genuine, specific answer — or if you have asked 2+ follow-ups already.`;
+
+  const prompt = `You are this person: ${input.personaPrompt}
+
+Scenario: ${input.scenario}
+
+How you behave: ${difficultyGuide}
+
+Conversation so far:
+${history}
+
+${decisionBlock}
+
+Return strict JSON only:
+
+Continuing: { "type": "followup", "followupQuestion": "your natural response or question — stay in character, keep it short" }
+
+Wrapping up:
+{
+  "type": "final",
+  "score": integer 1–10 (rate: clarity, authenticity, specificity, confidence, emotional resonance),
+  "strongPoints": ["1–3 things that landed well — be specific"],
+  "improvements": ["1–3 concrete things to sharpen"],
+  "modelAnswer": "3–5 sentence ideal version of how they could have answered the original question — natural, human, specific, memorable"
+}`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 650,
+    temperature: 0.55,
+    system: "Return only valid JSON. No markdown. No preamble.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as ConversationStep;
+    if (!mustEnd && parsed.type === "followup") {
+      const q = (parsed as { type: "followup"; followupQuestion: string }).followupQuestion;
+      return { type: "followup", followupQuestion: q ?? "Tell me more about that." };
+    }
+    const p = parsed as { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string };
+    return {
+      type: "final",
+      score: Math.min(10, Math.max(1, Math.round(Number(p.score)))),
+      strongPoints: Array.isArray(p.strongPoints) ? p.strongPoints : [],
+      improvements: Array.isArray(p.improvements) ? p.improvements : [],
+      modelAnswer: p.modelAnswer ?? "",
+    };
+  } catch {
+    return speakUpFallback(input.exchangeCount);
+  }
+}
+
+function speakUpFallback(exchangeCount: number): ConversationStep {
+  if (exchangeCount < 2) {
+    return { type: "followup", followupQuestion: "That's interesting — can you tell me a bit more about that?" };
+  }
+  return {
+    type: "final",
+    score: 5,
+    strongPoints: ["You gave an answer — that takes courage."],
+    improvements: [
+      "Open with something specific — a detail, a number, or a real moment.",
+      "Make the other person feel something, not just understand something.",
+      "End on the thing you most want them to remember.",
+    ],
+    modelAnswer:
+      "I [brief specific context about who I am / what I do / what happened]. The reason I [did it / feel this way / made this choice] is [genuine honest reason]. What I've learned from it is [one real insight]. I'd say the thing I want people to understand most is [core message].",
+  };
+}
+
 export async function phraseInVoice(text: string, tone: string): Promise<string> {
   if (!client) return text;
 
