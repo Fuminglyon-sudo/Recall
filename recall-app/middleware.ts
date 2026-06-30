@@ -1,50 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHmac } from "crypto";
+import { getToken } from "next-auth/jwt";
 
-const COOKIE_NAME = "recall_session";
+const ADMIN_COOKIE = "recall_session";
 
-async function verifyToken(token: string): Promise<boolean> {
+function verifyAdminToken(token: string): boolean {
+  if (!token) return false;
   const secret = process.env.AUTH_SECRET ?? "fallback-dev-secret";
-  try {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(secret),
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"]
-    );
-    const tokenBytes = new Uint8Array(
-      (token.match(/.{1,2}/g) ?? []).map((b) => parseInt(b, 16))
-    );
-    return await crypto.subtle.verify(
-      "HMAC",
-      key,
-      tokenBytes,
-      encoder.encode("authenticated")
-    );
-  } catch {
-    return false;
-  }
+  const expected = createHmac("sha256", secret).update("authenticated").digest("hex");
+  return token === expected;
 }
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Always allow: login page, Next.js internals, static assets, auth API, SW, icons
   if (
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon")
+    pathname.startsWith("/api/auth") ||
+    pathname === "/sw.js" ||
+    pathname === "/favicon.ico" ||
+    pathname === "/icon.png" ||
+    pathname === "/apple-icon.png" ||
+    pathname === "/manifest.webmanifest"
   ) {
     return NextResponse.next();
   }
 
-  const token = req.cookies.get(COOKIE_NAME)?.value ?? "";
-  if (await verifyToken(token)) {
+  // ── Path 1: Admin (env-var HMAC cookie) ─────────────────────────────────
+  const adminToken = req.cookies.get(ADMIN_COOKIE)?.value ?? "";
+  if (verifyAdminToken(adminToken)) {
     return NextResponse.next();
   }
 
+  // ── Path 2: Google OAuth (NextAuth JWT cookie) ───────────────────────────
+  const nextAuthToken = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  if (nextAuthToken?.userId) {
+    return NextResponse.next();
+  }
+
+  // ── Not authenticated ────────────────────────────────────────────────────
   if (pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Session expired. Please refresh the page and log in again." }, { status: 401 });
+    return NextResponse.json(
+      { error: "Session expired. Please refresh the page and log in again." },
+      { status: 401 },
+    );
   }
 
   const loginUrl = req.nextUrl.clone();

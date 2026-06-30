@@ -7,12 +7,79 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─── Auth (NextAuth + Prisma adapter) ──────────────────────────────────────
+// These four models are required by @auth/prisma-adapter.
+// The Session model is defined here but not actively used — we run JWT sessions
+// so tokens live in cookies, not the database.
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+
+  accounts          Account[]
+  sessions          Session[]
+  decks             Deck[]
+  streak            Streak?
+  voiceProfile      VoiceProfile?
+  socialSessions    SocialSession[]
+  countryProgress   UserCountryProgress[]
+
+  @@index([email])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// ─── Core app ──────────────────────────────────────────────────────────────
+
 model Deck {
   id          String   @id @default(cuid())
-  name        String   @unique
+  name        String
   description String?
   createdAt   DateTime @default(now())
+  // null = admin-owned (pre-existing data); set for all new user decks
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   cards       Card[]
+
+  @@index([userId])
 }
 
 model Card {
@@ -42,25 +109,31 @@ model Card {
 
 model ReviewLog {
   id         String   @id @default(cuid())
-  cardId      String
-  grade       Int
-  reviewedAt  DateTime @default(now())
-  card        Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId     String
+  grade      Int
+  reviewedAt DateTime @default(now())
+  card       Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
 
   @@index([cardId])
   @@index([reviewedAt])
 }
 
 model Streak {
-  id             String   @id @default(cuid())
-  currentStreak  Int      @default(0)
+  id             String    @id @default(cuid())
+  currentStreak  Int       @default(0)
   lastReviewDate DateTime?
+  // null = admin streak; set for all new users
+  userId         String?   @unique
+  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VoiceProfile {
   id        String   @id @default(cuid())
   tone      String   @default("")
   updatedAt DateTime @updatedAt
+  // null = admin profile; set for all new users
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SocialSession {
@@ -78,31 +151,60 @@ model SocialSession {
   powerMove         String
   messages          Json
   modelConversation Json?
+  // null = admin session; set for all new users
+  userId            String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
+  @@index([userId])
 }
 
+// ─── Countries ─────────────────────────────────────────────────────────────
+// Country reference data is shared. Per-user spaced-repetition progress
+// lives in UserCountryProgress.
+
 model Country {
-  id               String   @id @default(cuid())
-  name             String   @unique
-  flag             String
-  capital          String
-  continent        String
-  population       String?
-  currency         String?
-  languages        String
-  nationalFood     String?
-  phraseLanguage   String?
-  phraseHi         String?
-  phraseMorning    String?
-  phraseAfternoon  String?
-  funFact          String?
-  interval         Int      @default(1)
-  repetitions      Int      @default(0)
-  easeFactor       Float    @default(2.5)
-  dueAt            DateTime @default(now())
-  createdAt        DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String   @unique
+  flag            String
+  capital         String
+  continent       String
+  population      String?
+  currency        String?
+  languages       String
+  nationalFood    String?
+  phraseLanguage  String?
+  phraseHi        String?
+  phraseMorning   String?
+  phraseAfternoon String?
+  funFact         String?
+  // Legacy SM-2 fields kept for admin (null userId path); new users use UserCountryProgress
+  interval        Int      @default(1)
+  repetitions     Int      @default(0)
+  easeFactor      Float    @default(2.5)
+  dueAt           DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  userProgress UserCountryProgress[]
 
   @@index([dueAt])
   @@index([continent])
+}
+
+model UserCountryProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  countryId   String
+  interval    Int      @default(1)
+  repetitions Int      @default(0)
+  easeFactor  Float    @default(2.5)
+  dueAt       DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  country Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, countryId])
+  @@index([userId, dueAt])
 }
