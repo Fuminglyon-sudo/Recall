@@ -6,11 +6,15 @@ import { AppShell } from "@/components/app-shell";
 import { computeDistribution, MASTERY } from "@/lib/mastery";
 import { CardAccordion } from "@/components/card-accordion";
 import { updateCard } from "../actions";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function DeckDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const deck = await prisma.deck.findUnique({
-    where: { id },
+  const userId = await getCurrentUserId();
+  const uid = scopedUserId(userId ?? "");
+
+  const deck = await prisma.deck.findFirst({
+    where: { id, userId: uid },
     include: {
       cards: { orderBy: [{ dueAt: "asc" }, { createdAt: "desc" }] },
     },

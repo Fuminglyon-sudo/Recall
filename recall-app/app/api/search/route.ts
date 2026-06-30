@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseReady } from "@/lib/db-ready";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
@@ -9,8 +10,12 @@ export async function GET(req: NextRequest) {
   const ready = await isDatabaseReady();
   if (!ready) return NextResponse.json([]);
 
+  const userId = await getCurrentUserId();
+  const uid = scopedUserId(userId ?? "");
+
   const cards = await prisma.card.findMany({
     where: {
+      deck: { userId: uid },
       OR: [
         { front: { contains: q, mode: "insensitive" } },
         { back: { contains: q, mode: "insensitive" } },

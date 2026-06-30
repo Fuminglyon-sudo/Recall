@@ -15,8 +15,9 @@ import { saveTone } from "@/app/voice/actions";
 import { StreakCalendar } from "@/components/streak-calendar";
 import { UpcomingReviews } from "@/components/upcoming-reviews";
 import { WordOfTheDay } from "@/components/word-of-the-day";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
-async function getDashboardData() {
+async function getDashboardData(uid: string | null) {
   const today = new Date();
   const todayStart = new Date(today);
   todayStart.setHours(0, 0, 0, 0);
@@ -50,8 +51,9 @@ async function getDashboardData() {
   in8Days.setDate(in8Days.getDate() + 7);
 
   const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates] = await Promise.all([
-    prisma.streak.findFirst(),
+    prisma.streak.findFirst({ where: { userId: uid } }),
     prisma.deck.findMany({
+      where: { userId: uid },
       orderBy: { createdAt: "asc" },
       include: {
         _count: { select: { cards: true } },
@@ -60,17 +62,17 @@ async function getDashboardData() {
         },
       },
     }),
-    prisma.voiceProfile.findFirst(),
+    prisma.voiceProfile.findFirst({ where: { userId: uid } }),
     prisma.reviewLog.findMany({
-      where: { reviewedAt: { gte: thirtyDaysAgo } },
+      where: { reviewedAt: { gte: thirtyDaysAgo }, card: { deck: { userId: uid } } },
       select: { reviewedAt: true },
     }),
     prisma.card.findMany({
-      where: { dueAt: { gte: tomorrowStart, lt: in8Days } },
+      where: { dueAt: { gte: tomorrowStart, lt: in8Days }, deck: { userId: uid } },
       select: { dueAt: true },
     }),
     prisma.card.findMany({
-      where: { repetitions: { gte: 1 } },
+      where: { repetitions: { gte: 1 }, deck: { userId: uid } },
       include: { deck: { select: { id: true, name: true } } },
       orderBy: { createdAt: "asc" },
     }),
@@ -133,7 +135,9 @@ async function getDashboardData() {
 const MASTERY_ORDER: MasteryLevel[] = ["new", "learning", "familiar", "mastered"];
 
 export default async function HomePage() {
-  const data = await getDashboardData();
+  const userId = await getCurrentUserId();
+  const uid = scopedUserId(userId ?? "");
+  const data = await getDashboardData(uid);
   const total = data.totalCards || 1;
 
   return (

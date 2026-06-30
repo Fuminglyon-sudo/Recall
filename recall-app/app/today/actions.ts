@@ -4,10 +4,15 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
 import { isSameCalendarDay } from "@/lib/date";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export async function gradeCard(formData: FormData) {
   const cardId = String(formData.get("cardId") ?? "");
   const grade = Number(formData.get("grade") ?? 0);
+
+  const userId = await getCurrentUserId();
+  if (!userId) return;
+  const uid = scopedUserId(userId);
 
   const card = await prisma.card.findUnique({ where: { id: cardId } });
   if (!card) return;
@@ -30,17 +35,16 @@ export async function gradeCard(formData: FormData) {
         interval: next.interval,
         repetitions: next.repetitions,
         dueAt: next.dueAt,
-        // Save association only on the very first review
         ...(association && card.repetitions === 0 ? { association } : {}),
       },
     });
 
-    const streak = await tx.streak.findFirst();
+    const streak = await tx.streak.findFirst({ where: { userId: uid } });
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     if (!streak) {
-      await tx.streak.create({ data: { currentStreak: 1, lastReviewDate: today } });
+      await tx.streak.create({ data: { currentStreak: 1, lastReviewDate: today, userId: uid } });
       return;
     }
 

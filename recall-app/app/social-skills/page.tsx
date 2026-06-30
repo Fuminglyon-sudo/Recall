@@ -1,7 +1,10 @@
+import { redirect } from "next/navigation";
+import { isAdmin } from "@/lib/session";
 import { AppShell } from "@/components/app-shell";
 import { SocialSkillsClient } from "@/components/social-skills-client";
 
-export default function SocialSkillsPage() {
+export default async function SocialSkillsPage() {
+  if (!(await isAdmin())) redirect("/");
   return (
     <AppShell>
       <div className="mx-auto max-w-4xl space-y-6">

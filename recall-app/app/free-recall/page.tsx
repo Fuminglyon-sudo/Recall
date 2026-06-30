@@ -1,11 +1,18 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { FreeRecallClient } from "@/components/free-recall-client";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function FreeRecallPage() {
+  const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
+  const uid = scopedUserId(userId);
+
   const decks = await prisma.deck.findMany({
+    where: { userId: uid },
     orderBy: { name: "asc" },
     include: {
       _count: { select: { cards: true } },

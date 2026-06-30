@@ -1,7 +1,10 @@
+import { redirect } from "next/navigation";
+import { isAdmin } from "@/lib/session";
 import { AppShell } from "@/components/app-shell";
 import { PitchPracticeClient } from "@/components/pitch-practice-client";
 
-export default function PitchPracticePage() {
+export default async function PitchPracticePage() {
+  if (!(await isAdmin())) redirect("/");
   return (
     <AppShell>
       <div className="mx-auto max-w-4xl space-y-6">

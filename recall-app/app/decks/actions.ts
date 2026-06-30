@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 const deckSchema = z.object({
   name: z.string().min(1),
@@ -10,12 +11,16 @@ const deckSchema = z.object({
 });
 
 export async function createDeck(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) return;
+  const uid = scopedUserId(userId);
+
   const values = deckSchema.parse({
     name: formData.get("name"),
     description: formData.get("description") || undefined,
   });
 
-  const deck = await prisma.deck.create({ data: values });
+  const deck = await prisma.deck.create({ data: { ...values, userId: uid } });
   redirect(`/decks/${deck.id}`);
 }
 

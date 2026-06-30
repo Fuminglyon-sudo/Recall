@@ -38,3 +38,11 @@ export async function isAdmin(): Promise<boolean> {
   const id = await getCurrentUserId();
   return id === ADMIN_USER_ID;
 }
+
+/**
+ * Returns the userId value to use in Prisma where/data clauses for the current user.
+ * Admin-owned rows have userId = null; Google user rows have their Prisma User.id.
+ */
+export function scopedUserId(userId: string): string | null {
+  return userId === ADMIN_USER_ID ? null : userId;
+}

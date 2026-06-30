@@ -1,5 +1,7 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
+import { isAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { FounderBatchGenerator } from "@/components/founder-batch-generator";
@@ -7,6 +9,7 @@ import { createFounderBatchCards } from "@/app/cards/new/actions";
 import { isDatabaseReady } from "@/lib/db-ready";
 
 export default async function FounderWordsPage() {
+  if (!(await isAdmin())) redirect("/");
   const ready = await isDatabaseReady();
   const decks = ready ? await prisma.deck.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []) : [];
 

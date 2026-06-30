@@ -1,9 +1,11 @@
 import { Sidebar } from "./sidebar";
+import { isAdmin } from "@/lib/session";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export async function AppShell({ children }: { children: React.ReactNode }) {
+  const admin = await isAdmin();
   return (
     <div className="min-h-screen bg-slate-950">
-      <Sidebar />
+      <Sidebar isAdmin={admin} />
       {/* Offset for desktop sidebar width; offset for mobile top bar height */}
       <main className="pt-14 lg:pl-60 lg:pt-0">
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">

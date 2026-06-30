@@ -1,16 +1,23 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { createDeck } from "./actions";
 import { SubmitButton } from "@/components/forms";
 import { isDatabaseReady } from "@/lib/db-ready";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function DecksPage() {
+  const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
+  const uid = scopedUserId(userId);
+
   const ready = await isDatabaseReady();
   const decks = ready
     ? await prisma.deck.findMany({
+        where: { userId: uid },
         orderBy: { createdAt: "asc" },
         include: { _count: { select: { cards: true } } },
       })

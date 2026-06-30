@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { SubmitButton } from "@/components/forms";
@@ -7,10 +8,15 @@ import { createCard, createFounderBatchCards } from "./actions";
 import { DraftCardForm } from "@/components/draft-card-form";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { FounderBatchGenerator } from "@/components/founder-batch-generator";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function NewCardPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
+  const uid = scopedUserId(userId);
+
   const ready = await isDatabaseReady();
-  const decks = ready ? await prisma.deck.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []) : [];
+  const decks = ready ? await prisma.deck.findMany({ where: { userId: uid }, orderBy: { createdAt: "asc" } }).catch(() => []) : [];
   const params = await searchParams;
   const initialFront = params.front ?? "";
   const initialBack = params.back ?? "";

@@ -1,16 +1,22 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { SentenceChallengeClient } from "@/components/sentence-challenge-client";
 import { isDatabaseReady } from "@/lib/db-ready";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function SentenceChallengePage() {
+  const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
+  const uid = scopedUserId(userId);
+
   const ready = await isDatabaseReady();
 
   const rawCards = ready
     ? await prisma.card.findMany({
-        where: { interval: { gte: 7 } },
+        where: { interval: { gte: 7 }, deck: { userId: uid } },
         include: { deck: { select: { id: true, name: true } } },
         orderBy: [{ interval: "desc" }, { front: "asc" }],
       })

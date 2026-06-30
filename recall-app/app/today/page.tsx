@@ -1,18 +1,24 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { ReviewCard } from "@/components/review-card";
 import { gradeCard } from "./actions";
 import { isDatabaseReady } from "@/lib/db-ready";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 const MAX_NEW = 3;
 
 export default async function TodayPage() {
+  const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
+  const uid = scopedUserId(userId);
+
   const ready = await isDatabaseReady();
   const allDue = ready
     ? await prisma.card.findMany({
-        where: { dueAt: { lte: new Date() } },
+        where: { dueAt: { lte: new Date() }, deck: { userId: uid } },
         orderBy: [{ dueAt: "asc" }, { createdAt: "asc" }],
         include: { deck: true },
       })
