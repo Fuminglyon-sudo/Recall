@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag, Bookmark, BookmarkCheck } from "lucide-react";
 
 type Category = "all" | "professional" | "social" | "everyday";
@@ -563,28 +564,33 @@ export function SocialSkillsClient() {
             <button
               key={scenario.id}
               onClick={() => startScenario(scenario)}
-              className="group rounded-[2rem] border border-white/10 bg-white/5 p-5 text-left transition hover:border-white/20 hover:bg-white/8"
+              className="group rounded-[2rem] border border-white/10 bg-white/5 text-left transition hover:border-white/20 hover:bg-white/8 overflow-hidden"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{scenario.emoji}</span>
-                  <span
-                    className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${
-                      CATEGORY_COLORS[scenario.category]
-                    }`}
-                  >
-                    {scenario.category === "professional"
-                      ? "Professional"
-                      : scenario.category === "social"
-                        ? "Social"
-                        : "Everyday"}
-                  </span>
-                </div>
-                <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-slate-400" />
+              <div className="relative h-36 w-full">
+                <Image
+                  src={`/scenerios/lab-${scenario.id}.webp`}
+                  alt={scenario.tag}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                <span
+                  className={`absolute bottom-2.5 left-3 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[scenario.category]}`}
+                >
+                  {scenario.category === "professional" ? "Professional" : scenario.category === "social" ? "Social" : "Everyday"}
+                </span>
               </div>
-              <p className="mt-3 text-sm font-semibold text-white">{scenario.tag}</p>
-              <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-400">{scenario.context}</p>
-              <p className="mt-3 text-xs italic text-slate-500">{scenario.prompt}</p>
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{scenario.emoji}</span>
+                    <p className="text-sm font-semibold text-white">{scenario.tag}</p>
+                  </div>
+                  <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-slate-400" />
+                </div>
+                <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-400">{scenario.context}</p>
+                <p className="mt-2 text-xs italic text-slate-500">{scenario.prompt}</p>
+              </div>
             </button>
           ))}
         </div>
@@ -771,25 +777,44 @@ export function SocialSkillsClient() {
       </button>
 
       {/* Scenario context */}
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 sm:p-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xl">{activeScenario.emoji}</span>
-          <span
-            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${
-              CATEGORY_COLORS[activeScenario.category]
-            }`}
-          >
-            {activeScenario.tag}
-          </span>
-          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium text-slate-400">
-            {activeCharacter.label}
-          </span>
-          <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${difficultyBadge(difficulty)}`}>
-            {difficulty}
-          </span>
+      <div className="rounded-[2rem] border border-white/10 bg-white/5 overflow-hidden">
+        {activeScenario.id !== "custom" && (
+          <div className="relative aspect-video w-full">
+            <Image
+              src={`/scenerios/lab-${activeScenario.id}.webp`}
+              alt={activeScenario.tag}
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+            <div className="absolute bottom-4 left-5 flex flex-wrap items-center gap-2">
+              <span className="text-xl">{activeScenario.emoji}</span>
+              <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[activeScenario.category]}`}>
+                {activeScenario.tag}
+              </span>
+            </div>
+          </div>
+        )}
+        <div className="p-5 sm:p-6">
+          {activeScenario.id === "custom" && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="text-xl">{activeScenario.emoji}</span>
+              <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${CATEGORY_COLORS[activeScenario.category]}`}>
+                {activeScenario.tag}
+              </span>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium text-slate-400">
+              {activeCharacter.label}
+            </span>
+            <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${difficultyBadge(difficulty)}`}>
+              {difficulty}
+            </span>
+          </div>
+          <p className="mt-3 text-sm leading-7 text-slate-300">{activeScenario.context}</p>
+          <p className="mt-2 text-xs italic text-slate-500">{activeScenario.prompt}</p>
         </div>
-        <p className="mt-3 text-sm leading-7 text-slate-300">{activeScenario.context}</p>
-        <p className="mt-2 text-xs italic text-slate-500">{activeScenario.prompt}</p>
       </div>
 
       {/* Conversation thread */}
