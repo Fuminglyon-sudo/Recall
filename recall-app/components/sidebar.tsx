@@ -27,57 +27,85 @@ import {
   Settings,
 } from "lucide-react";
 
-const LINKS = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true, adminOnly: false },
-  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false, adminOnly: false },
-  { href: "/countries", label: "Countries", icon: Globe, exact: false, adminOnly: false },
-  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false, adminOnly: false },
-  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false, adminOnly: false },
-  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false, adminOnly: true },
-  { href: "/social-skills", label: "Social skills", icon: Users, exact: false, adminOnly: true },
-  { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false, adminOnly: true },
-  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false, adminOnly: false },
-  { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false, adminOnly: false },
-  { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false, adminOnly: true },
-  { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false, adminOnly: false },
-  { href: "/decks", label: "Decks", icon: Layers3, exact: false, adminOnly: false },
-  { href: "/search", label: "Search cards", icon: Search, exact: false, adminOnly: false },
-  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false, adminOnly: false },
-  { href: "/guide", label: "Guide", icon: BookOpen, exact: false, adminOnly: false },
-  { href: "/settings", label: "Settings", icon: Settings, exact: false, adminOnly: false },
+const USER_LINKS = [
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
+  { href: "/countries", label: "Countries", icon: Globe, exact: false },
+  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false },
+  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false },
+  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false },
+  { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false },
+  { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false },
+  { href: "/decks", label: "Decks", icon: Layers3, exact: false },
+  { href: "/search", label: "Search cards", icon: Search, exact: false },
+  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
+  { href: "/guide", label: "Guide", icon: BookOpen, exact: false },
+  { href: "/settings", label: "Settings", icon: Settings, exact: false },
 ];
 
-function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
-  const pathname = usePathname();
-  const visible = isAdmin ? LINKS : LINKS.filter((l) => !l.adminOnly);
+const ADMIN_LINKS = [
+  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false },
+  { href: "/social-skills", label: "Social skills", icon: Users, exact: false },
+  { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false },
+  { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false },
+];
 
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+  exact,
+  onClose,
+}: {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  exact: boolean;
+  onClose?: () => void;
+}) {
+  const pathname = usePathname();
+  const active = exact ? pathname === href : pathname.startsWith(href);
   return (
-    <nav className="flex-1 space-y-0.5 px-3 py-4">
-      {visible.map(({ href, label, icon: Icon, exact }) => {
-        const active = exact ? pathname === href : pathname.startsWith(href);
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={onClose}
-            className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors ${
-              active
-                ? "bg-white/10 font-medium text-white"
-                : "text-slate-400 hover:bg-white/8 hover:text-slate-200"
-            }`}
-          >
-            <Icon
-              className={`h-4 w-4 shrink-0 transition-colors ${
-                active ? "text-emerald-300" : "group-hover:text-slate-300"
-              }`}
-            />
-            {label}
-            {active ? (
-              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            ) : null}
-          </Link>
-        );
-      })}
+    <Link
+      href={href}
+      onClick={onClose}
+      className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors ${
+        active
+          ? "bg-white/10 font-medium text-white"
+          : "text-slate-400 hover:bg-white/8 hover:text-slate-200"
+      }`}
+    >
+      <Icon
+        className={`h-4 w-4 shrink-0 transition-colors ${
+          active ? "text-emerald-300" : "group-hover:text-slate-300"
+        }`}
+      />
+      {label}
+      {active ? <span className="ml-auto h-1.5 w-1.5 rounded-full bg-emerald-400" /> : null}
+    </Link>
+  );
+}
+
+function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
+  return (
+    <nav className="flex-1 overflow-y-auto px-3 py-4">
+      <div className="space-y-0.5">
+        {USER_LINKS.map((link) => (
+          <NavLink key={link.href} {...link} onClose={onClose} />
+        ))}
+      </div>
+
+      {isAdmin && (
+        <div className="mt-4 space-y-0.5">
+          <p className="mb-1 px-3 pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
+            Admin
+          </p>
+          <div className="mb-2 border-t border-white/8" />
+          {ADMIN_LINKS.map((link) => (
+            <NavLink key={link.href} {...link} onClose={onClose} />
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
