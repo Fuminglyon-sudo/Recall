@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Mic, Upload } from "lucide-react";
+import { Mic } from "lucide-react";
 
 type Deck = {
   id: string;
@@ -42,13 +42,10 @@ export function FounderBatchGenerator({
   const [cards, setCards] = useState<SuggestedCard[]>([]);
   const [selected, setSelected] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(false);
-  const [audioLoading, setAudioLoading] = useState(false);
   const [audioError, setAudioError] = useState("");
   const [recording, setRecording] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
 
   async function startRecording() {
     setAudioError("");
@@ -77,33 +74,13 @@ export function FounderBatchGenerator({
       return;
     }
 
-    // Fallback: MediaRecorder → upload to /api/founder-audio
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-      mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
-      mediaRecorder.onstop = async () => {
-        stream.getTracks().forEach((t) => t.stop());
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        await handleAudioUpload(new File([blob], "recording.webm", { type: "audio/webm" }));
-      };
-      mediaRecorder.start();
-      mediaRecorderRef.current = mediaRecorder;
-      setRecording(true);
-    } catch {
-      setAudioError("Could not access microphone. Please allow microphone permission and try again.");
-    }
+    setAudioError("Live recording requires Chrome or Edge. Please paste your context manually instead.");
   }
 
   function stopRecording() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
-    }
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current = null;
     }
     setRecording(false);
   }
@@ -152,31 +129,6 @@ export function FounderBatchGenerator({
         return { ...card, [field]: value } as SuggestedCard;
       })
     );
-  }
-
-  async function handleAudioUpload(file: File) {
-    setAudioLoading(true);
-    setAudioError("");
-    try {
-      const formData = new FormData();
-      formData.append("audio", file);
-
-      const response = await fetch("/api/founder-audio", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to transcribe audio");
-      }
-
-      setContext(data.transcript ?? "");
-    } catch (error) {
-      setAudioError(error instanceof Error ? error.message : "Failed to transcribe audio.");
-    } finally {
-      setAudioLoading(false);
-    }
   }
 
   return (
@@ -232,24 +184,12 @@ export function FounderBatchGenerator({
             <button
               type="button"
               onClick={() => void startRecording()}
-              disabled={audioLoading}
-              className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
             >
               <Mic className="h-4 w-4 text-emerald-300" />
-              {audioLoading ? "Transcribing…" : "Record"}
+              Record
             </button>
           )}
-
-          <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-slate-400 transition hover:bg-white/5 hover:text-slate-200">
-            <Upload className="h-4 w-4" />
-            Upload file
-            <input
-              type="file"
-              accept="audio/*"
-              className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleAudioUpload(f); }}
-            />
-          </label>
         </div>
         {audioError ? (
           <p className="mt-3 text-sm text-amber-300">{audioError}</p>

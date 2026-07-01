@@ -14,7 +14,9 @@ export async function gradeCard(formData: FormData) {
   if (!userId) return;
   const uid = scopedUserId(userId);
 
-  const card = await prisma.card.findUnique({ where: { id: cardId } });
+  const card = await prisma.card.findFirst({
+    where: { id: cardId, deck: { userId: uid } },
+  });
   if (!card) return;
 
   const next = applySm2({

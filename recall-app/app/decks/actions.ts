@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
+
 const deckSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
@@ -37,6 +38,10 @@ const updateCardSchema = z.object({
 });
 
 export async function updateCard(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) return;
+  const uid = scopedUserId(userId);
+
   const values = updateCardSchema.parse({
     cardId: formData.get("cardId"),
     deckId: formData.get("deckId"),
@@ -48,6 +53,12 @@ export async function updateCard(formData: FormData) {
     synonyms: formData.get("synonyms") || undefined,
     sourceContext: formData.get("sourceContext") || undefined,
   });
+
+  const card = await prisma.card.findFirst({
+    where: { id: values.cardId, deck: { userId: uid } },
+    select: { id: true },
+  });
+  if (!card) return;
 
   await prisma.card.update({
     where: { id: values.cardId },
