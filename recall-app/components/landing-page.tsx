@@ -84,7 +84,7 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
           <div className="mx-auto max-w-6xl px-6 text-center">
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-emerald-300">
               <Zap className="h-3 w-3" />
-              SM-2 spaced repetition · Claude AI · Free
+              SM-2 spaced repetition · Free
             </div>
 
             <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-[72px] lg:leading-[1.08]">

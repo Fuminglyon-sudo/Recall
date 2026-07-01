@@ -30,12 +30,19 @@ export default function AboutPage() {
         {/* Hero */}
         <section className="space-y-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">About</p>
-          <h1 className="text-4xl font-extrabold text-white sm:text-5xl">
-            Built for people who want to remember what they learn
+          <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl">
+            For everyone who has felt perfectly understood in their own head —
+            and perfectly lost the moment the words needed to come out.
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-slate-400">
-            Recall is a calm, focused flashcard app powered by spaced repetition science and Claude AI.
-            It exists because most vocabulary tools ask you to do too much — and most of it doesn't work.
+            There is a particular silence — the one that arrives at exactly the wrong moment. When you
+            know exactly what you feel, but the word won&apos;t surface. When a conversation ends and you
+            find, walking home, the sentence you should have said.
+          </p>
+          <p className="max-w-2xl text-lg leading-8 text-slate-400">
+            Recall is for people who live in that space. Who are done letting the right words come
+            too late — and want to build, quietly and without pressure, the vocabulary that makes
+            them feel at home in any room, any conversation, any moment that matters.
           </p>
         </section>
 
