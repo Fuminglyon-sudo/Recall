@@ -119,7 +119,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "🧭",
     setting: "Someone who cares about you — a parent, a close friend, a sibling — is worried about a significant decision you've made (moving, quitting, starting something, changing plans). They are not attacking you, but they are skeptical:",
     question: "I just don't understand — why would you do that? Help me understand what you are thinking.",
-    allowedPersonas: ["friend", "stranger", "skeptic", "loved-one"],
+    allowedPersonas: ["friend", "skeptic", "loved-one"],
   },
   {
     id: "toast",
@@ -146,7 +146,10 @@ const SCENARIOS: Scenario[] = [
     emoji: "🤝",
     setting: "You are at a social event — a party, a community gathering, an event — where you know only the host, who just walked away. Someone nearby makes eye contact and smiles but says nothing. The silence settles:",
     question: "(They're waiting for you to say something.)",
-    allowedPersonas: ["friend", "stranger", "skeptic", "loved-one"],
+    personaQuestions: {
+      friend: "(Your friend is standing in as a stranger for this one. They've just made eye contact and smiled — they're waiting for you to make the first move.)",
+    },
+    allowedPersonas: ["friend", "stranger", "skeptic"],
   },
   {
     id: "awkward-question",
