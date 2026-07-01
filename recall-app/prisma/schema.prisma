@@ -26,6 +26,7 @@ model User {
   streak            Streak?
   voiceProfile      VoiceProfile?
   socialSessions    SocialSession[]
+  speakUpSessions   SpeakUpSession[]
   countryProgress   UserCountryProgress[]
 
   @@index([email])
@@ -151,6 +152,7 @@ model SocialSession {
   powerMove         String
   messages          Json
   modelConversation Json?
+  practiceGoal      String?
   // null = admin session; set for all new users
   userId            String?
 
@@ -158,6 +160,30 @@ model SocialSession {
 
   @@index([createdAt])
   @@index([userId])
+}
+
+model SpeakUpSession {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  scenarioId   String
+  scenarioTag  String
+  personaId    String
+  personaLabel String
+  difficulty   String
+  practiceGoal String?
+  exchangeCount Int
+  score        Int
+  strongPoints Json
+  improvements Json
+  modelAnswer  String
+  messages     Json
+  // null = admin session; set for all new users
+  userId       String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 // ─── Push Notifications ────────────────────────────────────────────────────

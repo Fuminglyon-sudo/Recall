@@ -328,6 +328,7 @@ export type SocialConversationRequest = {
   messages: SocialMessage[];
   exchangeCount: number;
   forceEnd?: boolean;
+  practiceGoal?: string;
 };
 
 export type SocialConversationStep =
@@ -367,7 +368,7 @@ Full conversation:
 ${history}
 
 Now break character and give coaching feedback on how the person handled this social interaction.
-Evaluate across: how they opened, showed genuine curiosity, kept it going naturally, built rapport, and came across as confident and interesting.
+${input.practiceGoal ? `Their practice focus for this session: ${input.practiceGoal}. Weight your feedback and scoring toward this skill.\n` : ""}Evaluate across: how they opened, showed genuine curiosity, kept it going naturally, built rapport, and came across as confident and interesting.
 
 Return strict JSON with ALL of these fields:
 {

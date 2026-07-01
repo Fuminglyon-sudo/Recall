@@ -198,6 +198,15 @@ const CHARACTER_TYPES: CharacterType[] = [
   },
 ];
 
+type SocialPracticeGoal = "opener" | "curiosity" | "sustain" | "natural";
+
+const SOCIAL_GOALS: { id: SocialPracticeGoal; label: string; description: string; aiDescription: string }[] = [
+  { id: "opener", label: "Breaking the ice", description: "Make the first move with confidence", aiDescription: "Breaking the ice — making a confident, natural first move" },
+  { id: "curiosity", label: "Showing curiosity", description: "Ask questions that actually land", aiDescription: "Showing genuine curiosity — asking questions that make the other person lean in" },
+  { id: "sustain", label: "Keeping it going", description: "Sustain natural back-and-forth", aiDescription: "Keeping the conversation going naturally — sustaining momentum without forcing it" },
+  { id: "natural", label: "Sounding natural", description: "Less scripted, more genuinely at ease", aiDescription: "Sounding natural — less scripted and more genuinely at ease in the moment" },
+];
+
 function difficultyColor(d: string) {
   if (d === "easy") return "text-emerald-300";
   if (d === "hard") return "text-rose-300";
@@ -247,6 +256,7 @@ export function SocialSkillsClient() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [practiceGoal, setPracticeGoal] = useState<SocialPracticeGoal | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -306,6 +316,7 @@ export function SocialSkillsClient() {
     setExchangeCount(0);
     setFeedback(null);
     setError(null);
+    setPracticeGoal(null);
     setShowCustomForm(false);
     setCustomContext("");
     setCustomPrompt("");
@@ -397,6 +408,7 @@ export function SocialSkillsClient() {
           messages: newMessages,
           exchangeCount: newExchangeCount,
           forceEnd: false,
+          practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
         }),
       });
 
@@ -452,6 +464,7 @@ export function SocialSkillsClient() {
           messages: finalMessages,
           exchangeCount: finalCount,
           forceEnd: true,
+          practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
         }),
       });
 
@@ -495,6 +508,7 @@ export function SocialSkillsClient() {
           scenarioContext: activeScenario.context,
           characterLabel: activeCharacter.label,
           difficulty,
+          practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.label : undefined,
           exchangeCount,
           score: feedback.score,
           strongPoints: feedback.strongPoints,
@@ -570,6 +584,29 @@ export function SocialSkillsClient() {
                 ? "Realistic social dynamics with natural variation."
                 : "A demanding partner who gives little away — make them work to open up."}
           </p>
+        </div>
+
+        {/* Practice focus */}
+        <div>
+          <p className="mb-3 text-sm font-medium text-slate-300">
+            Practice focus <span className="text-xs font-normal text-slate-600">(optional)</span>
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {SOCIAL_GOALS.map((g) => (
+              <button
+                key={g.id}
+                onClick={() => setPracticeGoal(practiceGoal === g.id ? null : g.id)}
+                className={`rounded-2xl border px-3 py-3 text-left transition ${
+                  practiceGoal === g.id
+                    ? "border-emerald-300/30 bg-emerald-400/10 text-emerald-200"
+                    : "border-white/10 bg-white/5 text-slate-400 hover:bg-white/8 hover:text-slate-200"
+                }`}
+              >
+                <p className="text-sm font-medium">{g.label}</p>
+                <p className="mt-0.5 text-xs opacity-70">{g.description}</p>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Scenario grid */}
@@ -660,6 +697,7 @@ export function SocialSkillsClient() {
                   {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
                 </span>{" "}
                 · {exchangeCount} exchange{exchangeCount !== 1 ? "s" : ""}
+                {practiceGoal ? ` · ${SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.label ?? ""}` : ""}
               </p>
             </div>
           </div>
@@ -765,7 +803,7 @@ export function SocialSkillsClient() {
             className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
           >
             <RotateCcw className="h-4 w-4" />
-            Try again
+            Try the opener again
           </button>
           <button
             onClick={reset}
@@ -825,6 +863,11 @@ export function SocialSkillsClient() {
             <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${difficultyBadge(difficulty)}`}>
               {difficulty}
             </span>
+            {practiceGoal ? (
+              <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-medium text-emerald-300">
+                {SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.label}
+              </span>
+            ) : null}
           </div>
           <p className="mt-3 text-sm leading-7 text-slate-300">{activeScenario.context}</p>
           <p className="mt-2 text-xs italic text-slate-500">{activeScenario.prompt}</p>

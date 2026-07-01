@@ -2,7 +2,9 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ChevronRight, RotateCcw, Mic } from "lucide-react";
+import { ArrowLeft, Bookmark, BookmarkCheck, ChevronRight, RotateCcw, Mic } from "lucide-react";
+
+type Deck = { id: string; name: string };
 
 type Category = "career" | "life" | "social";
 type Difficulty = "easy" | "medium" | "hard";
@@ -259,7 +261,13 @@ function scoreBorder(s: number): string {
   return "border-red-400/25 bg-red-400/8";
 }
 
-export function SpeakUpClient() {
+export function SpeakUpClient({
+  decks = [],
+  saveCardAction,
+}: {
+  decks?: Deck[];
+  saveCardAction?: (formData: FormData) => Promise<{ success?: boolean; error?: string }>;
+} = {}) {
   const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
   const [active, setActive] = useState<Scenario | null>(null);
   const [persona, setPersona] = useState<Persona | null>(null);
@@ -272,6 +280,8 @@ export function SpeakUpClient() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<GradeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [savedSession, setSavedSession] = useState(false);
+  const [savingSession, setSavingSession] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
 
@@ -290,6 +300,7 @@ export function SpeakUpClient() {
     setResult(null);
     setError(null);
     setRecording(false);
+    setSavedSession(false);
   }
 
   function retryOpening() {
@@ -298,6 +309,37 @@ export function SpeakUpClient() {
     setExchangeCount(0);
     setResult(null);
     setError(null);
+    setSavedSession(false);
+  }
+
+  async function saveSession() {
+    if (!active || !persona || !result || savingSession || savedSession) return;
+    setSavingSession(true);
+    try {
+      const res = await fetch("/api/speak-sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scenarioId: active.id,
+          scenarioTag: active.tag,
+          personaId: persona.id,
+          personaLabel: persona.label,
+          difficulty,
+          practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label : null,
+          exchangeCount,
+          score: result.score,
+          strongPoints: result.strongPoints,
+          improvements: result.improvements,
+          modelAnswer: result.modelAnswer,
+          messages,
+        }),
+      });
+      if (res.ok) setSavedSession(true);
+    } catch {
+      // fail silently
+    } finally {
+      setSavingSession(false);
+    }
   }
 
   // ── Voice recording ────────────────────────────────────────────────────────
@@ -594,6 +636,15 @@ export function SpeakUpClient() {
           </div>
         )}
 
+        {/* Save phrase */}
+        {saveCardAction && decks.length > 0 && result.modelAnswer ? (
+          <SavePhraseForm
+            decks={decks}
+            modelAnswer={result.modelAnswer}
+            saveCardAction={saveCardAction}
+          />
+        ) : null}
+
         {/* Conversation review */}
         <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">Conversation</p>
@@ -627,6 +678,22 @@ export function SpeakUpClient() {
             New scenario
           </button>
         </div>
+
+        <button
+          onClick={() => void saveSession()}
+          disabled={savedSession || savingSession}
+          className={`flex w-full items-center justify-center gap-2 rounded-[2rem] border px-4 py-3 text-sm font-medium transition ${
+            savedSession
+              ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300 cursor-default"
+              : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
+          } disabled:opacity-60`}
+        >
+          {savedSession ? (
+            <><BookmarkCheck className="h-4 w-4" /> Session saved</>
+          ) : (
+            <><Bookmark className="h-4 w-4" /> {savingSession ? "Saving…" : "Save session"}</>
+          )}
+        </button>
       </div>
     );
   }
@@ -737,6 +804,115 @@ export function SpeakUpClient() {
       )}
 
       {error && <p className="text-sm text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+function SavePhraseForm({
+  decks,
+  modelAnswer,
+  saveCardAction,
+}: {
+  decks: Deck[];
+  modelAnswer: string;
+  saveCardAction: (formData: FormData) => Promise<{ success?: boolean; error?: string }>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [front, setFront] = useState("");
+  const [back, setBack] = useState(modelAnswer);
+  const [deckId, setDeckId] = useState(decks[0]?.id ?? "");
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  async function handleSubmit(e: { preventDefault(): void }) {
+    e.preventDefault();
+    if (!front.trim() || !back.trim() || !deckId) return;
+    setSaving(true);
+    setSaveError(null);
+    const fd = new FormData();
+    fd.set("front", front.trim());
+    fd.set("back", back.trim());
+    fd.set("deckId", deckId);
+    const res = await saveCardAction(fd);
+    setSaving(false);
+    if (res.success) setSaved(true);
+    else setSaveError(res.error ?? "Failed to save");
+  }
+
+  if (saved) {
+    return (
+      <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 px-5 py-4">
+        <p className="text-sm text-emerald-300">Saved to your deck — it will come up in your next review.</p>
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className="flex w-full items-center justify-center gap-2 rounded-[2rem] border border-dashed border-white/15 px-4 py-3 text-sm text-slate-400 transition hover:border-white/25 hover:text-slate-300"
+      >
+        + Save a phrase from this session as a flashcard
+      </button>
+    );
+  }
+
+  return (
+    <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Save a phrase</p>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <label className="block space-y-2">
+          <span className="text-xs font-medium text-slate-300">Phrase to remember</span>
+          <input
+            value={front}
+            onChange={(e) => setFront(e.target.value)}
+            placeholder="e.g. a word or line you want to own"
+            className="input-base"
+            required
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-xs font-medium text-slate-300">Definition / context</span>
+          <textarea
+            value={back}
+            onChange={(e) => setBack(e.target.value)}
+            rows={4}
+            className="input-base"
+            required
+          />
+        </label>
+        <label className="block space-y-2">
+          <span className="text-xs font-medium text-slate-300">Save to deck</span>
+          <select
+            value={deckId}
+            onChange={(e) => setDeckId(e.target.value)}
+            className="input-base"
+          >
+            {decks.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </select>
+        </label>
+        {saveError ? <p className="text-xs text-red-400">{saveError}</p> : null}
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={!front.trim() || saving}
+            className="flex-1 rounded-2xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Save to deck"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-400 transition hover:text-white"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -193,6 +193,29 @@ async function Dashboard({ uid }: { uid: string | null }) {
           </div>
         ) : null}
 
+        {/* Practice loop */}
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
+          <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Your practice loop</p>
+          <p className="mt-1 text-sm text-slate-400">Three activities that build on each other.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            <Link href="/today" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">1 · Remember it</p>
+              <p className="mt-1 text-sm font-medium text-white">Daily review</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Cards. Spaced repetition. Grade honestly.</p>
+            </Link>
+            <Link href="/speak-up" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">2 · Say it clearly</p>
+              <p className="mt-1 text-sm font-medium text-white">Speak Up</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Articulate ideas under pressure. Get honest feedback.</p>
+            </Link>
+            <Link href="/conversation-lab" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">3 · Connect</p>
+              <p className="mt-1 text-sm font-medium text-white">Conversation Lab</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Open, sustain, and end conversations well.</p>
+            </Link>
+          </div>
+        </div>
+
         <WordOfTheDay card={data.wordOfDay} />
 
         <PhraseItPanel initialTone={data.voiceTone} saveToneAction={saveTone} />

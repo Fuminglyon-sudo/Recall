@@ -26,24 +26,14 @@ const TABS = [
     desc: "Your daily review queue. Shows up to 6 cards mixed across all your decks — oldest due first. Cards overdue from a previous day are tagged Overdue so you clear backlogs before they stack up.",
   },
   {
-    name: "Pitch Practice",
-    href: "/pitch-practice",
-    desc: "Scenario-based pitch simulations for Japa Reality and Sharpen. An AI investor asks you a question, you respond (type or record), and it follows up with probing questions. After 2–5 exchanges you get a score, strong points, and a model answer.",
+    name: "Speak Up",
+    href: "/speak-up",
+    desc: "Pick a real scenario — a job interview, asking for a raise, explaining what you do, making a toast. Choose who you're talking to and how much pressure you want. Say your answer, get honest feedback with a stronger version, and try the opener again right from the results screen.",
   },
   {
-    name: "Social Skills Lab",
-    href: "/social-skills",
-    desc: "10 real-world social scenarios — airplane, networking mixer, wedding, coffee queue, elevator, and more. Pick a character type (Introvert, Extrovert, Hard to Read…), open the conversation yourself, and get coaching feedback plus one power move to try next time.",
-  },
-  {
-    name: "Founder Words",
-    href: "/founder-words",
-    desc: "Paste context about your product or a recent conversation and the AI generates 3–5 precise vocabulary cards (word, definition, example, memory hook) that you can save directly into any deck.",
-  },
-  {
-    name: "Corporate Jargon",
-    href: "/corporate-jargon",
-    desc: "A searchable library of 50+ professional terms you will hear in meetings, boardrooms, and business conversations — from circle back and hard stop to boiling the ocean and moving the needle. Click any term to expand its definition, example, and memory hook.",
+    name: "Conversation Lab",
+    href: "/conversation-lab",
+    desc: "10 real-world social scenarios — networking mixer, long-haul flight, wedding reception, dinner party, and more. Pick a character type (The Introvert, Worldly Traveler, Hard to Read…), open the conversation yourself, and get coaching feedback plus one power move to try next time.",
   },
   {
     name: "Decks",

@@ -1,7 +1,22 @@
+export const dynamic = "force-dynamic";
+
 import { AppShell } from "@/components/app-shell";
 import { SpeakUpClient } from "@/components/speak-up-client";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { saveCardFromSession } from "./actions";
 
-export default function SpeakUpPage() {
+export default async function SpeakUpPage() {
+  const userId = await getCurrentUserId();
+
+  const decks = userId
+    ? await prisma.deck.findMany({
+        where: { userId: scopedUserId(userId) },
+        select: { id: true, name: true },
+        orderBy: { createdAt: "asc" },
+      })
+    : [];
+
   return (
     <AppShell>
       <div className="mx-auto max-w-4xl space-y-6">
@@ -16,7 +31,7 @@ export default function SpeakUpPage() {
           </p>
         </section>
 
-        <SpeakUpClient />
+        <SpeakUpClient decks={decks} saveCardAction={saveCardFromSession} />
       </div>
     </AppShell>
   );

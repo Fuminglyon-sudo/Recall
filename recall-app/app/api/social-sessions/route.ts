@@ -21,6 +21,7 @@ const saveSchema = z.object({
   powerMove: z.string(),
   messages: z.array(messageSchema),
   modelConversation: z.array(messageSchema).optional(),
+  practiceGoal: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
         improvements: parsed.data.improvements,
         powerMove: parsed.data.powerMove,
         messages: parsed.data.messages,
+        practiceGoal: parsed.data.practiceGoal ?? null,
         ...(parsed.data.modelConversation
           ? { modelConversation: parsed.data.modelConversation }
           : {}),
