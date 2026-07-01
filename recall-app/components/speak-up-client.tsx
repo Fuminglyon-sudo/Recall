@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { ArrowLeft, ChevronRight, RotateCcw, Mic } from "lucide-react";
 
 type Category = "career" | "life" | "social";
@@ -13,6 +14,7 @@ type Scenario = {
   emoji: string;
   setting: string;
   question: string;
+  personaQuestions?: Partial<Record<string, string>>;
 };
 
 type Persona = {
@@ -55,6 +57,11 @@ const SCENARIOS: Scenario[] = [
     emoji: "💼",
     setting: "You are in a job interview for a role you genuinely want. After the usual hellos, the interviewer settles in and asks the classic opener:",
     question: "Tell me about yourself — who you are, what you've been doing, and why you want this role.",
+    personaQuestions: {
+      friend: "Okay, I'm the interviewer — go. Introduce yourself like we're sitting across the table right now.",
+      stranger: "Walk me through who you are and what you're going for. From scratch, like I know nothing about you.",
+      "loved-one": "You've been preparing for this. Walk me through exactly how you're going to open — what you'd say in the room.",
+    },
   },
   {
     id: "raise",
@@ -63,6 +70,11 @@ const SCENARIOS: Scenario[] = [
     emoji: "📈",
     setting: "Your manager has just given you positive feedback in your quarterly review. There's a natural pause. You have prepared for this moment for weeks. They look at you and say:",
     question: "Is there anything else on your mind that you'd like to discuss?",
+    personaQuestions: {
+      friend: "Walk me through it — pretend you're in the room with your manager right now. What are you going to say?",
+      stranger: "Give me the full picture. What's the situation and what are you planning to ask for?",
+      "loved-one": "I want you to feel confident going in. Talk me through exactly what you're going to say.",
+    },
   },
   {
     id: "idea-pitch",
@@ -71,6 +83,11 @@ const SCENARIOS: Scenario[] = [
     emoji: "💡",
     setting: "Your team is in a standing meeting and your manager turns to you. You've been thinking about an idea that could genuinely help the team, and today is the day you finally bring it up:",
     question: "You mentioned you had something you wanted to share — go ahead, the floor is yours.",
+    personaQuestions: {
+      friend: "Run it by me. Pitch it like you're in the room — I'll tell you what actually lands.",
+      stranger: "Explain it from scratch. What's the idea and why does it matter?",
+      "loved-one": "You mentioned you have something to bring up at work. Walk me through it.",
+    },
   },
   {
     id: "career-pivot",
@@ -79,6 +96,10 @@ const SCENARIOS: Scenario[] = [
     emoji: "🔄",
     setting: "You are at a work dinner, seated next to someone senior in your industry. They seem genuinely curious when they find out about your background. They look up and ask:",
     question: "So you moved from [previous field] into this? What made you make that leap?",
+    personaQuestions: {
+      friend: "Help me understand it — why did you make the switch? Explain it like you're telling me over dinner.",
+      "loved-one": "I've been curious about this change you made. Walk me through your thinking — why did you do it?",
+    },
   },
   // Life
   {
@@ -234,6 +255,10 @@ export function SpeakUpClient() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
 
+  const activeQuestion = active && persona
+    ? (active.personaQuestions?.[persona.id] ?? active.question)
+    : active?.question ?? "";
+
   // ── Reset ──────────────────────────────────────────────────────────────────
   function reset() {
     setActive(null);
@@ -291,7 +316,7 @@ export function SpeakUpClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          scenario: `${active.setting}\n\nQuestion asked: "${active.question}"`,
+          scenario: `${active.setting}\n\nQuestion asked: "${activeQuestion}"`,
           personaPrompt: persona.aiPrompt,
           difficulty,
           messages: nextMessages,
@@ -351,17 +376,24 @@ export function SpeakUpClient() {
             <button
               key={s.id}
               onClick={() => setActive(s)}
-              className="rounded-3xl border border-white/10 bg-white/5 p-5 text-left transition hover:border-emerald-300/30 hover:bg-white/8"
+              className="rounded-3xl border border-white/10 bg-white/5 text-left transition hover:border-emerald-300/30 hover:bg-white/8 overflow-hidden"
             >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">{s.emoji}</span>
+              <div className="relative h-36 w-full">
+                <Image
+                  src={`/scenerios/speak-up-${s.id}.webp`}
+                  alt={s.tag}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
+                <span className={`absolute bottom-2.5 left-3 rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${CATEGORY_COLORS[s.category]}`}>
+                  {CATEGORY_LABELS[s.category]}
+                </span>
+              </div>
+              <div className="flex items-start gap-2.5 p-4">
+                <span className="shrink-0 text-xl">{s.emoji}</span>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${CATEGORY_COLORS[s.category]}`}>
-                      {CATEGORY_LABELS[s.category]}
-                    </span>
-                  </div>
-                  <p className="mt-1.5 font-semibold text-white">{s.tag}</p>
+                  <p className="text-sm font-semibold text-white">{s.tag}</p>
                   <p className="mt-1 text-xs leading-5 text-slate-400 line-clamp-2">{s.setting}</p>
                 </div>
               </div>
@@ -381,11 +413,24 @@ export function SpeakUpClient() {
         </button>
 
         {/* Selected scenario recap */}
-        <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
-          <span className="text-2xl">{active.emoji}</span>
-          <p className="mt-2 font-semibold text-white">{active.tag}</p>
-          <p className="mt-2 text-sm leading-6 text-slate-300">{active.setting}</p>
-          <p className="mt-3 text-sm font-medium text-emerald-300">&quot;{active.question}&quot;</p>
+        <div className="rounded-[2rem] border border-white/10 bg-white/5 overflow-hidden">
+          <div className="relative h-44 w-full">
+            <Image
+              src={`/scenerios/speak-up-${active.id}.webp`}
+              alt={active.tag}
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+            <div className="absolute bottom-4 left-5 flex items-center gap-2">
+              <span className="text-xl">{active.emoji}</span>
+              <p className="font-semibold text-white">{active.tag}</p>
+            </div>
+          </div>
+          <div className="p-5">
+            <p className="text-sm leading-6 text-slate-300">{active.setting}</p>
+            <p className="mt-3 text-sm font-medium text-emerald-300">&quot;{active.question}&quot;</p>
+          </div>
         </div>
 
         {/* Difficulty */}
@@ -413,7 +458,7 @@ export function SpeakUpClient() {
 
         {/* Persona picker */}
         <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Who are you talking to?</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Who are you practicing with?</p>
           <div className="grid gap-3 sm:grid-cols-2">
             {PERSONAS.map((p) => (
               <button
@@ -440,7 +485,7 @@ export function SpeakUpClient() {
           <p className={`text-5xl font-bold tabular-nums ${scoreColor(result.score)}`}>{result.score}/10</p>
           <p className={`mt-2 text-lg font-semibold ${scoreColor(result.score)}`}>{scoreLabel(result.score)}</p>
           <p className="mt-1 text-sm text-slate-400">
-            {active.emoji} {active.tag} · talking to {persona.label.toLowerCase()} · {DIFFICULTY_LABELS[difficulty].toLowerCase()}
+            {active.emoji} {active.tag} · practiced with {persona.label.toLowerCase()} · {DIFFICULTY_LABELS[difficulty].toLowerCase()}
           </p>
         </div>
 
@@ -489,7 +534,7 @@ export function SpeakUpClient() {
             <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/8 p-3">
               <p className="text-xs text-emerald-300 mb-1 font-medium">Scenario</p>
               <p className="text-sm text-slate-300">{active.setting}</p>
-              <p className="mt-2 text-sm font-medium text-emerald-200">&quot;{active.question}&quot;</p>
+              <p className="mt-2 text-sm font-medium text-emerald-200">&quot;{activeQuestion}&quot;</p>
             </div>
             {messages.map((m, i) => (
               <div key={i} className={`rounded-2xl border p-3 ${m.role === "speaker" ? "border-white/10 bg-white/5" : "border-slate-500/20 bg-slate-800/40"}`}>
@@ -520,15 +565,33 @@ export function SpeakUpClient() {
         </button>
         <div className="flex items-center gap-3 text-xs text-slate-500">
           <span className={`rounded-full border px-2 py-0.5 ${DIFFICULTY_COLORS[difficulty]}`}>{DIFFICULTY_LABELS[difficulty]}</span>
-          <span>Talking to: {persona.label}</span>
+          <span>Practicing with: {persona.label}</span>
         </div>
       </div>
 
       {/* Scenario */}
-      <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 p-5">
-        <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-2">{active.emoji} {active.tag}</p>
-        <p className="text-sm leading-6 text-slate-300">{active.setting}</p>
-        <p className="mt-3 text-sm font-semibold text-emerald-200">&quot;{active.question}&quot;</p>
+      <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 overflow-hidden">
+        <div className="relative h-44 w-full">
+          <Image
+            src={`/scenerios/speak-up-${active.id}.webp`}
+            alt={active.tag}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />
+          <p className="absolute bottom-4 left-5 text-xs font-semibold uppercase tracking-widest text-emerald-400">
+            {active.emoji} {active.tag}
+          </p>
+        </div>
+        <div className="p-5">
+          <p className="text-sm leading-6 text-slate-300">{active.setting}</p>
+          <p className="mt-3 text-sm font-semibold text-emerald-200">&quot;{activeQuestion}&quot;</p>
+          {active.personaQuestions?.[persona.id] && (
+            <p className="mt-2 text-xs text-emerald-400/60">
+              Rehearsing with {persona.label.toLowerCase()} as your practice partner
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Message history */}
