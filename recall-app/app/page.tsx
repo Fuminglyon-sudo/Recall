@@ -210,7 +210,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
             A calm place to keep words, ideas, and language close.
           </h1>
           <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Review what is due today, add a new card when something matters, and build the language you want to use naturally.
+            Review what is due. Practice saying it clearly. Work on the conversations that matter. Three things that build on each other — and compound the more consistently you do them.
           </p>
         </div>
 

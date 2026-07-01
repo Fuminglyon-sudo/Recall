@@ -153,11 +153,11 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
               {[
                 "SM-2 spaced repetition",
                 "AI-drafted cards",
+                "Speak Up scenarios",
+                "Conversation Lab",
                 "Free recall sessions",
-                "Daily streak tracking",
                 "CSV export & import",
                 "Push reminders",
-                "Mastery progress view",
               ].map((f) => (
                 <span key={f} className="flex items-center gap-2">
                   <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
@@ -214,16 +214,16 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
           <div className="mx-auto max-w-6xl space-y-16 px-6">
             <div className="mx-auto max-w-2xl space-y-4 text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">How it works</p>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Three steps. A practice that grows.</h2>
+              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Capture. Review. Practice.</h2>
               <p className="text-slate-400">
-                Recall fits inside the quiet moments — before the day starts, or after it settles.
+                Three things, done consistently, that compound into language you can actually use.
               </p>
             </div>
             <div className="grid gap-6 sm:grid-cols-3">
               {[
-                { n: "01", title: "Capture", body: "Something stands out — a word, a concept, an idea. Open Recall, type the front, and let Claude draft the back in seconds." },
-                { n: "02", title: "Review", body: "Each day, Recall shows exactly what's due. Grade how well you remembered each card. Done in minutes." },
-                { n: "03", title: "Compound", body: "Cards you know earn longer gaps. Ones you forget come back sooner. Your retention compounds over weeks and months." },
+                { n: "01", title: "Capture", body: "Something stands out — a word, a concept, an idea. Type the front, let Claude draft the definition, example, and memory hook in seconds." },
+                { n: "02", title: "Review", body: "Each day, your queue shows exactly what's due. Grade how well you remembered each card. Cards you know drift farther away. Ones you struggle with return sooner." },
+                { n: "03", title: "Practice", body: "Speak Up puts you in high-stakes scenarios — a raise negotiation, a difficult call, an investor pitch. Conversation Lab drops you into real social moments. Words you can use under pressure are words you actually own." },
               ].map(({ n, title, body }) => (
                 <div key={n} className="relative space-y-5 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8">
                   <span className="absolute -right-2 -top-4 select-none text-7xl font-black text-white/[0.05]">{n}</span>

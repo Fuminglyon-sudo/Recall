@@ -18,7 +18,7 @@ export default async function LoginPage({
           <p className="text-4xl mb-3">🧠</p>
           <p className="text-sm font-medium text-emerald-300">Recall</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">Welcome</h1>
-          <p className="mt-1 text-sm text-slate-400">Sign in to access your cards.</p>
+          <p className="mt-1 text-sm text-slate-400">Sign in to continue your practice.</p>
         </div>
 
         <div className="space-y-4">

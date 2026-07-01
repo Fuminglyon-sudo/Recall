@@ -91,7 +91,7 @@ const FEATURES: Feature[] = [
     label: "Speak Up",
     icon: Mic,
     tagline: "The room where you rehearse before the room that counts.",
-    what: "Most people lose opportunities not because they lack ability, but because the right words didn't come when the moment did. Speak Up puts you in high-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call — with an AI listener who responds at the difficulty level you choose. You go back and forth up to 4 times, then receive a score, your strong points, one specific thing to improve, and a model response.",
+    what: "Most people lose opportunities not because they lack ability, but because the right words didn't come when the moment did. Speak Up puts you in high-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call — with an AI listener who responds at the difficulty level you choose. Each scenario opens with a coaching tip specific to that context before the first exchange. You go back and forth up to 4 times, then receive a score, your strong points, one specific thing to improve, the exact exchange where the conversation shifted, and a model response.",
     tips: [
       "Set difficulty to Hard intentionally. A listener who pushes back trains you to hold your position under pressure. Easy listeners only confirm what you already do well — that is not practice, it is performance.",
       "Read your feedback before trying the same scenario again. The improvement note is specific — act on it in the very next attempt rather than hoping to do better by instinct.",
@@ -104,7 +104,7 @@ const FEATURES: Feature[] = [
     label: "Conversation Lab",
     icon: MessageCircle,
     tagline: "Become someone conversations come easily to.",
-    what: "A freeform space to build the kind of fluency that is not rehearsed — it is felt. Different contexts, different registers, different kinds of people. Less structured than Speak Up, and designed for the thing Speak Up cannot give you: the ease that comes from spending time inside a conversation with no particular goal except to be present and articulate.",
+    what: "Ten real-world social scenarios — a networking mixer, a flight next to a stranger, a wedding reception where you know nobody, a dinner party, and more. Each opens with a coaching tip specific to that context, so you go in with a concrete strategy rather than hoping for the best. You start the conversation, keep it going, then receive a score, strong points, one specific improvement, and the exact exchange where things shifted — so you know precisely what to work on next time.",
     tips: [
       "Use it to warm up before a meeting, a pitch, or any situation where you want to be sharp. Even five minutes of open dialogue reduces friction when the real moment arrives.",
       "Try explaining something you know well to someone who knows nothing about it. If your words are unclear in the lab, they will be unclear in the room.",

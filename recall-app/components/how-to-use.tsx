@@ -23,7 +23,7 @@ const TABS = [
   {
     name: "Today",
     href: "/today",
-    desc: "Your daily review queue. Shows up to 6 cards mixed across all your decks — oldest due first. Cards overdue from a previous day are tagged Overdue so you clear backlogs before they stack up.",
+    desc: "Your daily review queue. Shows all due review cards plus up to 3 new cards, drawn across your decks. Cards overdue from a previous day are tagged Overdue and appear first so backlogs clear before fresh cards are added.",
   },
   {
     name: "Speak Up",
@@ -80,9 +80,10 @@ export function HowToUse() {
               Recall uses{" "}
               <span className="font-medium text-white">spaced repetition</span> — cards you know
               well come back less often; cards you struggle with return sooner. Each day shows you
-              up to <span className="font-medium text-white">6 cards</span>, mixed across all your
-              decks so you always get variety. Grade yourself honestly and the algorithm does the
-              rest. If you miss a day, overdue cards are tagged{" "}
+              all <span className="font-medium text-white">due reviews</span> plus up to{" "}
+              <span className="font-medium text-white">3 new cards</span>, drawn across your decks
+              so you always get variety. Grade yourself honestly and the algorithm does the rest.
+              If you miss a day, overdue cards are tagged{" "}
               <span className="font-medium text-amber-300">Overdue</span> so you can clear them
               first before fresh cards are added.
             </p>
