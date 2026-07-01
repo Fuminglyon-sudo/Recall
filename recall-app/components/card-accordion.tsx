@@ -25,10 +25,12 @@ export function CardAccordion({
   cards,
   deckId,
   updateCardAction,
+  resetCardAction,
 }: {
   cards: CardRow[];
   deckId: string;
   updateCardAction: (formData: FormData) => void;
+  resetCardAction?: (formData: FormData) => void;
 }) {
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
 
@@ -47,6 +49,7 @@ export function CardAccordion({
         const isOpen = openIds.has(card.id);
         const mastery = getMastery(card.interval, card.repetitions);
         const meta = MASTERY[mastery];
+        const isStruggling = card.easeFactor < 2.0 && card.repetitions > 0;
 
         return (
           <div key={card.id} className={`overflow-hidden rounded-[2rem] border transition-colors ${isOpen ? "border-white/15 bg-white/5" : "border-white/8 bg-white/[0.03] hover:border-white/12 hover:bg-white/[0.05]"} backdrop-blur`}>
@@ -64,6 +67,11 @@ export function CardAccordion({
                 ) : null}
               </span>
               <div className="flex shrink-0 items-center gap-2">
+                {isStruggling ? (
+                  <span className="hidden rounded-full border border-amber-400/25 bg-amber-400/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300 sm:inline">
+                    Struggling
+                  </span>
+                ) : null}
                 {card.partOfSpeech ? (
                   <span className="hidden rounded-full border border-emerald-300/20 bg-emerald-400/10 px-2.5 py-0.5 text-xs font-medium text-emerald-200 sm:inline">
                     {card.partOfSpeech}
@@ -136,6 +144,26 @@ export function CardAccordion({
                     <SubmitButton label="Save edits" pendingLabel="Saving…" />
                   </div>
                 </form>
+
+                {resetCardAction && isStruggling ? (
+                  <form action={resetCardAction} className="mt-4 border-t border-white/8 pt-4">
+                    <input type="hidden" name="cardId" value={card.id} />
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-amber-300">Reset progress</p>
+                        <p className="mt-0.5 text-xs leading-5 text-slate-500">
+                          Start this card fresh. Clears interval, ease factor, and repetitions.
+                        </p>
+                      </div>
+                      <button
+                        type="submit"
+                        className="shrink-0 rounded-2xl border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/20"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </form>
+                ) : null}
               </div>
             ) : null}
           </div>

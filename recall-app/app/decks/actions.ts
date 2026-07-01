@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
@@ -74,4 +75,26 @@ export async function updateCard(formData: FormData) {
   });
 
   redirect(`/decks/${values.deckId}`);
+}
+
+export async function resetCard(formData: FormData) {
+  const userId = await getCurrentUserId();
+  if (!userId) return;
+  const uid = scopedUserId(userId);
+
+  const cardId = String(formData.get("cardId") ?? "");
+  if (!cardId) return;
+
+  const card = await prisma.card.findFirst({
+    where: { id: cardId, deck: { userId: uid } },
+    select: { id: true, deckId: true },
+  });
+  if (!card) return;
+
+  await prisma.card.update({
+    where: { id: cardId },
+    data: { repetitions: 0, interval: 0, easeFactor: 2.5, dueAt: new Date() },
+  });
+
+  revalidatePath(`/decks/${card.deckId}`);
 }

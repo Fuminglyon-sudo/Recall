@@ -14,6 +14,7 @@ type Scenario = {
   emoji: string;
   context: string;
   prompt: string;
+  tension?: string;
 };
 
 type CharacterType = {
@@ -58,6 +59,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You are on a 6-hour flight. You settle into your window seat and the stranger next to you glances up briefly, nods, then goes back to what they were doing. You have hours ahead of you.",
     prompt: "Break the ice. Say whatever feels natural to start a conversation.",
+    tension: "You are tired after a long work week and almost cancelled this trip. You are open to conversation but it needs to feel natural, not forced.",
   },
   {
     id: "networking",
@@ -67,6 +69,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You are at a professional networking event — name tags on, drinks in hand, soft background music. You spot someone standing alone near the edge of the room, looking around.",
     prompt: "You walk over. Start the conversation.",
+    tension: "You have already had two forgettable conversations tonight and are thinking about leaving early. If this next conversation is interesting, you will stay.",
   },
   {
     id: "wedding",
@@ -76,6 +79,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You are at a wedding reception. You know the couple well but almost nobody else at your table. The person sitting next to you has been quietly eating while the speeches played. The speeches just ended.",
     prompt: "The room relaxes. Say something to get the conversation going.",
+    tension: "You know the couple well but feel slightly out of place among people who all seem to know each other already. You are quietly glad someone is starting a conversation.",
   },
   {
     id: "coffee",
@@ -85,6 +89,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You are waiting in a long queue at a busy coffee shop. The person ahead of you has been waiting just as long. You have both been quietly watching the baristas scramble during the morning rush.",
     prompt: "You decide to say something. What comes out?",
+    tension: "The wait has been annoying — longer than it should be. But you got unexpectedly good news this morning, so you are in a better mood than usual.",
   },
   {
     id: "conference",
@@ -94,6 +99,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "A keynote just ended at a conference in your industry. You end up next to someone at the water station in the hallway — both of you reaching for a cup at the same moment.",
     prompt: "You both laugh at the awkward reach. Break the silence.",
+    tension: "The keynote was not as good as you hoped. You have opinions about it and are looking for someone worth talking to before the afternoon session.",
   },
   {
     id: "gym",
@@ -103,6 +109,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You have seen this person at the gym for months. You always nod to each other but have never spoken. Today you end up on adjacent machines during a quiet period — just the two of you in that section.",
     prompt: "Finally say something.",
+    tension: "You have noticed this person for months and always meant to say something. Part of you is relieved they are finally speaking first.",
   },
   {
     id: "dinner-party",
@@ -112,6 +119,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You are new to this city and your friend invited you to their dinner party. You do not know most people there. Someone comes to refill their drink in the kitchen at the same moment as you.",
     prompt: "You both reach for the drinks at the same time. What do you say?",
+    tension: "You are newer to this city too, though they do not know that yet. You have been hoping to meet someone who was not already part of the existing friend group.",
   },
   {
     id: "elevator",
@@ -121,6 +129,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You have lived in the same building for over a year. You always see this neighbor but only exchange nods. Tonight you step into an empty elevator together — just the two of you, eight floors to go.",
     prompt: "The doors close. Say something.",
+    tension: "You have lived here over a year and kept meaning to say something. Tonight you are feeling unusually open to finally making it happen.",
   },
   {
     id: "mutual-friend",
@@ -130,6 +139,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "A mutual friend just introduced you to this person at a casual hangout, then immediately got pulled away to another conversation, leaving the two of you standing there with your drinks.",
     prompt: "Your friend just walked away. Keep it going.",
+    tension: "You have heard a little about this person from your mutual friend and have been mildly curious. You are open, but the other person needs to carry this now.",
   },
   {
     id: "industry-event",
@@ -139,6 +149,7 @@ const SCENARIOS: Scenario[] = [
     context:
       "You are at an industry dinner and end up seated next to someone clearly more experienced and established in your field. They are approachable — but you can tell they have met a lot of people in their time.",
     prompt: "Dinner has just started. You go first.",
+    tension: "You have met a lot of people in your field over the years. Most conversations start the same way and end unremarkably. You are genuinely hoping this one surprises you.",
   },
 ];
 
@@ -146,44 +157,44 @@ const CHARACTER_TYPES: CharacterType[] = [
   {
     id: "introvert",
     label: "The Introvert",
-    description: "Thoughtful, short answers, needs warming up",
+    description: "Thoughtful, short answers — needs real warmth to open up",
     aiPrompt:
-      "You are a reserved, introverted person. You give short, genuine answers and do not volunteer much. You are not unfriendly — just private. You need real warmth before you open up. You rarely initiate follow-up questions first.",
+      "You are a reserved, introverted person. You give short, genuine answers and do not volunteer much. You are not unfriendly — just private. What draws you out: a question that feels genuinely curious, not performative. What keeps you closed: small talk that is clearly going nowhere or forced friendliness. You need real warmth before you open up.",
   },
   {
     id: "extrovert",
     label: "The Extrovert",
-    description: "Warm, talkative, easy to connect with",
+    description: "Warm, talkative — loves when people actually share",
     aiPrompt:
-      "You are naturally warm and talkative. You respond with genuine enthusiasm, expand on topics naturally, and make people feel at ease quickly. You enjoy conversation and it shows.",
+      "You are naturally warm and talkative. You respond with genuine enthusiasm, expand on topics easily, and make people feel at ease quickly. What you love: people who lean in and actually share something real. What mildly bores you: someone who stays surface-level when the conversation could clearly go somewhere. You enjoy conversation and it shows.",
   },
   {
     id: "executive",
     label: "The Busy Executive",
-    description: "Direct, no-nonsense, values substance",
+    description: "Direct — generic openers lose you immediately",
     aiPrompt:
-      "You are a successful, busy professional. Polite but direct. You do not do small talk for long and you appreciate when someone says something genuinely interesting or gets to a real point quickly. Your responses are brief unless something earns more.",
+      "You are a successful, busy professional. Polite but direct. You do not do small talk for long and you pay attention when someone says something genuinely interesting. What earns your engagement: something real, specific, said with confidence. What loses you immediately: vague openers, obligatory pleasantries, or anything that sounds like a script. Your responses are brief unless something earns more.",
   },
   {
     id: "guarded",
     label: "The Hard to Read",
-    description: "Neutral, cautious, takes real effort to open up",
+    description: "Neutral, cautious — patience earns more than persistence",
     aiPrompt:
-      "You are measured and a bit guarded. You respond politely but briefly and do not volunteer information easily. You are not rude — just not an easy person to draw out. The other person has to genuinely earn your openness.",
+      "You are measured and a bit guarded. You respond politely but briefly and do not volunteer information easily. You are not rude — just not easy to draw out. What eventually opens you: patient, genuine curiosity — not persistence or obvious charm. What keeps you closed: anything that feels like a performance or a tactic. The other person has to genuinely earn your openness.",
   },
   {
     id: "traveler",
     label: "The Worldly Traveler",
-    description: "Has great stories, genuinely curious about people",
+    description: "Curious, full of stories — predictable questions bore them",
     aiPrompt:
-      "You have traveled widely and lived in several countries. You are warm, curious, and a natural conversationalist. You often share a brief anecdote but you are equally interested in the other person's world. You find almost everyone interesting.",
+      "You have traveled widely and lived in several countries. You are warm, curious, and a natural conversationalist. You often share a brief anecdote but you are equally interested in the other person's world. What delights you: unexpected angles, genuine curiosity, people who have something they actually care about. What bores you: predictable tourism questions or safe, surface-level openers.",
   },
   {
     id: "random",
     label: "Surprise me",
     description: "Random personality — the realistic challenge",
     aiPrompt:
-      "Choose your own personality type that feels completely realistic and natural for this scenario. Be authentic and slightly unpredictable. The person practicing should not be able to easily predict how you will respond.",
+      "Choose a personality type that feels completely realistic and natural for this scenario. Be authentic and slightly unpredictable — the person practicing should not be able to easily predict how you will respond. Make a clear decision about who you are and commit to it fully.",
   },
 ];
 
@@ -257,7 +268,10 @@ export function SocialSkillsClient() {
   };
 
   function characterPromptWithDifficulty() {
-    return activeCharacter.aiPrompt + DIFFICULTY_MODIFIER[difficulty];
+    const tension = activeScenario?.tension
+      ? `\n\nYour hidden context going into this: ${activeScenario.tension}`
+      : "";
+    return activeCharacter.aiPrompt + tension + DIFFICULTY_MODIFIER[difficulty];
   }
 
   function startScenario(scenario: Scenario) {

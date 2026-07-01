@@ -373,9 +373,9 @@ Return strict JSON with ALL of these fields:
 {
   "type": "feedback",
   "score": integer 1-10 (1 = very uncomfortable, 10 = effortlessly natural),
-  "strongPoints": ["1-3 specific things they did well in this conversation"],
-  "improvements": ["1-3 specific things to work on"],
-  "powerMove": "one concrete technique or phrase they can try next time to immediately level up their conversation game",
+  "strongPoints": ["1-2 items — each must cite a specific phrase or moment from the conversation that showed strong social skill. Format: quote the phrase or describe the moment, then one sentence on why it worked."],
+  "improvements": ["1-2 items — each must: (1) quote or describe the specific phrase or moment that weakened the connection, (2) say briefly what went wrong, (3) give a revised version showing how it could have played better"],
+  "powerMove": "one concrete technique or phrase they can try next time — make it specific to what actually happened in this conversation, not generic advice",
   "modelConversation": only include this field if score is 8 or below — an array of message objects showing how this conversation could have ideally gone from start to finish. Write the user lines showing confident, natural, curious conversation. Write the character lines as they would realistically respond to those better inputs. Keep each message 1-3 sentences. Aim for 4-8 exchanges total showing a natural arc. Format: [{ "role": "user", "content": "..." }, { "role": "character", "content": "..." }, ...]. If score is 9 or 10, omit this field entirely.
 }`;
 
@@ -475,6 +475,7 @@ export type SpeakUpRequest = {
   messages: Array<{ role: "speaker" | "listener"; content: string }>;
   exchangeCount: number;
   forceEnd?: boolean;
+  practiceGoal?: string;
 };
 
 export async function conductSpeakUpConversation(input: SpeakUpRequest): Promise<ConversationStep> {
@@ -500,12 +501,16 @@ Decide: respond naturally (type "followup") OR wrap up with feedback (type "fina
 Ask a follow-up if their answer was vague, skipped the core point, or could go deeper with one more prompt.
 Wrap up if they gave a clear, genuine, specific answer — or if you have asked 2+ follow-ups already.`;
 
+  const goalBlock = input.practiceGoal
+    ? `\nTheir practice focus this session: ${input.practiceGoal}. Weight your feedback toward this skill.\n`
+    : "";
+
   const prompt = `You are this person: ${input.personaPrompt}
 
 Scenario: ${input.scenario}
 
 How you behave: ${difficultyGuide}
-
+${goalBlock}
 Conversation so far:
 ${history}
 
@@ -519,8 +524,8 @@ Wrapping up:
 {
   "type": "final",
   "score": integer 1–10 (rate: clarity, authenticity, specificity, confidence, emotional resonance),
-  "strongPoints": ["1–3 things that landed well — be specific"],
-  "improvements": ["1–3 concrete things to sharpen"],
+  "strongPoints": ["1–2 items — each must cite a specific phrase from their answer that worked. Format: quote the phrase in quotation marks, then one sentence explaining why it landed."],
+  "improvements": ["1–2 items — each must: (1) quote the specific phrase that weakened their response in quotation marks, (2) say briefly what was weak about it, (3) give a revised version of that exact phrase showing how it could land better"],
   "modelAnswer": "3–5 sentence ideal version of how they could have answered the original question — natural, human, specific, memorable"
 }`;
 

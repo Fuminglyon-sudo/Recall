@@ -183,38 +183,38 @@ const PERSONAS: Persona[] = [
   {
     id: "friend",
     label: "A close friend",
-    description: "Warm, supportive, will ask genuine follow-ups",
-    aiPrompt: "You are a warm, close friend. You care about this person and listen genuinely. You ask follow-up questions naturally and are encouraging — but you also notice when something feels rehearsed or doesn't quite ring true.",
+    description: "Warm, supportive — notices when you're holding back",
+    aiPrompt: "You are a warm, close friend who genuinely wants this person to succeed. You've seen them nervous and you've seen them shine — you notice immediately when they're holding back or performing instead of being real. You listen with full attention, ask the follow-up questions no one else dares to, and get gently honest when something doesn't ring true.",
   },
   {
     id: "manager",
     label: "Your manager",
-    description: "Professional, measured, values clarity",
-    aiPrompt: "You are a composed, experienced manager. You are fair and not intimidating — but you are looking for clarity, specificity, and confidence. Vague answers prompt you to dig a little deeper. You appreciate directness.",
+    description: "Professional, measured — rooting for you but needs substance",
+    aiPrompt: "You are a composed, experienced manager who is actually rooting for this person — but you can't show it until they earn it. You've heard a thousand vague, rehearsed answers. Specific, honest, and confident earns your full attention. Anything that sounds safe or polished without substance makes you probe gently deeper. You appreciate directness above everything.",
   },
   {
     id: "stranger",
     label: "A curious stranger",
-    description: "Open-minded, no context, needs things explained simply",
-    aiPrompt: "You are a friendly, curious stranger with no background in what this person does or the choices they've made. You ask the kinds of questions a genuinely curious outsider would ask — and you notice when something doesn't quite make sense from the outside.",
+    description: "No context — one chance to earn their attention",
+    aiPrompt: "You are a friendly, genuinely curious stranger with no background in what this person does or the choices they've made. You have no reason to care yet — they have one chance to say something that makes you lean in. You ask the questions an interested outsider would naturally ask, and you notice instantly when something doesn't quite make sense from the outside.",
   },
   {
     id: "skeptic",
     label: "A skeptic",
-    description: "Not hostile, but needs to be genuinely convinced",
-    aiPrompt: "You are thoughtful and a little skeptical — not unfriendly, but not easily impressed either. You need specific, real answers to be satisfied. If something sounds vague or too polished, you gently push back. You want to believe them — but they have to earn it.",
+    description: "Not hostile — but generic claims bounce right off",
+    aiPrompt: "You are thoughtful and a little skeptical — not unfriendly, but not easily impressed. Generic claims bounce right off you. A specific, honest, concrete detail earns more with you than ten polished sentences. You want to believe them — but they have to give you something real to hold onto.",
   },
   {
     id: "senior",
     label: "A senior figure",
-    description: "Experienced, has heard it all before, needs something memorable",
-    aiPrompt: "You are a senior, accomplished person who has had many conversations like this one. You are not dismissive — but you've heard every generic answer. You respond better to something honest and specific than to something polished and safe. You notice when someone is performing versus when they're actually present.",
+    description: "Experienced — can tell instantly if you're performing",
+    aiPrompt: "You are a senior, accomplished person who has had many conversations exactly like this one. You can tell in the first few seconds whether someone is performing or genuinely present. Something real and specific earns far more with you than anything safe or polished. You remember the people who surprised you.",
   },
   {
     id: "loved-one",
     label: "A worried loved one",
-    description: "Cares deeply, asks hard questions from love not judgment",
-    aiPrompt: "You are a family member or close friend who genuinely loves this person. Your questions come from care and sometimes worry. You're not trying to be harsh — but you are honest, and you notice when something doesn't add up. You want to understand, not judge.",
+    description: "Loves you — which is exactly why they won't just nod",
+    aiPrompt: "You are a family member or close friend who loves this person deeply — which is exactly why you won't just nod along. You know them better than they think you do. You will notice if they sound more confident here than they actually feel. Your questions come from care, not judgment — and you want them to walk into that room ready.",
   },
 ];
 
@@ -229,6 +229,15 @@ const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   medium: "border-amber-300/20 bg-amber-400/10 text-amber-200",
   hard: "border-rose-300/20 bg-rose-400/10 text-rose-200",
 };
+
+type PracticeGoal = "opener" | "specificity" | "pushback" | "natural";
+
+const PRACTICE_GOALS: { id: PracticeGoal; label: string; description: string; aiDescription: string }[] = [
+  { id: "opener", label: "Opening strong", description: "Nail the first two sentences", aiDescription: "Opening strong — saying the right thing in the first two sentences" },
+  { id: "specificity", label: "Being more specific", description: "Use concrete details, not vague language", aiDescription: "Being more specific — using concrete details instead of vague language" },
+  { id: "pushback", label: "Handling pushback", description: "Stay grounded when challenged", aiDescription: "Handling pushback — staying grounded and clear when challenged or pressed" },
+  { id: "natural", label: "Sounding natural", description: "Less rehearsed, more genuine", aiDescription: "Sounding natural — less rehearsed, more genuinely present in the moment" },
+];
 
 function scoreLabel(s: number): string {
   if (s >= 9) return "Crystal clear";
@@ -255,6 +264,7 @@ export function SpeakUpClient() {
   const [active, setActive] = useState<Scenario | null>(null);
   const [persona, setPersona] = useState<Persona | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [practiceGoal, setPracticeGoal] = useState<PracticeGoal | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [exchangeCount, setExchangeCount] = useState(0);
@@ -273,12 +283,21 @@ export function SpeakUpClient() {
   function reset() {
     setActive(null);
     setPersona(null);
+    setPracticeGoal(null);
     setMessages([]);
     setDraft("");
     setExchangeCount(0);
     setResult(null);
     setError(null);
     setRecording(false);
+  }
+
+  function retryOpening() {
+    setMessages([]);
+    setDraft("");
+    setExchangeCount(0);
+    setResult(null);
+    setError(null);
   }
 
   // ── Voice recording ────────────────────────────────────────────────────────
@@ -332,6 +351,7 @@ export function SpeakUpClient() {
           messages: nextMessages,
           exchangeCount: nextExchange,
           forceEnd: force,
+          practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
         }),
       });
 
@@ -466,6 +486,29 @@ export function SpeakUpClient() {
           </p>
         </div>
 
+        {/* Practice focus */}
+        <div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
+            Practice focus <span className="font-normal normal-case tracking-normal text-slate-600">(optional)</span>
+          </p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {PRACTICE_GOALS.map((g) => (
+              <button
+                key={g.id}
+                onClick={() => setPracticeGoal(practiceGoal === g.id ? null : g.id)}
+                className={`rounded-2xl border px-3 py-3 text-left transition ${
+                  practiceGoal === g.id
+                    ? "border-emerald-400/40 bg-emerald-400/15 text-emerald-200"
+                    : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
+                }`}
+              >
+                <p className="text-sm font-medium">{g.label}</p>
+                <p className="mt-0.5 text-xs opacity-70">{g.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Persona picker */}
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Who are you practicing with?</p>
@@ -499,6 +542,7 @@ export function SpeakUpClient() {
           <p className={`mt-2 text-lg font-semibold ${scoreColor(result.score)}`}>{scoreLabel(result.score)}</p>
           <p className="mt-1 text-sm text-slate-400">
             {active.emoji} {active.tag} · practiced with {persona.label.toLowerCase()} · {DIFFICULTY_LABELS[difficulty].toLowerCase()}
+            {practiceGoal ? ` · ${PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label.toLowerCase() ?? ""}` : ""}
           </p>
         </div>
 
@@ -558,13 +602,21 @@ export function SpeakUpClient() {
           </div>
         </div>
 
-        <button
-          onClick={reset}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/8 hover:text-white"
-        >
-          <RotateCcw className="h-4 w-4" />
-          Try another scenario
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={retryOpening}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-emerald-300/20 bg-emerald-400/8 px-4 py-3 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/15 hover:text-emerald-200"
+          >
+            <RotateCcw className="h-4 w-4" />
+            Try the opener again
+          </button>
+          <button
+            onClick={reset}
+            className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/8 hover:text-white"
+          >
+            New scenario
+          </button>
+        </div>
       </div>
     );
   }
@@ -579,6 +631,7 @@ export function SpeakUpClient() {
         <div className="flex items-center gap-3 text-xs text-slate-500">
           <span className={`rounded-full border px-2 py-0.5 ${DIFFICULTY_COLORS[difficulty]}`}>{DIFFICULTY_LABELS[difficulty]}</span>
           <span>Practicing with: {persona.label}</span>
+          {practiceGoal && <span className="text-emerald-400">· {PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label}</span>}
         </div>
       </div>
 

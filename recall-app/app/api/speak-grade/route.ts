@@ -14,6 +14,7 @@ const schema = z.object({
   ).min(1),
   exchangeCount: z.number().int().min(0),
   forceEnd: z.boolean().optional(),
+  practiceGoal: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {

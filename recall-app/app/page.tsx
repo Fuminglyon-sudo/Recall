@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { formatRelativeDay, isSameCalendarDay } from "@/lib/date";
+import { isSameCalendarDay } from "@/lib/date";
 import { AppShell } from "@/components/app-shell";
 import { StatCard } from "@/components/stat-card";
 import { CalmCard } from "@/components/calm-card";
@@ -53,6 +53,7 @@ async function getDashboardData(uid: string | null) {
       reviewDays: [] as string[],
       upcomingByDay: {} as Record<string, number>,
       wordOfDay: null,
+      strugglingCount: 0,
     };
   }
 
@@ -75,7 +76,7 @@ async function getDashboardData(uid: string | null) {
       include: {
         _count: { select: { cards: true } },
         cards: {
-          select: { id: true, interval: true, repetitions: true, dueAt: true },
+          select: { id: true, interval: true, repetitions: true, easeFactor: true, dueAt: true },
         },
       },
     }),
@@ -126,6 +127,7 @@ async function getDashboardData(uid: string | null) {
 
   const allCards = decks.flatMap((d: typeof decks[number]) => d.cards);
   const mastery = computeDistribution(allCards);
+  const strugglingCount = allCards.filter((c) => c.easeFactor < 2.0 && c.repetitions > 0).length;
 
   return {
     dueToday: dueTodayCount,
@@ -146,6 +148,7 @@ async function getDashboardData(uid: string | null) {
     reviewDays,
     upcomingByDay,
     wordOfDay,
+    strugglingCount,
   };
 }
 
@@ -178,6 +181,17 @@ async function Dashboard({ uid }: { uid: string | null }) {
           <StatCard label="Mastered" value={String(data.mastery.mastered)} helper={data.mastery.mastered > 0 ? "Words that have settled into you." : "Your first mastered card is closer than it looks."} />
           <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
         </div>
+
+        {data.strugglingCount > 0 ? (
+          <div className="rounded-[2rem] border border-amber-400/20 bg-amber-400/5 px-5 py-4">
+            <p className="text-sm font-semibold text-amber-300">
+              {data.strugglingCount} card{data.strugglingCount === 1 ? "" : "s"} not sticking yet
+            </p>
+            <p className="mt-1 text-xs leading-5 text-amber-200/60">
+              These keep coming back with low grades. Honest grading and your personal anchor will help them settle. Find them in your decks.
+            </p>
+          </div>
+        ) : null}
 
         <WordOfTheDay card={data.wordOfDay} />
 

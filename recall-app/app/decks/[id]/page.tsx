@@ -6,7 +6,7 @@ import { AppShell } from "@/components/app-shell";
 import { computeDistribution, MASTERY } from "@/lib/mastery";
 import { CardAccordion } from "@/components/card-accordion";
 import { DeckIO } from "@/components/deck-io";
-import { updateCard } from "../actions";
+import { updateCard, resetCard } from "../actions";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function DeckDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -41,6 +41,8 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
     dueAt: card.dueAt.toISOString(),
   }));
 
+  const strugglingCount = cards.filter((c) => c.easeFactor < 2.0 && c.repetitions > 0).length;
+
   return (
     <AppShell>
       <section className="space-y-6">
@@ -74,8 +76,19 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
           ) : null}
         </div>
 
+        {strugglingCount > 0 ? (
+          <div className="rounded-[2rem] border border-amber-400/25 bg-amber-400/8 px-6 py-4">
+            <p className="text-sm font-semibold text-amber-300">
+              {strugglingCount} card{strugglingCount === 1 ? "" : "s"} not sticking yet
+            </p>
+            <p className="mt-1 text-sm leading-6 text-amber-200/70">
+              These keep coming back. They&apos;ve been graded poorly several times and their ease factor has dropped below 2.0. You can reset any struggling card to start fresh.
+            </p>
+          </div>
+        ) : null}
+
         {cards.length > 0 ? (
-          <CardAccordion cards={cards} deckId={deck.id} updateCardAction={updateCard} />
+          <CardAccordion cards={cards} deckId={deck.id} updateCardAction={updateCard} resetCardAction={resetCard} />
         ) : (
           <div className="rounded-[2rem] border border-white/8 bg-white/[0.03] p-8 text-center">
             <p className="text-sm text-slate-400">No cards yet. Add one to get started.</p>
