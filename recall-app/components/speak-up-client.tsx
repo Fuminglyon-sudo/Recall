@@ -302,10 +302,15 @@ export function SpeakUpClient() {
 
   // ── Voice recording ────────────────────────────────────────────────────────
   function startRecording() {
-    const SpeechRecognition = (window as unknown as { webkitSpeechRecognition?: new () => unknown }).webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-    const recognition = new SpeechRecognition() as { lang: string; continuous: boolean; interimResults: boolean; onresult: (e: unknown) => void; onend: () => void; start: () => void; stop: () => void };
-    recognitionRef.current = recognition;
+    setError(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      setError("Speech recognition is not supported in this browser. Try Chrome or Edge, or type your answer.");
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognition = new SR() as any;
     recognition.lang = "en-US";
     recognition.continuous = true;
     recognition.interimResults = false;
@@ -314,7 +319,12 @@ export function SpeakUpClient() {
       const transcript = Array.from({ length: Object.keys(ev.results).length }, (_, i) => ev.results[i][0].transcript).join(" ");
       setDraft((prev) => (prev ? prev + " " + transcript : transcript));
     };
+    recognition.onerror = () => {
+      setError("Microphone access denied or unavailable. Check your browser permissions and try again.");
+      setRecording(false);
+    };
     recognition.onend = () => setRecording(false);
+    recognitionRef.current = recognition;
     recognition.start();
     setRecording(true);
   }
