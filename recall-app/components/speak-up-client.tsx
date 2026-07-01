@@ -15,6 +15,7 @@ type Scenario = {
   setting: string;
   question: string;
   personaQuestions?: Partial<Record<string, string>>;
+  allowedPersonas?: string[];
 };
 
 type Persona = {
@@ -117,6 +118,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "🧭",
     setting: "Someone who cares about you — a parent, a close friend, a sibling — is worried about a significant decision you've made (moving, quitting, starting something, changing plans). They are not attacking you, but they are skeptical:",
     question: "I just don't understand — why would you do that? Help me understand what you are thinking.",
+    allowedPersonas: ["friend", "stranger", "skeptic", "loved-one"],
   },
   {
     id: "toast",
@@ -142,6 +144,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "🤝",
     setting: "You are at a social event — a party, a community gathering, an event — where you know only the host, who just walked away. Someone nearby makes eye contact and smiles but says nothing. The silence settles:",
     question: "(They're waiting for you to say something.)",
+    allowedPersonas: ["friend", "stranger", "skeptic", "loved-one"],
   },
   {
     id: "awkward-question",
@@ -150,6 +153,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "😬",
     setting: "You are at a family gathering or social event. Someone asks a direct question about your personal life that catches you completely off guard — about relationships, money, career, or a life choice. They mean well but the question stings a little:",
     question: "So are you still [doing that thing / with that person / in that situation]? What's happening with all that?",
+    allowedPersonas: ["friend", "stranger", "skeptic", "loved-one"],
   },
   {
     id: "reconnect",
@@ -158,6 +162,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "🫂",
     setting: "You run into someone you were once very close to but drifted away from — an old friend, a former colleague, someone who mattered to you. The surprise of seeing them is mutual. They say:",
     question: "Oh wow, it's been years. Catch me up — what's been going on with you?",
+    allowedPersonas: ["friend", "stranger", "skeptic", "loved-one"],
   },
   {
     id: "share-opinion",
@@ -378,7 +383,7 @@ export function SpeakUpClient() {
               onClick={() => setActive(s)}
               className="rounded-3xl border border-white/10 bg-white/5 text-left transition hover:border-emerald-300/30 hover:bg-white/8 overflow-hidden"
             >
-              <div className="relative h-36 w-full">
+              <div className="relative aspect-video w-full">
                 <Image
                   src={`/scenerios/speak-up-${s.id}.webp`}
                   alt={s.tag}
@@ -414,7 +419,7 @@ export function SpeakUpClient() {
 
         {/* Selected scenario recap */}
         <div className="rounded-[2rem] border border-white/10 bg-white/5 overflow-hidden">
-          <div className="relative h-44 w-full">
+          <div className="relative aspect-video w-full">
             <Image
               src={`/scenerios/speak-up-${active.id}.webp`}
               alt={active.tag}
@@ -460,7 +465,10 @@ export function SpeakUpClient() {
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Who are you practicing with?</p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {PERSONAS.map((p) => (
+            {(active.allowedPersonas
+              ? PERSONAS.filter((p) => active.allowedPersonas!.includes(p.id))
+              : PERSONAS
+            ).map((p) => (
               <button
                 key={p.id}
                 onClick={() => setPersona(p)}
@@ -571,7 +579,7 @@ export function SpeakUpClient() {
 
       {/* Scenario */}
       <div className="rounded-[2rem] border border-emerald-300/20 bg-emerald-400/8 overflow-hidden">
-        <div className="relative h-44 w-full">
+        <div className="relative aspect-video w-full">
           <Image
             src={`/scenerios/speak-up-${active.id}.webp`}
             alt={active.tag}
