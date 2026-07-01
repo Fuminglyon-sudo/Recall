@@ -264,9 +264,11 @@ function scoreBorder(s: number): string {
 export function SpeakUpClient({
   decks = [],
   saveCardAction,
+  strugglingWords = [],
 }: {
   decks?: Deck[];
   saveCardAction?: (formData: FormData) => Promise<{ success?: boolean; error?: string }>;
+  strugglingWords?: string[];
 } = {}) {
   const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
   const [active, setActive] = useState<Scenario | null>(null);
@@ -435,6 +437,21 @@ export function SpeakUpClient({
 
     return (
       <div className="space-y-6">
+        {/* Struggling words bridge */}
+        {strugglingWords.length > 0 ? (
+          <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/8 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">From your review</p>
+            <p className="mt-2 text-sm text-slate-300">
+              {strugglingWords.length === 1 ? "This word is" : "These words are"} not sticking yet. Pick any scenario and try to use {strugglingWords.length === 1 ? "it" : "one of them"} naturally in your answer.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {strugglingWords.map((w) => (
+                <span key={w} className="rounded-full border border-amber-300/25 bg-amber-400/12 px-3 py-1 text-sm font-medium text-amber-200">{w}</span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {/* Category filter */}
         <div className="flex flex-wrap gap-2">
           {(["all", "career", "life", "social"] as const).map((cat) => (

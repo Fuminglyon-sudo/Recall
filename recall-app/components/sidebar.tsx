@@ -15,7 +15,6 @@ import {
   Sparkles,
   Mic2,
   Mic,
-  Briefcase,
   Users,
   MessageCircle,
   Search,
@@ -25,22 +24,29 @@ import {
   Globe,
   BookOpen,
   Settings,
+  Briefcase,
 } from "lucide-react";
 
-const USER_LINKS = [
+const CORE_LINKS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
+  { href: "/speak-up", label: "Speak Up", icon: Mic, exact: false },
+  { href: "/conversation-lab", label: "Conversation Lab", icon: MessageCircle, exact: false },
+];
+
+const TOOLS_LINKS = [
+  { href: "/decks", label: "Decks", icon: Layers3, exact: false },
+  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
+  { href: "/search", label: "Search", icon: Search, exact: false },
+  { href: "/guide", label: "Guide", icon: BookOpen, exact: false },
+  { href: "/settings", label: "Settings", icon: Settings, exact: false },
+];
+
+const MORE_LINKS = [
   { href: "/countries", label: "Countries", icon: Globe, exact: false },
-  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false },
-  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false },
   { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false },
   { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false },
   { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false },
-  { href: "/decks", label: "Decks", icon: Layers3, exact: false },
-  { href: "/search", label: "Search cards", icon: Search, exact: false },
-  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
-  { href: "/guide", label: "Guide", icon: BookOpen, exact: false },
-  { href: "/settings", label: "Settings", icon: Settings, exact: false },
 ];
 
 const ADMIN_LINKS = [
@@ -86,25 +92,47 @@ function NavLink({
   );
 }
 
+function NavSection({ label, children }: { label?: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-0.5">
+      {label ? (
+        <p className="px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
+          {label}
+        </p>
+      ) : null}
+      {children}
+    </div>
+  );
+}
+
 function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
   return (
-    <nav className="flex-1 overflow-y-auto px-3 py-4">
-      <div className="space-y-0.5">
-        {USER_LINKS.map((link) => (
+    <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+      <NavSection>
+        {CORE_LINKS.map((link) => (
           <NavLink key={link.href} {...link} onClose={onClose} />
         ))}
-      </div>
+      </NavSection>
+
+      <NavSection label="Tools">
+        {TOOLS_LINKS.map((link) => (
+          <NavLink key={link.href} {...link} onClose={onClose} />
+        ))}
+      </NavSection>
+
+      <NavSection label="More">
+        {MORE_LINKS.map((link) => (
+          <NavLink key={link.href} {...link} onClose={onClose} />
+        ))}
+      </NavSection>
 
       {isAdmin && (
-        <div className="mt-4 space-y-0.5">
-          <p className="mb-1 px-3 pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600">
-            Admin
-          </p>
-          <div className="mb-2 border-t border-white/8" />
+        <NavSection label="Admin">
+          <div className="mb-1 border-t border-white/8" />
           {ADMIN_LINKS.map((link) => (
             <NavLink key={link.href} {...link} onClose={onClose} />
           ))}
-        </div>
+        </NavSection>
       )}
     </nav>
   );

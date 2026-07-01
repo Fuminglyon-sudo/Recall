@@ -9,13 +9,23 @@ import { saveCardFromSession } from "./actions";
 export default async function SpeakUpPage() {
   const userId = await getCurrentUserId();
 
-  const decks = userId
-    ? await prisma.deck.findMany({
-        where: { userId: scopedUserId(userId) },
-        select: { id: true, name: true },
-        orderBy: { createdAt: "asc" },
-      })
-    : [];
+  const [decks, strugglingRaw] = userId
+    ? await Promise.all([
+        prisma.deck.findMany({
+          where: { userId: scopedUserId(userId) },
+          select: { id: true, name: true },
+          orderBy: { createdAt: "asc" },
+        }),
+        prisma.card.findMany({
+          where: { deck: { userId: scopedUserId(userId) }, easeFactor: { lt: 2.0 }, repetitions: { gt: 0 } },
+          select: { front: true },
+          take: 5,
+          orderBy: { easeFactor: "asc" },
+        }),
+      ])
+    : [[], []];
+
+  const strugglingWords = strugglingRaw.map((c) => c.front);
 
   return (
     <AppShell>
@@ -31,7 +41,7 @@ export default async function SpeakUpPage() {
           </p>
         </section>
 
-        <SpeakUpClient decks={decks} saveCardAction={saveCardFromSession} />
+        <SpeakUpClient decks={decks} saveCardAction={saveCardFromSession} strugglingWords={strugglingWords} />
       </div>
     </AppShell>
   );

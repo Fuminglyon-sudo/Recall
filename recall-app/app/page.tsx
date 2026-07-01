@@ -54,6 +54,7 @@ async function getDashboardData(uid: string | null) {
       upcomingByDay: {} as Record<string, number>,
       wordOfDay: null,
       strugglingCount: 0,
+      practiceStats: { speakAvg: null as number | null, socialAvg: null as number | null, weakestGoal: null as string | null, speakCount: 0, socialCount: 0 },
     };
   }
 
@@ -68,7 +69,7 @@ async function getDashboardData(uid: string | null) {
   const in8Days = new Date(tomorrowStart);
   in8Days.setDate(in8Days.getDate() + 7);
 
-  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates] = await Promise.all([
+  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates, speakSessions, socialSessions] = await Promise.all([
     prisma.streak.findFirst({ where: { userId: uid } }),
     prisma.deck.findMany({
       where: { userId: uid },
@@ -93,6 +94,18 @@ async function getDashboardData(uid: string | null) {
       where: { repetitions: { gte: 1 }, deck: { userId: uid } },
       include: { deck: { select: { id: true, name: true } } },
       orderBy: { createdAt: "asc" },
+    }),
+    prisma.speakUpSession.findMany({
+      where: { userId: uid ?? undefined },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: { score: true, practiceGoal: true },
+    }),
+    prisma.socialSession.findMany({
+      where: { userId: uid ?? undefined },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: { score: true, practiceGoal: true },
     }),
   ]);
 
@@ -129,6 +142,14 @@ async function getDashboardData(uid: string | null) {
   const mastery = computeDistribution(allCards);
   const strugglingCount = allCards.filter((c) => c.easeFactor < 2.0 && c.repetitions > 0).length;
 
+  const speakAvg = speakSessions.length > 0
+    ? Math.round(speakSessions.reduce((s, x) => s + x.score, 0) / speakSessions.length)
+    : null;
+  const socialAvg = socialSessions.length > 0
+    ? Math.round(socialSessions.reduce((s, x) => s + x.score, 0) / socialSessions.length)
+    : null;
+  const weakestGoal = computeWeakestGoal([...speakSessions, ...socialSessions]);
+
   return {
     dueToday: dueTodayCount,
     totalCards: allCards.length,
@@ -149,7 +170,28 @@ async function getDashboardData(uid: string | null) {
     upcomingByDay,
     wordOfDay,
     strugglingCount,
+    practiceStats: { speakAvg, socialAvg, weakestGoal, speakCount: speakSessions.length, socialCount: socialSessions.length },
   };
+}
+
+function computeWeakestGoal(sessions: { score: number; practiceGoal: string | null }[]): string | null {
+  const withGoal = sessions.filter((s): s is { score: number; practiceGoal: string } => s.practiceGoal !== null);
+  if (withGoal.length < 3) return null;
+  const byGoal: Record<string, { total: number; count: number }> = {};
+  for (const s of withGoal) {
+    if (!byGoal[s.practiceGoal]) byGoal[s.practiceGoal] = { total: 0, count: 0 };
+    byGoal[s.practiceGoal].total += s.score;
+    byGoal[s.practiceGoal].count++;
+  }
+  let weakest: string | null = null;
+  let weakestAvg = Infinity;
+  for (const [goal, data] of Object.entries(byGoal)) {
+    if (data.count >= 2) {
+      const avg = data.total / data.count;
+      if (avg < weakestAvg) { weakestAvg = avg; weakest = goal; }
+    }
+  }
+  return weakest;
 }
 
 const MASTERY_ORDER: MasteryLevel[] = ["new", "learning", "familiar", "mastered"];
@@ -190,6 +232,9 @@ async function Dashboard({ uid }: { uid: string | null }) {
             <p className="mt-1 text-xs leading-5 text-amber-200/60">
               These keep coming back with low grades. Honest grading and your personal anchor will help them settle. Find them in your decks.
             </p>
+            <Link href="/speak-up" className="mt-3 inline-flex text-xs font-semibold text-amber-300 transition hover:text-amber-200">
+              Practice them in Speak Up →
+            </Link>
           </div>
         ) : null}
 
@@ -215,6 +260,34 @@ async function Dashboard({ uid }: { uid: string | null }) {
             </Link>
           </div>
         </div>
+
+        {data.practiceStats.speakCount > 0 || data.practiceStats.socialCount > 0 ? (
+          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Practice at a glance</p>
+            <p className="mt-1 text-sm text-slate-400">Your last 10 sessions per mode.</p>
+            <div className="mt-4 flex flex-wrap gap-4">
+              {data.practiceStats.speakCount > 0 && data.practiceStats.speakAvg !== null ? (
+                <div className="flex-1 min-w-[8rem] rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Speak Up</p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.speakAvg}<span className="text-sm font-normal text-slate-500">/100</span></p>
+                  <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.speakCount} session{data.practiceStats.speakCount === 1 ? "" : "s"}</p>
+                </div>
+              ) : null}
+              {data.practiceStats.socialCount > 0 && data.practiceStats.socialAvg !== null ? (
+                <div className="flex-1 min-w-[8rem] rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Conversation Lab</p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.socialAvg}<span className="text-sm font-normal text-slate-500">/100</span></p>
+                  <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.socialCount} session{data.practiceStats.socialCount === 1 ? "" : "s"}</p>
+                </div>
+              ) : null}
+            </div>
+            {data.practiceStats.weakestGoal ? (
+              <p className="mt-4 text-xs leading-5 text-slate-400">
+                Focus area: <span className="font-semibold text-slate-200">{data.practiceStats.weakestGoal}</span> — your scores here run lower than anywhere else.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
 
         <WordOfTheDay card={data.wordOfDay} />
 

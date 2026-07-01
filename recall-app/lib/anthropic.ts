@@ -339,6 +339,7 @@ export type SocialConversationStep =
       strongPoints: string[];
       improvements: string[];
       powerMove: string;
+      turningPoint?: string;
       modelConversation?: Array<{ role: "user" | "character"; content: string }>;
     };
 
@@ -377,6 +378,7 @@ Return strict JSON with ALL of these fields:
   "strongPoints": ["1-2 items — each must cite a specific phrase or moment from the conversation that showed strong social skill. Format: quote the phrase or describe the moment, then one sentence on why it worked."],
   "improvements": ["1-2 items — each must: (1) quote or describe the specific phrase or moment that weakened the connection, (2) say briefly what went wrong, (3) give a revised version showing how it could have played better"],
   "powerMove": "one concrete technique or phrase they can try next time — make it specific to what actually happened in this conversation, not generic advice",
+  "turningPoint": "one sentence identifying the exact exchange or moment where the conversation either clicked or fell flat — be specific about what was said and why it shifted things",
   "modelConversation": only include this field if score is 8 or below — an array of message objects showing how this conversation could have ideally gone from start to finish. Write the user lines showing confident, natural, curious conversation. Write the character lines as they would realistically respond to those better inputs. Keep each message 1-3 sentences. Aim for 4-8 exchanges total showing a natural arc. Format: [{ "role": "user", "content": "..." }, { "role": "character", "content": "..." }, ...]. If score is 9 or 10, omit this field entirely.
 }`;
 
@@ -395,6 +397,7 @@ Return strict JSON with ALL of these fields:
         strongPoints: string[];
         improvements: string[];
         powerMove: string;
+        turningPoint?: string;
         modelConversation?: Array<{ role: "user" | "character"; content: string }>;
       };
       const score = Math.min(10, Math.max(1, Math.round(Number(parsed.score))));
@@ -406,6 +409,7 @@ Return strict JSON with ALL of these fields:
         powerMove:
           parsed.powerMove ??
           "Try the observation + question formula: make a genuine comment about something in the shared moment, then ask one open question that can't be answered with just yes or no.",
+        turningPoint: typeof parsed.turningPoint === "string" ? parsed.turningPoint : undefined,
         modelConversation:
           score <= 8 && Array.isArray(parsed.modelConversation)
             ? parsed.modelConversation

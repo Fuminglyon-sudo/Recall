@@ -15,6 +15,7 @@ type Scenario = {
   context: string;
   prompt: string;
   tension?: string;
+  hint?: string;
 };
 
 type CharacterType = {
@@ -34,6 +35,7 @@ type FeedbackResult = {
   strongPoints: string[];
   improvements: string[];
   powerMove: string;
+  turningPoint?: string;
   modelConversation?: Array<{ role: "user" | "character"; content: string }>;
 };
 
@@ -60,6 +62,7 @@ const SCENARIOS: Scenario[] = [
       "You are on a 6-hour flight. You settle into your window seat and the stranger next to you glances up briefly, nods, then goes back to what they were doing. You have hours ahead of you.",
     prompt: "Break the ice. Say whatever feels natural to start a conversation.",
     tension: "You are tired after a long work week and almost cancelled this trip. You are open to conversation but it needs to feel natural, not forced.",
+    hint: "Lead with a low-pressure observation about the flight or the seat — don't open with a question. Let them choose how much to engage.",
   },
   {
     id: "networking",
@@ -70,6 +73,7 @@ const SCENARIOS: Scenario[] = [
       "You are at a professional networking event — name tags on, drinks in hand, soft background music. You spot someone standing alone near the edge of the room, looking around.",
     prompt: "You walk over. Start the conversation.",
     tension: "You have already had two forgettable conversations tonight and are thinking about leaving early. If this next conversation is interesting, you will stay.",
+    hint: "Ask what brought them here specifically, not what they do. Genuine curiosity cuts through pleasantries immediately at professional events.",
   },
   {
     id: "wedding",
@@ -80,6 +84,7 @@ const SCENARIOS: Scenario[] = [
       "You are at a wedding reception. You know the couple well but almost nobody else at your table. The person sitting next to you has been quietly eating while the speeches played. The speeches just ended.",
     prompt: "The room relaxes. Say something to get the conversation going.",
     tension: "You know the couple well but feel slightly out of place among people who all seem to know each other already. You are quietly glad someone is starting a conversation.",
+    hint: "Use the shared moment as your anchor — the speeches, the couple, the room. A light observational comment lands better than a direct question.",
   },
   {
     id: "coffee",
@@ -90,6 +95,7 @@ const SCENARIOS: Scenario[] = [
       "You are waiting in a long queue at a busy coffee shop. The person ahead of you has been waiting just as long. You have both been quietly watching the baristas scramble during the morning rush.",
     prompt: "You decide to say something. What comes out?",
     tension: "The wait has been annoying — longer than it should be. But you got unexpectedly good news this morning, so you are in a better mood than usual.",
+    hint: "The shared wait is already your connection point. One wry observation about the queue is often all it takes.",
   },
   {
     id: "conference",
@@ -100,6 +106,7 @@ const SCENARIOS: Scenario[] = [
       "A keynote just ended at a conference in your industry. You end up next to someone at the water station in the hallway — both of you reaching for a cup at the same moment.",
     prompt: "You both laugh at the awkward reach. Break the silence.",
     tension: "The keynote was not as good as you hoped. You have opinions about it and are looking for someone worth talking to before the afternoon session.",
+    hint: "Reference something specific from the keynote. Concrete details signal you were actually paying attention, not just working the room.",
   },
   {
     id: "gym",
@@ -110,6 +117,7 @@ const SCENARIOS: Scenario[] = [
       "You have seen this person at the gym for months. You always nod to each other but have never spoken. Today you end up on adjacent machines during a quiet period — just the two of you in that section.",
     prompt: "Finally say something.",
     tension: "You have noticed this person for months and always meant to say something. Part of you is relieved they are finally speaking first.",
+    hint: "Keep it brief and undemanding. A simple acknowledgment that you've seen each other around removes the strangeness without forcing a full conversation.",
   },
   {
     id: "dinner-party",
@@ -120,6 +128,7 @@ const SCENARIOS: Scenario[] = [
       "You are new to this city and your friend invited you to their dinner party. You do not know most people there. Someone comes to refill their drink in the kitchen at the same moment as you.",
     prompt: "You both reach for the drinks at the same time. What do you say?",
     tension: "You are newer to this city too, though they do not know that yet. You have been hoping to meet someone who was not already part of the existing friend group.",
+    hint: "Being new here is useful — ask how they know the host. It gives them something specific to respond to instead of a generic opener.",
   },
   {
     id: "elevator",
@@ -130,6 +139,7 @@ const SCENARIOS: Scenario[] = [
       "You have lived in the same building for over a year. You always see this neighbor but only exchange nods. Tonight you step into an empty elevator together — just the two of you, eight floors to go.",
     prompt: "The doors close. Say something.",
     tension: "You have lived here over a year and kept meaning to say something. Tonight you are feeling unusually open to finally making it happen.",
+    hint: "One light comment is enough — the short ride is your whole context. Don't try to cover too much ground in eight floors.",
   },
   {
     id: "mutual-friend",
@@ -140,6 +150,7 @@ const SCENARIOS: Scenario[] = [
       "A mutual friend just introduced you to this person at a casual hangout, then immediately got pulled away to another conversation, leaving the two of you standing there with your drinks.",
     prompt: "Your friend just walked away. Keep it going.",
     tension: "You have heard a little about this person from your mutual friend and have been mildly curious. You are open, but the other person needs to carry this now.",
+    hint: "Ask how they know your mutual friend first. It gives both of you a real anchor before the conversation has to stand on its own.",
   },
   {
     id: "industry-event",
@@ -150,6 +161,7 @@ const SCENARIOS: Scenario[] = [
       "You are at an industry dinner and end up seated next to someone clearly more experienced and established in your field. They are approachable — but you can tell they have met a lot of people in their time.",
     prompt: "Dinner has just started. You go first.",
     tension: "You have met a lot of people in your field over the years. Most conversations start the same way and end unremarkably. You are genuinely hoping this one surprises you.",
+    hint: "Ask what they're working on right now, not their title or background. Specific questions earn specific, interesting answers from experienced people.",
   },
 ];
 
@@ -424,7 +436,7 @@ export function SocialSkillsClient() {
 
       const data = (await response.json()) as
         | { type: "response"; message: string }
-        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string; modelConversation?: Array<{ role: "user" | "character"; content: string }> };
+        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string; turningPoint?: string; modelConversation?: Array<{ role: "user" | "character"; content: string }> };
 
       if (data.type === "response") {
         setMessages((prev) => [...prev, { role: "character", content: data.message }]);
@@ -484,6 +496,7 @@ export function SocialSkillsClient() {
         strongPoints: string[];
         improvements: string[];
         powerMove: string;
+        turningPoint?: string;
         modelConversation?: Array<{ role: "user" | "character"; content: string }>;
       };
 
@@ -736,6 +749,13 @@ export function SocialSkillsClient() {
           ) : null}
         </div>
 
+        {feedback.turningPoint ? (
+          <div className="rounded-[2rem] border border-sky-300/20 bg-sky-400/5 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">The turning point</p>
+            <p className="mt-3 text-sm leading-7 text-slate-200">{feedback.turningPoint}</p>
+          </div>
+        ) : null}
+
         {feedback.powerMove ? (
           <div className="rounded-[2rem] border border-emerald-300/15 bg-emerald-400/5 p-6">
             <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
@@ -905,6 +925,12 @@ export function SocialSkillsClient() {
               ? "Say whatever you would actually say in this moment."
               : `Exchange ${exchangeCount} — keep it going naturally.`}
           </p>
+
+          {activeScenario.hint && exchangeCount === 0 ? (
+            <p className="mt-2 text-xs leading-5 text-emerald-400/75">
+              <span className="font-semibold">Tip:</span> {activeScenario.hint}
+            </p>
+          ) : null}
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
             {recording ? (
