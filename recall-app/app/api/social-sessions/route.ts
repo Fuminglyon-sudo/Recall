@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 const messageSchema = z.object({
   role: z.enum(["user", "character"]),
@@ -24,14 +25,22 @@ const saveSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
     const body = (await req.json()) as unknown;
     const parsed = saveSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
 
+    const uid = scopedUserId(userId);
+
     const session = await prisma.socialSession.create({
       data: {
+        userId: uid,
         scenarioTag: parsed.data.scenarioTag,
         scenarioEmoji: parsed.data.scenarioEmoji,
         scenarioContext: parsed.data.scenarioContext,
@@ -58,7 +67,15 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const uid = scopedUserId(userId);
+
     const sessions = await prisma.socialSession.findMany({
+      where: { userId: uid },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

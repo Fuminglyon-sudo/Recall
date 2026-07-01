@@ -16,6 +16,7 @@ import { StreakCalendar } from "@/components/streak-calendar";
 import { UpcomingReviews } from "@/components/upcoming-reviews";
 import { WordOfTheDay } from "@/components/word-of-the-day";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { PushPrompt } from "@/components/push-prompt";
 
 async function getDashboardData(uid: string | null) {
   const today = new Date();
@@ -153,6 +154,10 @@ export default async function HomePage() {
             naturally when talking about Japa Reality and Sharpen.
           </p>
         </div>
+
+        {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? (
+          <PushPrompt vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
+        ) : null}
 
         <div className="grid gap-4 sm:grid-cols-3">
           <StatCard label="Current streak" value={String(data.currentStreak)} helper={data.reviewedToday ? "You showed up today." : "Your rhythm resumes today."} />

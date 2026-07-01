@@ -5,6 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { FreeRecallClient } from "@/components/free-recall-client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { gradeRecallSession } from "./actions";
 
 export default async function FreeRecallPage() {
   const userId = await getCurrentUserId();
@@ -16,7 +17,7 @@ export default async function FreeRecallPage() {
     orderBy: { name: "asc" },
     include: {
       _count: { select: { cards: true } },
-      cards: { select: { front: true, repetitions: true } },
+      cards: { select: { id: true, front: true, repetitions: true } },
     },
   });
 
@@ -27,20 +28,26 @@ export default async function FreeRecallPage() {
       name: d.name,
       totalCards: d._count.cards,
       seenCards: d.cards.filter((c) => c.repetitions > 0).length,
-      fronts: d.cards.map((c) => c.front),
+      cards: d.cards.map((c) => ({ id: c.id, front: c.front, seen: c.repetitions > 0 })),
     }));
 
-  const allFronts = [...new Set(perDeck.flatMap((d) => d.fronts))];
-  const allSeen = [...new Set(
+  const allSeenSet = new Set(
     decks.flatMap((d) => d.cards.filter((c) => c.repetitions > 0).map((c) => c.front))
-  )];
+  );
+  const allCardsMap = new Map(
+    decks.flatMap((d) => d.cards.map((c) => [c.front, { id: c.id, seen: c.repetitions > 0 }]))
+  );
 
   const allDecksOption = {
     id: "all",
     name: "All decks",
-    totalCards: allFronts.length,
-    seenCards: allSeen.length,
-    fronts: allFronts,
+    totalCards: allCardsMap.size,
+    seenCards: allSeenSet.size,
+    cards: [...allCardsMap.entries()].map(([front, meta]) => ({
+      id: meta.id,
+      front,
+      seen: meta.seen,
+    })),
   };
 
   const deckData = [allDecksOption, ...perDeck];
@@ -58,7 +65,7 @@ export default async function FreeRecallPage() {
             cannot name is exactly what needs more attention. This is the most effective memory exercise there is.
           </p>
         </section>
-        <FreeRecallClient decks={deckData} />
+        <FreeRecallClient decks={deckData} gradeAction={gradeRecallSession} />
       </div>
     </AppShell>
   );

@@ -7,7 +7,7 @@ export default async function LoginPage({
   searchParams: Promise<Record<string, string>>;
 }) {
   const params = await searchParams;
-  const error = params.error === "1";
+  const errorCode = params.error;
   const from = params.from ?? "/";
 
   return (
@@ -39,9 +39,14 @@ export default async function LoginPage({
             </summary>
 
             <div className="mt-3 overflow-hidden rounded-3xl border border-white/8 bg-white/[0.03] p-5 backdrop-blur">
-              {error && (
+              {errorCode === "1" && (
                 <div className="mb-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
                   Incorrect username or password.
+                </div>
+              )}
+              {errorCode === "rate" && (
+                <div className="mb-4 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+                  Too many attempts. Please wait 15 minutes before trying again.
                 </div>
               )}
               <LoginForm from={from} />

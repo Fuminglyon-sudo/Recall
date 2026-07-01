@@ -26,30 +26,29 @@ import {
 } from "lucide-react";
 
 const LINKS = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true, adminOnly: false },
-  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false, adminOnly: false },
-  { href: "/countries", label: "Countries", icon: Globe, exact: false, adminOnly: false },
-  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false, adminOnly: false },
-  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false, adminOnly: false },
-  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false, adminOnly: true },
-  { href: "/social-skills", label: "Social skills", icon: Users, exact: false, adminOnly: true },
-  { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false, adminOnly: true },
-  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false, adminOnly: false },
-  { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false, adminOnly: false },
-  { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false, adminOnly: true },
-  { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false, adminOnly: false },
-  { href: "/decks", label: "Decks", icon: Layers3, exact: false, adminOnly: false },
-  { href: "/search", label: "Search cards", icon: Search, exact: false, adminOnly: false },
-  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false, adminOnly: false },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
+  { href: "/countries", label: "Countries", icon: Globe, exact: false },
+  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false },
+  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false },
+  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false },
+  { href: "/social-skills", label: "Social skills", icon: Users, exact: false },
+  { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false },
+  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false },
+  { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false },
+  { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false },
+  { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false },
+  { href: "/decks", label: "Decks", icon: Layers3, exact: false },
+  { href: "/search", label: "Search cards", icon: Search, exact: false },
+  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
 ];
 
-function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
+function NavItems({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
-  const visible = isAdmin ? LINKS : LINKS.filter((l) => !l.adminOnly);
 
   return (
     <nav className="flex-1 space-y-0.5 px-3 py-4">
-      {visible.map(({ href, label, icon: Icon, exact }) => {
+      {LINKS.map(({ href, label, icon: Icon, exact }) => {
         const active = exact ? pathname === href : pathname.startsWith(href);
         return (
           <Link
@@ -78,7 +77,15 @@ function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean
   );
 }
 
-function SidebarContent({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
+function SidebarContent({
+  onClose,
+  userLabel,
+  isAdmin,
+}: {
+  onClose?: () => void;
+  userLabel?: string | null;
+  isAdmin: boolean;
+}) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between p-5 pb-2">
@@ -103,10 +110,25 @@ function SidebarContent({ onClose, isAdmin }: { onClose?: () => void; isAdmin: b
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <NavItems onClose={onClose} isAdmin={isAdmin} />
+        <NavItems onClose={onClose} />
       </div>
 
-      <div className="shrink-0 border-t border-white/8 px-5 py-4 space-y-3">
+      <div className="shrink-0 border-t border-white/8 px-5 py-4 space-y-2">
+        {userLabel ? (
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="h-5 w-5 shrink-0 rounded-full bg-emerald-400/20 flex items-center justify-center">
+              <span className="text-[10px] font-semibold text-emerald-300 uppercase">
+                {userLabel[0]}
+              </span>
+            </div>
+            <p className="truncate text-xs font-medium text-slate-300">{userLabel}</p>
+            {isAdmin && (
+              <span className="shrink-0 rounded-full bg-emerald-400/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-400">
+                admin
+              </span>
+            )}
+          </div>
+        ) : null}
         <p className="text-xs text-slate-600">One thing at a time.</p>
         <a
           href="/api/logout"
@@ -120,14 +142,20 @@ function SidebarContent({ onClose, isAdmin }: { onClose?: () => void; isAdmin: b
   );
 }
 
-export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
+export function Sidebar({
+  isAdmin,
+  userLabel,
+}: {
+  isAdmin: boolean;
+  userLabel?: string | null;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       {/* Desktop sidebar — fixed left */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col lg:border-r lg:border-white/8 lg:bg-slate-950/90 lg:backdrop-blur-xl">
-        <SidebarContent isAdmin={isAdmin} />
+        <SidebarContent isAdmin={isAdmin} userLabel={userLabel} />
       </aside>
 
       {/* Mobile top bar */}
@@ -155,7 +183,7 @@ export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
             onClick={() => setOpen(false)}
           />
           <aside className="fixed inset-y-0 left-0 z-50 w-72 border-r border-white/10 bg-slate-950 lg:hidden">
-            <SidebarContent isAdmin={isAdmin} onClose={() => setOpen(false)} />
+            <SidebarContent isAdmin={isAdmin} userLabel={userLabel} onClose={() => setOpen(false)} />
           </aside>
         </>
       ) : null}

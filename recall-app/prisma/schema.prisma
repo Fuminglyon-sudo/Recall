@@ -160,6 +160,20 @@ model SocialSession {
   @@index([userId])
 }
 
+// ─── Push Notifications ────────────────────────────────────────────────────
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  // null = admin; cuid = Google user
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 // ─── Countries ─────────────────────────────────────────────────────────────
 // Country reference data is shared. Per-user spaced-repetition progress
 // lives in UserCountryProgress.

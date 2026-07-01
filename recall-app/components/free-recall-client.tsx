@@ -1,34 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Timer } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { ArrowLeft, Timer, CheckCircle2 } from "lucide-react";
+
+type CardMeta = { id: string; front: string; seen: boolean };
 
 type DeckOption = {
   id: string;
   name: string;
   totalCards: number;
   seenCards: number;
-  fronts: string[];
+  cards: CardMeta[];
 };
 
 type RememberedItem = {
   correct: string;
-  typed?: string; // present when the user's spelling differed
+  cardId: string;
+  typed?: string;
 };
 
 type Results = {
   remembered: RememberedItem[];
-  missed: string[];
+  missed: { front: string; cardId: string }[];
   unrecognised: string[];
 };
 
-const SECONDS = 5 * 60; // 5 minutes
+const SECONDS = 5 * 60;
 
 function normalize(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().replace(/\s+/g, " ");
 }
 
-// Levenshtein distance — allows catching common misspellings
 function levenshtein(a: string, b: string): number {
   const m = a.length, n = b.length;
   const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
@@ -44,7 +46,6 @@ function levenshtein(a: string, b: string): number {
   return dp[m][n];
 }
 
-// Max allowed edit distance based on word length
 function maxDistance(len: number): number {
   if (len >= 8) return 2;
   if (len >= 5) return 1;
@@ -53,14 +54,11 @@ function maxDistance(len: number): number {
 
 function fuzzyMatch(typed: string, front: string): boolean {
   if (typed === front) return true;
-  // prefix match (typed the start of a multi-word card front)
   if (front.startsWith(typed) && typed.length >= 4) return true;
   if (typed.startsWith(front) && front.length >= 4) return true;
-  // levenshtein on the first word of the card front vs typed (handles single-word typos)
   const firstWord = front.split(" ")[0];
   const threshold = maxDistance(Math.max(typed.length, firstWord.length));
   if (threshold > 0 && levenshtein(typed, firstWord) <= threshold) return true;
-  // full front levenshtein for short multi-word phrases
   if (front.split(" ").length <= 2) {
     const threshold2 = maxDistance(Math.max(typed.length, front.length));
     if (threshold2 > 0 && levenshtein(typed, front) <= threshold2) return true;
@@ -68,36 +66,46 @@ function fuzzyMatch(typed: string, front: string): boolean {
   return false;
 }
 
-function scoreResults(typed: string, fronts: string[]): Results {
+function scoreResults(typed: string, cards: CardMeta[]): Results {
   const typedLines = typed
     .split(/[\n,]+/)
     .map((l) => l.trim())
     .filter(Boolean);
 
-  const normalFronts = fronts.map(normalize);
+  // Only score cards that have been seen (repetitions > 0) for SM-2 grading
+  const seenCards = cards.filter((c) => c.seen);
+  const normalFronts = seenCards.map((c) => normalize(c.front));
 
   const remembered: RememberedItem[] = [];
   const rememberedKeys = new Set<string>();
-  const missedSet = new Set(fronts);
+  const missedSet = new Map(seenCards.map((c) => [c.front, c.id]));
   const unrecognised: string[] = [];
 
   for (const line of typedLines) {
     const norm = normalize(line);
     const matchIndex = normalFronts.findIndex((f) => fuzzyMatch(norm, f));
     if (matchIndex !== -1) {
-      const matched = fronts[matchIndex];
-      if (!rememberedKeys.has(matched)) {
-        const corrected = normalize(matched) !== norm;
-        remembered.push(corrected ? { correct: matched, typed: line.trim() } : { correct: matched });
-        rememberedKeys.add(matched);
-        missedSet.delete(matched);
+      const matched = seenCards[matchIndex];
+      if (!rememberedKeys.has(matched.front)) {
+        const corrected = normalize(matched.front) !== norm;
+        remembered.push(
+          corrected
+            ? { correct: matched.front, cardId: matched.id, typed: line.trim() }
+            : { correct: matched.front, cardId: matched.id }
+        );
+        rememberedKeys.add(matched.front);
+        missedSet.delete(matched.front);
       }
     } else {
       if (!unrecognised.includes(line)) unrecognised.push(line);
     }
   }
 
-  return { remembered, missed: [...missedSet], unrecognised };
+  return {
+    remembered,
+    missed: [...missedSet.entries()].map(([front, cardId]) => ({ front, cardId })),
+    unrecognised,
+  };
 }
 
 function fmt(s: number) {
@@ -106,12 +114,22 @@ function fmt(s: number) {
   return `${m}:${sec}`;
 }
 
-export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
+type GradeAction = (grades: { cardId: string; grade: number }[]) => Promise<void>;
+
+export function FreeRecallClient({
+  decks,
+  gradeAction,
+}: {
+  decks: DeckOption[];
+  gradeAction: GradeAction;
+}) {
   const [phase, setPhase] = useState<"pick" | "write" | "results">("pick");
   const [deck, setDeck] = useState<DeckOption | null>(null);
   const [text, setText] = useState("");
   const [timeLeft, setTimeLeft] = useState(SECONDS);
   const [results, setResults] = useState<Results | null>(null);
+  const [gradesSubmitted, setGradesSubmitted] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -133,14 +151,30 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
     setText("");
     setTimeLeft(SECONDS);
     setResults(null);
+    setGradesSubmitted(false);
     setPhase("write");
   }
 
   function submit() {
     if (!deck) return;
     clearInterval(intervalRef.current!);
-    setResults(scoreResults(text, deck.fronts));
+    const r = scoreResults(text, deck.cards);
+    setResults(r);
     setPhase("results");
+
+    // Submit SM-2 grades for all seen cards
+    const grades = [
+      ...r.remembered.map(({ cardId }) => ({ cardId, grade: 4 })),
+      ...r.missed.map(({ cardId }) => ({ cardId, grade: 1 })),
+    ];
+    if (grades.length > 0) {
+      startTransition(async () => {
+        await gradeAction(grades);
+        setGradesSubmitted(true);
+      });
+    } else {
+      setGradesSubmitted(true);
+    }
   }
 
   function reset() {
@@ -157,7 +191,6 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
     const [allDecks, ...perDeck] = decks;
     return (
       <div className="space-y-3">
-        {/* All decks — prominent top option */}
         <button
           key={allDecks.id}
           onClick={() => startSession(allDecks)}
@@ -275,10 +308,23 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
               </p>
             </div>
           </div>
+
+          {/* SM-2 feedback */}
+          <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+            {isPending ? (
+              <span className="animate-pulse">Updating your review schedule…</span>
+            ) : gradesSubmitted ? (
+              <>
+                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                <span className="text-emerald-400/80">
+                  Review schedule updated — missed cards will come up sooner.
+                </span>
+              </>
+            ) : null}
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          {/* Remembered */}
           {results.remembered.length > 0 ? (
             <div className="rounded-[2rem] border border-emerald-400/20 bg-emerald-400/5 p-5">
               <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300">
@@ -302,18 +348,17 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
             </div>
           ) : null}
 
-          {/* Missed */}
           {results.missed.length > 0 ? (
             <div className="rounded-[2rem] border border-amber-400/20 bg-amber-400/5 p-5">
               <p className="text-xs font-semibold uppercase tracking-widest text-amber-300">
                 Missed ({results.missed.length})
               </p>
-              <p className="mt-1 text-[11px] text-slate-500">These are the cards to focus on next.</p>
+              <p className="mt-1 text-[11px] text-slate-500">Moved up in your review queue.</p>
               <ul className="mt-3 space-y-1.5">
-                {results.missed.map((w) => (
-                  <li key={w} className="flex gap-2 text-sm leading-6 text-slate-300">
+                {results.missed.map(({ front }) => (
+                  <li key={front} className="flex gap-2 text-sm leading-6 text-slate-300">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
-                    {w}
+                    {front}
                   </li>
                 ))}
               </ul>
@@ -321,7 +366,6 @@ export function FreeRecallClient({ decks }: { decks: DeckOption[] }) {
           ) : null}
         </div>
 
-        {/* Unrecognised */}
         {results.unrecognised.length > 0 ? (
           <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5">
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">

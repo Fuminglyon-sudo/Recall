@@ -11,7 +11,9 @@ import { isDatabaseReady } from "@/lib/db-ready";
 export default async function FounderWordsPage() {
   if (!(await isAdmin())) redirect("/");
   const ready = await isDatabaseReady();
-  const decks = ready ? await prisma.deck.findMany({ orderBy: { createdAt: "asc" } }).catch(() => []) : [];
+  const decks = ready
+    ? await prisma.deck.findMany({ where: { userId: null }, orderBy: { createdAt: "asc" } }).catch(() => [])
+    : [];
 
   return (
     <AppShell>
