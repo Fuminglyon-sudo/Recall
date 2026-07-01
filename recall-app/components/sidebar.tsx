@@ -23,32 +23,35 @@ import {
   BookmarkCheck,
   BrainCircuit,
   Globe,
+  BookOpen,
 } from "lucide-react";
 
 const LINKS = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
-  { href: "/countries", label: "Countries", icon: Globe, exact: false },
-  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false },
-  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false },
-  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false },
-  { href: "/social-skills", label: "Social skills", icon: Users, exact: false },
-  { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false },
-  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false },
-  { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false },
-  { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false },
-  { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false },
-  { href: "/decks", label: "Decks", icon: Layers3, exact: false },
-  { href: "/search", label: "Search cards", icon: Search, exact: false },
-  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false },
+  { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true, adminOnly: false },
+  { href: "/today", label: "Today", icon: CalendarCheck2, exact: false, adminOnly: false },
+  { href: "/countries", label: "Countries", icon: Globe, exact: false, adminOnly: false },
+  { href: "/speak-up", label: "Speak up", icon: Mic, exact: false, adminOnly: false },
+  { href: "/conversation-lab", label: "Conversation lab", icon: MessageCircle, exact: false, adminOnly: false },
+  { href: "/pitch-practice", label: "Pitch practice", icon: Mic2, exact: false, adminOnly: true },
+  { href: "/social-skills", label: "Social skills", icon: Users, exact: false, adminOnly: true },
+  { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false, adminOnly: true },
+  { href: "/free-recall", label: "Free recall", icon: BrainCircuit, exact: false, adminOnly: false },
+  { href: "/sentence-challenge", label: "Sentence challenge", icon: PenLine, exact: false, adminOnly: false },
+  { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false, adminOnly: true },
+  { href: "/corporate-jargon", label: "Corporate jargon", icon: Briefcase, exact: false, adminOnly: false },
+  { href: "/decks", label: "Decks", icon: Layers3, exact: false, adminOnly: false },
+  { href: "/search", label: "Search cards", icon: Search, exact: false, adminOnly: false },
+  { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false, adminOnly: false },
+  { href: "/guide", label: "Guide", icon: BookOpen, exact: false, adminOnly: false },
 ];
 
-function NavItems({ onClose }: { onClose?: () => void }) {
+function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
   const pathname = usePathname();
+  const visible = isAdmin ? LINKS : LINKS.filter((l) => !l.adminOnly);
 
   return (
     <nav className="flex-1 space-y-0.5 px-3 py-4">
-      {LINKS.map(({ href, label, icon: Icon, exact }) => {
+      {visible.map(({ href, label, icon: Icon, exact }) => {
         const active = exact ? pathname === href : pathname.startsWith(href);
         return (
           <Link
@@ -110,7 +113,7 @@ function SidebarContent({
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <NavItems onClose={onClose} />
+        <NavItems onClose={onClose} isAdmin={isAdmin} />
       </div>
 
       <div className="shrink-0 border-t border-white/8 px-5 py-4 space-y-2">
