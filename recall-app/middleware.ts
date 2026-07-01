@@ -28,6 +28,8 @@ export async function middleware(req: NextRequest) {
   if (
     pathname === "/" ||
     pathname === "/landing" ||
+    pathname === "/about" ||
+    pathname === "/contact" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getCurrentUserId } from "@/lib/session";
+import { getCurrentUserId, ADMIN_USER_ID } from "@/lib/session";
+import { auth } from "@/lib/next-auth";
 import { LandingPage } from "@/components/landing-page";
 
 export const metadata: Metadata = {
@@ -16,5 +17,15 @@ export const metadata: Metadata = {
 
 export default async function LandingRoute() {
   const userId = await getCurrentUserId();
-  return <LandingPage isLoggedIn={!!userId} />;
+  const isLoggedIn = !!userId;
+
+  let userName: string | null = null;
+  if (isLoggedIn && userId !== ADMIN_USER_ID) {
+    const session = await auth();
+    userName = session?.user?.name ?? session?.user?.email ?? null;
+  } else if (isLoggedIn) {
+    userName = "Admin";
+  }
+
+  return <LandingPage isLoggedIn={isLoggedIn} userName={userName} />;
 }
