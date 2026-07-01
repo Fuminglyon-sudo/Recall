@@ -13,6 +13,9 @@ import {
   Zap,
   FileText,
   Bell,
+  Mic,
+  MessageCircle,
+  Globe,
 } from "lucide-react";
 import { LandingUserMenu } from "./landing-user-menu";
 import { LandingFaq } from "./landing-faq";
@@ -303,6 +306,84 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
               </div>
             </div>
           ))}
+        </section>
+
+        {/* ── Audacity section ─────────────────────────────────────────────── */}
+        <section className="border-t border-white/8 py-28">
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
+              {/* Narrative */}
+              <div className="space-y-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">The opportunity cost</p>
+                <h2 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl">
+                  The world rewards the ones<br className="hidden sm:block" /> who speak up.
+                </h2>
+                <p className="text-base leading-7 text-slate-400">
+                  Think of the last time an opportunity walked past you.
+                </p>
+                <p className="text-base leading-7 text-slate-400">
+                  The promotion that went to someone with less experience but more confidence. The
+                  connection you wanted to make but never approached. The networking event where
+                  someone from Lagos, Singapore, or São Paulo extended a hand — and you had nothing
+                  to say beyond hello, and the moment passed.
+                </p>
+                <p className="text-base leading-7 text-slate-400">
+                  The world is not always fair. But it consistently rewards the ones who know what
+                  to say, who can hold their position under pressure, and who can find something
+                  real in common with anyone they meet.
+                </p>
+                <p className="text-base leading-7 text-slate-300">
+                  Audacity is not a personality trait. It is a practice.
+                  Recall has three features built for exactly this.
+                </p>
+              </div>
+
+              {/* Feature cards */}
+              <div className="space-y-4">
+                {([
+                  {
+                    icon: Mic,
+                    label: "Speak Up",
+                    href: "/speak-up",
+                    tagline: "The room where you rehearse before the room that counts.",
+                    body: "High-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call. Practise until the right words arrive before the moment does, not after.",
+                  },
+                  {
+                    icon: MessageCircle,
+                    label: "Conversation Lab",
+                    href: "/conversation-lab",
+                    tagline: "Become someone conversations come easily to.",
+                    body: "Open-ended practice across contexts, registers, and situations. The place where speaking up stops feeling like a risk and starts feeling like who you are.",
+                  },
+                  {
+                    icon: Globe,
+                    label: "Countries",
+                    href: "/countries",
+                    tagline: "Know something real about where people are from.",
+                    body: "The capital. The greeting in their language. Something that makes their country distinct. Walk into any room in the world with something genuine to say — and watch the conversation open.",
+                  },
+                ] as const).map(({ icon: Icon, label, href, tagline, body }) => (
+                  <Link
+                    key={label}
+                    href={isLoggedIn ? href : "/login"}
+                    className="group flex gap-4 rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:border-emerald-400/30 hover:bg-white/8"
+                  >
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-white">{label}</p>
+                        <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
+                      </div>
+                      <p className="text-xs font-medium text-emerald-300/80">{tagline}</p>
+                      <p className="text-xs leading-5 text-slate-400">{body}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ── More features strip ───────────────────────────────────────────── */}
