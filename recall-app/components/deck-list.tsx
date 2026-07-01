@@ -19,7 +19,7 @@ export function DeckList({ decks }: { decks: DeckItem[] }) {
       <div className="flex items-end justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold text-white">Decks</h2>
-          <p className="text-sm text-slate-400">Keep vocabulary, founder language, and personal memories separate but gentle.</p>
+          <p className="text-sm text-slate-400">Keep vocabulary, ideas, and personal notes in separate decks so reviews stay focused.</p>
         </div>
         <Link href="/decks" className="text-sm font-medium text-emerald-300 transition hover:text-emerald-200">Manage decks</Link>
       </div>

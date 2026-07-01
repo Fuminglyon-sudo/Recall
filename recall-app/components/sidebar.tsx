@@ -24,6 +24,7 @@ import {
   BrainCircuit,
   Globe,
   BookOpen,
+  Settings,
 } from "lucide-react";
 
 const LINKS = [
@@ -43,6 +44,7 @@ const LINKS = [
   { href: "/search", label: "Search cards", icon: Search, exact: false, adminOnly: false },
   { href: "/cards/new", label: "Add card", icon: PlusCircle, exact: false, adminOnly: false },
   { href: "/guide", label: "Guide", icon: BookOpen, exact: false, adminOnly: false },
+  { href: "/settings", label: "Settings", icon: Settings, exact: false, adminOnly: false },
 ];
 
 function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {

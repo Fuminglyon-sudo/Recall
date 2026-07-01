@@ -24,8 +24,9 @@ async function verifyAdminToken(token: string): Promise<boolean> {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Always allow: login page, Next.js internals, static assets, auth API, SW, icons
+  // Always allow: root landing, login, Next.js internals, static assets, auth API, SW, icons
   if (
+    pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||

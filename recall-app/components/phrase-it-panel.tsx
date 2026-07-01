@@ -96,7 +96,7 @@ export function PhraseItPanel({
               value={tone}
               onChange={(e) => setTone(e.target.value)}
               rows={4}
-              placeholder={`e.g. I write in short punchy sentences. I avoid buzzwords and corporate fluff. I'm direct but warm. I think like a founder and I care about clarity over cleverness.`}
+              placeholder={`e.g. I write in short punchy sentences. I avoid buzzwords and corporate fluff. I'm direct but warm. I care about clarity over cleverness.`}
               className="input-base"
             />
             <div className="flex items-center gap-3">

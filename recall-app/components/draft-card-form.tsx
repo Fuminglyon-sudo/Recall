@@ -82,7 +82,7 @@ export function DraftCardForm({
       </div>
       <Field label="Example sentence"><textarea name="example" value={example} onChange={(event) => setExample(event.target.value)} rows={3} className="input-base" /></Field>
       <Field label="Memory hook"><textarea name="hook" value={hook} onChange={(event) => setHook(event.target.value)} rows={3} className="input-base" /></Field>
-      <Field label="Source context (optional)"><textarea name="sourceContext" value={sourceContext} onChange={(event) => setSourceContext(event.target.value)} rows={3} placeholder="Useful for founder vocabulary: what you built, why it matters, or where you used the term." className="input-base" /></Field>
+      <Field label="Source context (optional)"><textarea name="sourceContext" value={sourceContext} onChange={(event) => setSourceContext(event.target.value)} rows={3} placeholder="Where you encountered this term, what it relates to, or the context that made it important." className="input-base" /></Field>
       <div>{submitButton}</div>
     </form>
   );
