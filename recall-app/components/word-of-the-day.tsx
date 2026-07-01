@@ -24,7 +24,7 @@ export function WordOfTheDay({ card }: { card: WordCard | null }) {
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Word of the day</p>
-          <p className="mt-1 text-xs text-slate-600">Resurfaces a card worth keeping sharp.</p>
+          <p className="mt-1 text-xs text-slate-600">One word, brought back to the surface.</p>
         </div>
         <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${meta.bg} ${meta.border} ${meta.color}`}>
           {meta.label}

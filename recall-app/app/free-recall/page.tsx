@@ -62,7 +62,7 @@ export default async function FreeRecallPage() {
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-300">
             Pick a deck, then write down every word or concept you can recall — no hints, no cards. What you
-            cannot name is exactly what needs more attention. This is the most effective memory exercise there is.
+            cannot name is exactly what needs more attention. It&apos;s harder than it sounds — and that&apos;s exactly why it works.
           </p>
         </section>
         <FreeRecallClient decks={deckData} gradeAction={gradeRecallSession} />

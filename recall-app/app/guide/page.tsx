@@ -53,7 +53,7 @@ const FEATURES: Feature[] = [
     href: "/",
     label: "Dashboard",
     icon: LayoutDashboard,
-    tagline: "Your home base.",
+    tagline: "Where your practice lives.",
     what: "Shows everything at a glance — today's due count, current streak, mastered cards, word of the day, mastery distribution, a 30-day review heatmap, and the next 8 days of upcoming cards.",
     tips: [
       "Check the upcoming reviews calendar before adding new cards — if a big batch is due in 3 days, wait a day so the load stays even.",
@@ -90,7 +90,7 @@ const FEATURES: Feature[] = [
     href: "/speak-up",
     label: "Speak Up",
     icon: Mic,
-    tagline: "Practice everyday communication out loud.",
+    tagline: "A place to practice saying things out loud.",
     what: "You are given a real-world scenario (asking for a raise, pushing back on a deadline, navigating a difficult call) and an AI listener with a set personality and difficulty level. You go back and forth up to 4 times, then receive a score, strong points, one thing to improve, and a model response.",
     tips: [
       "Set difficulty to Hard intentionally. A listener who pushes back teaches you to hold your position under pressure — easy listeners only confirm what you already do well.",
@@ -113,7 +113,7 @@ const FEATURES: Feature[] = [
     href: "/free-recall",
     label: "Free Recall",
     icon: BrainCircuit,
-    tagline: "The hardest and most effective memory exercise.",
+    tagline: "The exercise that shows you what you actually know.",
     what: "Pick a deck, then write every word or concept you can remember in 5 minutes — no hints, no cards. Your results are scored and, critically, fed back into your review schedule: remembered cards get a boost, missed cards are moved up so they return sooner.",
     tips: [
       "Do Free Recall before your Today review occasionally, not after. Attempting retrieval cold and then immediately seeing the cards in Today creates a powerful learning contrast.",
@@ -126,7 +126,7 @@ const FEATURES: Feature[] = [
     href: "/sentence-challenge",
     label: "Sentence Challenge",
     icon: PenLine,
-    tagline: "Prove you can use the word, not just recognise it.",
+    tagline: "Using a word is different from knowing it. This is where you find out.",
     what: "The AI generates a realistic scenario and asks you to write a sentence using a specific word from your decks. It grades your sentence on accuracy, naturalness, and register — and gives you a better version if yours was off.",
     tips: [
       "Aim for sentences that reflect how you actually speak or write. Generic textbook sentences are graded lower and teach less.",
@@ -301,7 +301,7 @@ export default async function GuidePage() {
         <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
           <p className="text-sm font-medium text-emerald-300">Guide</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">
-            Everything Recall can do, and how to use it well.
+            A quiet guide to each part of the app — and how to use it well.
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
             Recall is built around one idea: the things you want to say should come out naturally,

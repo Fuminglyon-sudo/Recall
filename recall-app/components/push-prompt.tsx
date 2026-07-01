@@ -66,7 +66,7 @@ export function PushPrompt({ vapidPublicKey }: { vapidPublicKey: string }) {
     <div className="flex items-start gap-3 rounded-2xl border border-emerald-400/15 bg-emerald-400/5 px-4 py-4">
       <Bell className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-white">Get a daily reminder</p>
+        <p className="text-sm font-medium text-white">A gentle nudge</p>
         <p className="mt-0.5 text-xs text-slate-400">
           We&apos;ll send one notification each morning when you have cards due — nothing else.
         </p>

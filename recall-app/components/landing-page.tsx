@@ -88,16 +88,16 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
             </div>
 
             <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-[72px] lg:leading-[1.08]">
-              The smarter way to build{" "}
+              The words are there.{" "}
               <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
-                vocabulary that sticks
+                Recall brings them closer.
               </span>
             </h1>
 
             <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-400">
-              Recall uses proven spaced repetition science and Claude AI to help you capture words,
-              concepts, and ideas — then tells you exactly what to review and when.
-              Short sessions, lasting results.
+              Recall uses spaced repetition to help you capture words, concepts, and ideas — then
+              brings each one back at exactly the moment you need it. Quiet sessions.
+              Language that feels like yours.
             </p>
 
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -131,7 +131,7 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
             <div className="mx-auto mt-16 grid max-w-xl grid-cols-3 gap-6 border-t border-white/8 pt-10">
               {[
                 { value: "SM-2", label: "Proven algorithm" },
-                { value: "AI",   label: "Claude-powered" },
+                { value: "AI",   label: "AI-assisted cards" },
                 { value: "Free", label: "No card required" },
               ].map(({ value, label }) => (
                 <div key={label} className="space-y-1">
@@ -211,9 +211,9 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
           <div className="mx-auto max-w-6xl space-y-16 px-6">
             <div className="mx-auto max-w-2xl space-y-4 text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">How it works</p>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Three steps. Daily habit.</h2>
+              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Three steps. A practice that grows.</h2>
               <p className="text-slate-400">
-                Recall is designed to fit inside two minutes of your day. Most users review before their first coffee.
+                Recall fits inside the quiet moments — before the day starts, or after it settles.
               </p>
             </div>
             <div className="grid gap-6 sm:grid-cols-3">
@@ -309,8 +309,8 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
         <section className="border-t border-white/8 bg-white/[0.02] py-20">
           <div className="mx-auto max-w-6xl px-6 space-y-12">
             <div className="mx-auto max-w-2xl space-y-3 text-center">
-              <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Everything else you'll want</h2>
-              <p className="text-slate-400">Built-in features that most flashcard apps charge for.</p>
+              <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Everything else, without the noise</h2>
+              <p className="text-slate-400">The features that make a practice sustainable.</p>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {[
@@ -336,9 +336,9 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
           <div className="mx-auto max-w-6xl space-y-12 px-6">
             <div className="mx-auto max-w-2xl space-y-4 text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Comparison</p>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Built for people who want results</h2>
+              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Built for people who want language that comes when they need it</h2>
               <p className="text-slate-400">
-                Most tools make you work harder to remember less. Recall does the scheduling for you.
+                Most tools ask you to manage the practice. Recall manages it for you — so you can just show up.
               </p>
             </div>
 
@@ -404,10 +404,10 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
               </div>
               <div className="relative space-y-6">
                 <h2 className="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
-                  Start building vocabulary that lasts
+                  The words you reach for — finally within reach
                 </h2>
                 <p className="mx-auto max-w-lg text-slate-400">
-                  Free forever. Sign in with Google and your first deck is ready in under a minute.
+                  Free to use. Your first card can be added today.
                 </p>
                 {isLoggedIn ? (
                   <Link
@@ -444,7 +444,7 @@ export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) 
                 <span className="text-sm font-bold text-white">Recall</span>
               </Link>
               <p className="max-w-xs text-sm leading-6 text-slate-500">
-                A calm flashcard app powered by spaced repetition and Claude AI.
+                A calm flashcard app built on spaced repetition.
                 Remember what matters.
               </p>
             </div>

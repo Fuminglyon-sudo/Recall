@@ -24,7 +24,7 @@ export default async function SettingsPage() {
             <Settings className="h-5 w-5 text-slate-400" />
             <h1 className="text-2xl font-semibold text-white">Settings</h1>
           </div>
-          <p className="text-sm text-slate-400">Manage your account.</p>
+          <p className="text-sm text-slate-400">Your account, your data.</p>
         </div>
 
         {/* Account info */}

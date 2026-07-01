@@ -28,7 +28,7 @@ export default async function DecksPage() {
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
           <p className="text-sm font-medium text-emerald-300">Decks</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Organise cards by topic, product, or people you want to remember well.</h1>
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Organise cards by the parts of your vocabulary that matter to you.</h1>
           <div className="mt-8 grid gap-4">
             {!ready ? (
               <div className="rounded-3xl border border-amber-300/20 bg-amber-400/10 p-5 text-sm leading-7 text-amber-100">
@@ -40,7 +40,7 @@ export default async function DecksPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <h2 className="text-lg font-semibold text-white">{deck.name}</h2>
-                    <p className="mt-2 text-sm leading-7 text-slate-400">{deck.description ?? "A calm container for cards that belong together."}</p>
+                    <p className="mt-2 text-sm leading-7 text-slate-400">{deck.description ?? "Words that belong together, gathered here."}</p>
                   </div>
                   <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-medium text-emerald-300">{deck._count.cards} cards</span>
                 </div>
@@ -51,11 +51,11 @@ export default async function DecksPage() {
 
         <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
           <p className="text-sm font-medium text-emerald-300">New deck</p>
-          <h2 className="mt-3 text-2xl font-semibold text-white">Create another place for memory.</h2>
+          <h2 className="mt-3 text-2xl font-semibold text-white">A new space for the words that belong here.</h2>
           <form action={createDeck} className="mt-6 space-y-5">
             <label className="block space-y-2">
               <span className="text-sm font-medium text-slate-200">Name</span>
-              <input name="name" className="input-base" placeholder="e.g. Founder Stories" required />
+              <input name="name" className="input-base" placeholder="e.g. Words I reach for" required />
             </label>
             <label className="block space-y-2">
               <span className="text-sm font-medium text-slate-200">Description</span>

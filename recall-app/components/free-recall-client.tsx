@@ -267,7 +267,7 @@ export function FreeRecallClient({
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={12}
-            placeholder={"flywheel\nchurn\nB2B\nwedge\n…"}
+            placeholder={"connection\npatience\narticulate\nfluent\n…"}
             className="input-base font-mono text-sm leading-7"
           />
 
@@ -275,7 +275,7 @@ export function FreeRecallClient({
             onClick={submit}
             className="rounded-2xl bg-emerald-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
           >
-            {timeLeft === 0 ? "Time's up — see results" : "I'm done — see results"}
+            {timeLeft === 0 ? "Time's up — show me what I remembered" : "I'm done — show me what I remembered"}
           </button>
         </div>
       </div>
@@ -317,7 +317,7 @@ export function FreeRecallClient({
               <>
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                 <span className="text-emerald-400/80">
-                  Review schedule updated — missed cards will come up sooner.
+                  The cards you missed will come around again soon.
                 </span>
               </>
             ) : null}
@@ -353,7 +353,7 @@ export function FreeRecallClient({
               <p className="text-xs font-semibold uppercase tracking-widest text-amber-300">
                 Missed ({results.missed.length})
               </p>
-              <p className="mt-1 text-[11px] text-slate-500">Moved up in your review queue.</p>
+              <p className="mt-1 text-[11px] text-slate-500">Coming back to you sooner.</p>
               <ul className="mt-3 space-y-1.5">
                 {results.missed.map(({ front }) => (
                   <li key={front} className="flex gap-2 text-sm leading-6 text-slate-300">
