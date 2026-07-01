@@ -383,7 +383,7 @@ export function SpeakUpClient() {
               onClick={() => setActive(s)}
               className="rounded-3xl border border-white/10 bg-white/5 text-left transition hover:border-emerald-300/30 hover:bg-white/8 overflow-hidden"
             >
-              <div className="relative aspect-video w-full">
+              <div className="relative h-36 w-full">
                 <Image
                   src={`/scenerios/speak-up-${s.id}.webp`}
                   alt={s.tag}
