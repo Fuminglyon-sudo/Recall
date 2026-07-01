@@ -1,10 +1,10 @@
-const CACHE = "recall-v1";
-
-const PRECACHE = ["/", "/today", "/countries", "/free-recall"];
+const CACHE = "recall-v2";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) =>
+      c.addAll(["/manifest.webmanifest", "/favicon.png", "/icon.png"])
+    ).then(() => self.skipWaiting())
   );
 });
 
@@ -23,16 +23,39 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
 
+  // Navigation requests (HTML pages): network-first, cache on success
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((res) => {
+          if (res.ok) {
+            caches.open(CACHE).then((c) => c.put(request, res.clone()));
+          }
+          return res;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          if (cached) return cached;
+          return new Response(
+            "You appear to be offline. Reload when you have a connection.",
+            { status: 503, headers: { "Content-Type": "text/plain" } }
+          );
+        })
+    );
+    return;
+  }
+
+  // Static assets: cache-first
   event.respondWith(
-    fetch(request)
-      .then((res) => {
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((res) => {
         if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE).then((c) => c.put(request, clone));
+          caches.open(CACHE).then((c) => c.put(request, res.clone()));
         }
         return res;
-      })
-      .catch(() => caches.match(request))
+      });
+    })
   );
 });
 
@@ -54,7 +77,7 @@ self.addEventListener("push", (event) => {
       icon: "/icon.png",
       badge: "/icon.png",
       data: { url: data.url },
-      tag: "recall-daily", // replaces any earlier unread notification
+      tag: "recall-daily",
       renotify: false,
     })
   );
