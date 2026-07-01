@@ -27,6 +27,7 @@ export async function middleware(req: NextRequest) {
   // Always allow: root landing, login, Next.js internals, static assets, auth API, SW, icons
   if (
     pathname === "/" ||
+    pathname === "/landing" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||

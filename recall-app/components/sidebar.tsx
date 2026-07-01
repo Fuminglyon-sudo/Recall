@@ -94,7 +94,7 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between p-5 pb-2">
-        <Link href="/" className="flex items-center gap-3" onClick={onClose}>
+        <Link href="/landing" className="flex items-center gap-3" onClick={onClose}>
           <div className="rounded-2xl bg-emerald-400/15 p-2.5 text-emerald-300">
             <Brain className="h-5 w-5" />
           </div>
@@ -165,7 +165,7 @@ export function Sidebar({
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-white/8 bg-slate-950/90 px-4 backdrop-blur-xl lg:hidden">
-        <Link href="/" className="flex items-center gap-2.5">
+        <Link href="/landing" className="flex items-center gap-2.5">
           <div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300">
             <Brain className="h-4 w-4" />
           </div>
