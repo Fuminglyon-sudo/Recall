@@ -110,6 +110,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "🍽️",
     setting: "You are at a dinner party. Someone you've just met is genuinely curious — not making small talk. They lean in and say:",
     question: "So what do you actually do? Like, walk me through it — what does a typical day look like for you?",
+    allowedPersonas: ["friend", "stranger", "skeptic", "senior"],
   },
   {
     id: "big-decision",
@@ -135,6 +136,7 @@ const SCENARIOS: Scenario[] = [
     emoji: "🎨",
     setting: "You're at a casual dinner and you mention something you care about deeply — a hobby, a side project, a cause. The person next to you has never heard of it and seems genuinely curious:",
     question: "Wait, what does that even mean? What do you actually do when you do that?",
+    allowedPersonas: ["friend", "manager", "stranger", "skeptic", "senior"],
   },
   // Social
   {
