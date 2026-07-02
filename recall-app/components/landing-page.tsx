@@ -3,7 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowDown, BrainCircuit } from "lucide-react";
+import { ArrowRight, BrainCircuit } from "lucide-react";
+import { Cormorant_Garamond } from "next/font/google";
+
+const display = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
+});
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
@@ -14,7 +22,7 @@ type Slide = {
   id: string;
   image: string | null;
   eyebrow: string | null;
-  headline: string;
+  headlineParts: Array<{ text: string; italic?: boolean; bold?: boolean }>;
   body: string | null;
   features: Array<{ label: string; href: string; desc: string }> | null;
 };
@@ -24,7 +32,11 @@ const SLIDES: Slide[] = [
     id: "pain",
     image: "/scenerios/speak-up-interview-intro.webp",
     eyebrow: null,
-    headline: "You're in the room.\nAnd you can't find the words.",
+    headlineParts: [
+      { text: "You're in the room." },
+      { text: "\n" },
+      { text: "And you can't find the words.", italic: true },
+    ],
     body: "The thought is there. Clear, fully formed. But when the moment comes — it stays locked inside your head.",
     features: null,
   },
@@ -32,7 +44,11 @@ const SLIDES: Slide[] = [
     id: "escape",
     image: "/scenerios/lab-elevator.webp",
     eyebrow: null,
-    headline: "So you wait\nfor it to pass.",
+    headlineParts: [
+      { text: "So you wait" },
+      { text: "\n" },
+      { text: "for it to pass.", italic: true },
+    ],
     body: "You keep it vague. You check your phone. Walking home, you find the sentence you should have said.",
     features: null,
   },
@@ -40,7 +56,12 @@ const SLIDES: Slide[] = [
     id: "turn",
     image: "/scenerios/speak-up-big-decision.webp",
     eyebrow: "What changes everything",
-    headline: "What if you'd already\npracticed this exact moment?",
+    headlineParts: [
+      { text: "What if you'd already" },
+      { text: "\n" },
+      { text: "practiced", italic: true },
+      { text: " this exact moment?" },
+    ],
     body: "Not scripted. Not memorised. Just practiced — so when it mattered, the right words were already close.",
     features: null,
   },
@@ -48,7 +69,11 @@ const SLIDES: Slide[] = [
     id: "product",
     image: "/scenerios/speak-up-raise.webp",
     eyebrow: "Recall",
-    headline: "A practice\nthat compounds.",
+    headlineParts: [
+      { text: "A practice" },
+      { text: "\n" },
+      { text: "that compounds.", italic: true },
+    ],
     body: "Real scenarios. Honest coaching. A system that builds the version of you that knows what to say — before you walk through the door.",
     features: null,
   },
@@ -56,7 +81,11 @@ const SLIDES: Slide[] = [
     id: "features",
     image: "/scenerios/lab-networking.webp",
     eyebrow: "The loop",
-    headline: "Three things.\nDone consistently.",
+    headlineParts: [
+      { text: "Three things." },
+      { text: "\n" },
+      { text: "Done consistently.", italic: true },
+    ],
     body: null,
     features: [
       {
@@ -80,7 +109,11 @@ const SLIDES: Slide[] = [
     id: "cta",
     image: null,
     eyebrow: null,
-    headline: "Build the version of you\nthat knows what to say.",
+    headlineParts: [
+      { text: "Build the version of you" },
+      { text: "\n" },
+      { text: "that knows what to say.", italic: true },
+    ],
     body: "Free to use. No card required. Start your first session today.",
     features: null,
   },
@@ -115,253 +148,400 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
   }, []);
 
   function scrollToSlide(index: number) {
-    slideRefs.current[index]?.scrollIntoView({ behavior: "smooth" });
+    const container = containerRef.current;
+    if (!container) return;
+    container.scrollTo({ left: index * container.clientWidth, behavior: "smooth" });
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
       e.preventDefault();
       scrollToSlide(Math.min(activeSlide + 1, SLIDES.length - 1));
-    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
       e.preventDefault();
       scrollToSlide(Math.max(activeSlide - 1, 0));
     }
   }
 
+  const isLast = activeSlide === SLIDES.length - 1;
+
   return (
-    <div
-      className="relative antialiased"
-      style={{ height: "100dvh", overflow: "hidden", background: "#010d1a" }}
-    >
-      {/* ── Floating nav ─────────────────────────────────────────────────── */}
-      <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-6 sm:px-10">
-        <Link href="/landing" className="flex items-center gap-2.5">
-          <div className="rounded-xl bg-emerald-400/20 p-1.5 text-emerald-300">
-            <BrainCircuit className="h-4 w-4" />
-          </div>
-          <span
-            className="text-sm font-bold tracking-tight text-white"
-            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
-          >
-            Recall
-          </span>
-        </Link>
+    <>
+      <style>{`
+        @keyframes triangleAdvance {
+          0%   { opacity: 0.35; transform: translateX(0px);  }
+          55%  { opacity: 1;    transform: translateX(7px);  }
+          100% { opacity: 0.35; transform: translateX(0px);  }
+        }
+        @keyframes triangleGlow {
+          0%, 100% { filter: drop-shadow(0 0 5px rgba(74,222,128,0.4)); }
+          55%       { filter: drop-shadow(0 0 14px rgba(74,222,128,0.9)); }
+        }
+        .slides-container::-webkit-scrollbar { display: none; }
+        .slides-container { scrollbar-width: none; -ms-overflow-style: none; }
+      `}</style>
 
-        <div className="flex items-center gap-4">
-          <Link
-            href="/about"
-            className="hidden text-sm text-white/55 transition hover:text-white sm:block"
-            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
-          >
-            About
-          </Link>
-          {isLoggedIn ? (
-            <Link
-              href="/"
-              className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
-            >
-              Dashboard
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
-            >
-              Sign in
-            </Link>
-          )}
-        </div>
-      </header>
-
-      {/* ── Vertical dot nav ─────────────────────────────────────────────── */}
-      <div className="fixed right-4 top-1/2 z-50 flex -translate-y-1/2 flex-col items-center gap-3 sm:right-6">
-        {SLIDES.map((s, i) => (
-          <button
-            key={s.id}
-            onClick={() => scrollToSlide(i)}
-            aria-label={`Slide ${i + 1}`}
-            className="flex items-center justify-center transition-all duration-300"
-            style={{
-              width: "20px",
-              height: "6px",
-              borderRadius: "3px",
-              background: activeSlide === i ? "#4ade80" : "rgba(255,255,255,0.25)",
-              transform: activeSlide === i ? "scaleX(1.4)" : "scaleX(1)",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ── Scroll container ─────────────────────────────────────────────── */}
       <div
-        ref={containerRef}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        style={{
-          height: "100dvh",
-          overflowY: "scroll",
-          scrollSnapType: "y mandatory",
-          outline: "none",
-        }}
+        className={`relative antialiased ${display.variable}`}
+        style={{ height: "100dvh", overflow: "hidden", background: "#010d1a" }}
       >
-        {SLIDES.map((slide, i) => {
-          const isLast = i === SLIDES.length - 1;
+        {/* ── Floating nav ──────────────────────────────────────────────── */}
+        <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-6 sm:px-10">
+          <Link href="/landing" className="flex items-center gap-2.5">
+            <div className="rounded-xl bg-emerald-400/20 p-1.5 text-emerald-300">
+              <BrainCircuit className="h-4 w-4" />
+            </div>
+            <span
+              className="text-sm font-bold tracking-tight text-white"
+              style={{ textShadow: "0 1px 10px rgba(0,0,0,0.9)" }}
+            >
+              Recall
+            </span>
+          </Link>
 
-          if (isLast) {
+          <div className="flex items-center gap-5">
+            <Link
+              href="/about"
+              className="hidden text-sm text-white/50 transition hover:text-white sm:block"
+              style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
+            >
+              About
+            </Link>
+            {isLoggedIn ? (
+              <Link href="/" className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300">
+                Dashboard
+              </Link>
+            ) : (
+              <Link href="/login" className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300">
+                Sign in
+              </Link>
+            )}
+          </div>
+        </header>
+
+        {/* ── Flashing right triangle ───────────────────────────────────── */}
+        {!isLast && (
+          <button
+            onClick={() => scrollToSlide(activeSlide + 1)}
+            aria-label="Next slide"
+            className="fixed right-5 top-1/2 z-50 sm:right-8"
+            style={{ transform: "translateY(-50%)" }}
+          >
+            <div
+              style={{
+                animation: "triangleAdvance 1.6s ease-in-out infinite, triangleGlow 1.6s ease-in-out infinite",
+                width: 0,
+                height: 0,
+                borderTop: "16px solid transparent",
+                borderBottom: "16px solid transparent",
+                borderLeft: "26px solid #4ade80",
+              }}
+            />
+          </button>
+        )}
+
+        {/* ── Slide progress dots (small, bottom-center) ───────────────── */}
+        <div className="fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 gap-2">
+          {SLIDES.map((s, i) => (
+            <button
+              key={s.id}
+              onClick={() => scrollToSlide(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              style={{
+                width: activeSlide === i ? "24px" : "6px",
+                height: "6px",
+                borderRadius: "3px",
+                background: activeSlide === i ? "#4ade80" : "rgba(255,255,255,0.2)",
+                transition: "all 0.35s ease",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* ── Horizontal scroll container ───────────────────────────────── */}
+        <div
+          ref={containerRef}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          className="slides-container"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            height: "100dvh",
+            overflowX: "scroll",
+            scrollSnapType: "x mandatory",
+            outline: "none",
+          }}
+        >
+          {SLIDES.map((slide, i) => {
+            if (i === SLIDES.length - 1) {
+              /* ── CTA slide (no image) ─────────────────────────────── */
+              return (
+                <section
+                  key={slide.id}
+                  ref={(el) => { slideRefs.current[i] = el; }}
+                  style={{
+                    scrollSnapAlign: "start",
+                    minWidth: "100vw",
+                    height: "100dvh",
+                    flexShrink: 0,
+                  }}
+                  className="relative flex flex-col items-center justify-center overflow-hidden px-8 text-center"
+                >
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      background: "radial-gradient(ellipse 65% 55% at 50% 52%, rgba(74,222,128,0.09) 0%, transparent 70%)",
+                    }}
+                  />
+
+                  <div className="relative max-w-2xl space-y-8">
+                    <p
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontStyle: "italic",
+                        fontSize: "1rem",
+                        letterSpacing: "0.12em",
+                        color: "#4ade80",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Recall
+                    </p>
+
+                    <h2
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)",
+                        fontWeight: 700,
+                        lineHeight: 1.08,
+                        color: "#f1f5f9",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {slide.headlineParts.map((part, pi) =>
+                        part.text === "\n" ? (
+                          <br key={pi} />
+                        ) : (
+                          <span
+                            key={pi}
+                            style={{
+                              fontStyle: part.italic ? "italic" : "normal",
+                              fontWeight: part.italic ? 400 : 700,
+                              color: part.italic ? "#86efac" : "#f1f5f9",
+                            }}
+                          >
+                            {part.text}
+                          </span>
+                        )
+                      )}
+                    </h2>
+
+                    <p
+                      style={{
+                        fontSize: "1.05rem",
+                        lineHeight: 1.75,
+                        color: "#94a3b8",
+                        maxWidth: "28rem",
+                        margin: "0 auto",
+                      }}
+                    >
+                      {slide.body}
+                    </p>
+
+                    {isLoggedIn ? (
+                      <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-8 py-4 text-base font-bold text-slate-950 transition hover:bg-emerald-300"
+                        style={{ boxShadow: "0 0 40px rgba(74,222,128,0.18)" }}
+                      >
+                        Go to dashboard <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/login"
+                        className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-8 py-4 text-base font-bold text-slate-950 transition hover:bg-emerald-300"
+                        style={{ boxShadow: "0 0 40px rgba(74,222,128,0.18)" }}
+                      >
+                        Get started free <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    )}
+
+                    <p style={{ fontSize: "0.75rem", color: "#475569", marginTop: "0.5rem" }}>
+                      <Link href="/about" className="transition hover:text-slate-400">
+                        Learn more about Recall →
+                      </Link>
+                    </p>
+                  </div>
+
+                  <div className="absolute bottom-7 flex flex-wrap justify-center gap-5 text-xs text-slate-700">
+                    <Link href="/about" className="transition hover:text-slate-400">About</Link>
+                    <Link href="/guide" className="transition hover:text-slate-400">Guide</Link>
+                    <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
+                    <span>© {new Date().getFullYear()} Recall</span>
+                  </div>
+                </section>
+              );
+            }
+
+            /* ── Image slides ─────────────────────────────────────────── */
             return (
               <section
                 key={slide.id}
                 ref={(el) => { slideRefs.current[i] = el; }}
-                style={{ scrollSnapAlign: "start", height: "100dvh" }}
-                className="relative flex flex-col items-center justify-center overflow-hidden px-6 text-center"
+                style={{
+                  scrollSnapAlign: "start",
+                  minWidth: "100vw",
+                  height: "100dvh",
+                  flexShrink: 0,
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                  overflow: "hidden",
+                  paddingLeft: "clamp(1.75rem, 6vw, 5rem)",
+                  paddingRight: "clamp(1.75rem, 12vw, 10rem)",
+                  paddingBottom: "clamp(4rem, 8vh, 6rem)",
+                }}
               >
-                {/* Glow */}
-                <div
-                  className="pointer-events-none absolute inset-0"
-                  style={{ background: "radial-gradient(ellipse 60% 50% at 50% 55%, rgba(74,222,128,0.10) 0%, transparent 70%)" }}
+                {/* Background image */}
+                <Image
+                  src={slide.image!}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  priority={i <= 1}
+                  sizes="100vw"
                 />
 
-                <div className="relative max-w-2xl space-y-7">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">Recall</p>
-                  <h2
-                    className="font-extrabold leading-tight text-white"
-                    style={{
-                      fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                      whiteSpace: "pre-line",
-                      textWrap: "balance",
-                    } as React.CSSProperties}
-                  >
-                    {slide.headline}
-                  </h2>
-                  <p className="mx-auto max-w-sm text-base leading-7 text-slate-400">
-                    {slide.body}
-                  </p>
-                  {isLoggedIn ? (
-                    <Link
-                      href="/"
-                      className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 shadow-lg transition hover:bg-emerald-300"
-                      style={{ boxShadow: "0 0 32px rgba(74,222,128,0.2)" }}
-                    >
-                      Go to dashboard <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  ) : (
-                    <Link
-                      href="/login"
-                      className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 shadow-lg transition hover:bg-emerald-300"
-                      style={{ boxShadow: "0 0 32px rgba(74,222,128,0.2)" }}
-                    >
-                      Get started free <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  )}
-                </div>
+                {/* Bottom-up dark gradient */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to top, #010d1a 0%, rgba(1,13,26,0.82) 38%, rgba(1,13,26,0.4) 65%, rgba(1,13,26,0.22) 100%)",
+                  }}
+                />
+                {/* Left vignette for text contrast */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(to right, rgba(1,13,26,0.6) 0%, transparent 65%)",
+                  }}
+                />
 
-                {/* Footer strip */}
-                <div className="absolute bottom-7 flex flex-wrap justify-center gap-5 text-xs text-slate-700">
-                  <Link href="/about" className="transition hover:text-slate-400">About</Link>
-                  <Link href="/guide" className="transition hover:text-slate-400">Guide</Link>
-                  <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
-                  <span>© {new Date().getFullYear()} Recall</span>
+                {/* Slide content */}
+                <div className="relative" style={{ maxWidth: "min(680px, 80vw)" }}>
+                  {slide.eyebrow ? (
+                    <p
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontStyle: "italic",
+                        fontSize: "clamp(0.8rem, 1.2vw, 1rem)",
+                        letterSpacing: "0.08em",
+                        color: "#4ade80",
+                        marginBottom: "1rem",
+                        textShadow: "0 1px 8px rgba(0,0,0,0.8)",
+                      }}
+                    >
+                      {slide.eyebrow}
+                    </p>
+                  ) : null}
+
+                  <h2
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)",
+                      lineHeight: 1.06,
+                      color: "#f8fafc",
+                      textShadow: "0 2px 24px rgba(0,0,0,0.55)",
+                      marginBottom: "1.25rem",
+                    }}
+                  >
+                    {slide.headlineParts.map((part, pi) =>
+                      part.text === "\n" ? (
+                        <br key={pi} />
+                      ) : (
+                        <span
+                          key={pi}
+                          style={{
+                            fontStyle: part.italic ? "italic" : "normal",
+                            fontWeight: part.italic ? 400 : 700,
+                            color: part.italic ? "#86efac" : "#f8fafc",
+                          }}
+                        >
+                          {part.text}
+                        </span>
+                      )
+                    )}
+                  </h2>
+
+                  {slide.body ? (
+                    <p
+                      style={{
+                        fontSize: "clamp(0.95rem, 1.5vw, 1.15rem)",
+                        lineHeight: 1.72,
+                        color: "#cbd5e1",
+                        maxWidth: "38rem",
+                        textShadow: "0 1px 10px rgba(0,0,0,0.65)",
+                      }}
+                    >
+                      {slide.body}
+                    </p>
+                  ) : null}
+
+                  {slide.features ? (
+                    <div
+                      style={{
+                        marginTop: "2rem",
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                        gap: "0.75rem",
+                        maxWidth: "680px",
+                      }}
+                    >
+                      {slide.features.map((f) => (
+                        <Link
+                          key={f.label}
+                          href={isLoggedIn ? f.href : "/login"}
+                          className="group rounded-2xl border border-white/10 bg-slate-950/65 p-4 backdrop-blur-sm transition hover:border-emerald-400/35 hover:bg-slate-950/80"
+                        >
+                          <p
+                            className="flex items-center gap-1.5"
+                            style={{
+                              fontFamily: "var(--font-display)",
+                              fontWeight: 600,
+                              fontSize: "1rem",
+                              color: "#f1f5f9",
+                            }}
+                          >
+                            {f.label}
+                            <ArrowRight
+                              className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:opacity-100"
+                              style={{ transition: "opacity 0.2s" }}
+                            />
+                          </p>
+                          <p
+                            style={{
+                              marginTop: "0.35rem",
+                              fontSize: "0.78rem",
+                              lineHeight: 1.55,
+                              color: "#64748b",
+                            }}
+                          >
+                            {f.desc}
+                          </p>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               </section>
             );
-          }
-
-          return (
-            <section
-              key={slide.id}
-              ref={(el) => { slideRefs.current[i] = el; }}
-              style={{ scrollSnapAlign: "start", height: "100dvh" }}
-              className="relative flex flex-col justify-end overflow-hidden px-7 pb-16 sm:px-14 sm:pb-20"
-            >
-              {/* Background image */}
-              <Image
-                src={slide.image!}
-                alt=""
-                fill
-                className="object-cover"
-                priority={i <= 1}
-                sizes="100vw"
-              />
-
-              {/* Gradient overlay — dark base, fades up */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to top, #010d1a 0%, rgba(1,13,26,0.78) 40%, rgba(1,13,26,0.35) 70%, rgba(1,13,26,0.20) 100%)",
-                }}
-              />
-
-              {/* Side vignette — makes left-anchored text always readable */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(to right, rgba(1,13,26,0.55) 0%, transparent 60%)",
-                }}
-              />
-
-              {/* Content */}
-              <div className="relative max-w-2xl space-y-4">
-                {slide.eyebrow ? (
-                  <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
-                    {slide.eyebrow}
-                  </p>
-                ) : null}
-
-                <h2
-                  className="font-extrabold leading-[1.08] text-white"
-                  style={{
-                    fontSize: "clamp(2rem, 5.5vw, 4rem)",
-                    whiteSpace: "pre-line",
-                    textShadow: "0 2px 20px rgba(0,0,0,0.5)",
-                  }}
-                >
-                  {slide.headline}
-                </h2>
-
-                {slide.body ? (
-                  <p
-                    className="max-w-lg text-base leading-7 text-slate-300 sm:text-lg"
-                    style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
-                  >
-                    {slide.body}
-                  </p>
-                ) : null}
-
-                {slide.features ? (
-                  <div className="mt-2 grid gap-2.5 sm:grid-cols-3 pt-2">
-                    {slide.features.map((f) => (
-                      <Link
-                        key={f.label}
-                        href={isLoggedIn ? f.href : "/login"}
-                        className="group rounded-2xl border border-white/12 bg-slate-950/65 p-4 backdrop-blur-sm transition hover:border-emerald-400/30 hover:bg-slate-950/80"
-                      >
-                        <p className="flex items-center gap-1.5 text-sm font-semibold text-white">
-                          {f.label}
-                          <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:opacity-100" />
-                        </p>
-                        <p className="mt-1 text-xs leading-5 text-slate-400">{f.desc}</p>
-                      </Link>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              {/* Scroll cue — first slide only */}
-              {i === 0 ? (
-                <button
-                  onClick={() => scrollToSlide(1)}
-                  className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/30 transition hover:text-white/60"
-                >
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.2em]">Scroll</span>
-                  <ArrowDown className="h-3.5 w-3.5 animate-bounce" />
-                </button>
-              ) : null}
-            </section>
-          );
-        })}
+          })}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
