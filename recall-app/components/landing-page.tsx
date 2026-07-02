@@ -199,13 +199,34 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
             </span>
           </Link>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3">
             <Link
               href="/about"
-              className="hidden text-sm text-white/50 transition hover:text-white sm:block"
-              style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
+              className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontStyle: "italic",
+                fontSize: "0.9rem",
+                color: "rgba(255,255,255,0.75)",
+                textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+                letterSpacing: "0.01em",
+              }}
             >
               About
+            </Link>
+            <Link
+              href="/contact"
+              className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontStyle: "italic",
+                fontSize: "0.9rem",
+                color: "rgba(255,255,255,0.75)",
+                textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+                letterSpacing: "0.01em",
+              }}
+            >
+              Contact
             </Link>
             {isLoggedIn ? (
               <Link href="/" className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300">
