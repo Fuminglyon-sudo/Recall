@@ -1,7 +1,25 @@
+export const dynamic = "force-dynamic";
+
 import { AppShell } from "@/components/app-shell";
 import { SocialSkillsClient } from "@/components/social-skills-client";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
-export default function ConversationLabPage() {
+export default async function ConversationLabPage() {
+  const userId = await getCurrentUserId();
+  const uid = userId ? scopedUserId(userId) : null;
+
+  const strugglingRaw = uid
+    ? await prisma.card.findMany({
+        where: { deck: { userId: uid }, easeFactor: { lt: 2.0 }, repetitions: { gt: 0 } },
+        select: { front: true },
+        take: 5,
+        orderBy: { easeFactor: "asc" },
+      })
+    : [];
+
+  const strugglingWords = strugglingRaw.map((c) => c.front);
+
   return (
     <AppShell>
       <div className="mx-auto max-w-4xl space-y-6">
@@ -17,7 +35,7 @@ export default function ConversationLabPage() {
           </p>
         </section>
 
-        <SocialSkillsClient />
+        <SocialSkillsClient strugglingWords={strugglingWords} />
       </div>
     </AppShell>
   );

@@ -55,6 +55,7 @@ async function getDashboardData(uid: string | null) {
       wordOfDay: null,
       strugglingCount: 0,
       practiceStats: { speakAvg: null as number | null, socialAvg: null as number | null, weakestGoal: null as string | null, speakCount: 0, socialCount: 0 },
+      coachingInsight: null as { message: string; cta?: { label: string; href: string } } | null,
     };
   }
 
@@ -99,13 +100,13 @@ async function getDashboardData(uid: string | null) {
       where: { userId: uid ?? undefined },
       orderBy: { createdAt: "desc" },
       take: 10,
-      select: { score: true, practiceGoal: true },
+      select: { score: true, practiceGoal: true, createdAt: true },
     }),
     prisma.socialSession.findMany({
       where: { userId: uid ?? undefined },
       orderBy: { createdAt: "desc" },
       take: 10,
-      select: { score: true, practiceGoal: true },
+      select: { score: true, practiceGoal: true, createdAt: true },
     }),
   ]);
 
@@ -149,6 +150,7 @@ async function getDashboardData(uid: string | null) {
     ? Math.round(socialSessions.reduce((s, x) => s + x.score, 0) / socialSessions.length)
     : null;
   const weakestGoal = computeWeakestGoal([...speakSessions, ...socialSessions]);
+  const coachingInsight = computeCoachingInsight(speakSessions, socialSessions, strugglingCount);
 
   return {
     dueToday: dueTodayCount,
@@ -171,7 +173,82 @@ async function getDashboardData(uid: string | null) {
     wordOfDay,
     strugglingCount,
     practiceStats: { speakAvg, socialAvg, weakestGoal, speakCount: speakSessions.length, socialCount: socialSessions.length },
+    coachingInsight,
   };
+}
+
+type SessionWithDate = { score: number; practiceGoal: string | null; createdAt: Date };
+
+function computeCoachingInsight(
+  speakSessions: SessionWithDate[],
+  socialSessions: SessionWithDate[],
+  strugglingCount: number,
+): { message: string; cta?: { label: string; href: string } } | null {
+  const allSessions = [...speakSessions, ...socialSessions].sort(
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+  );
+  if (allSessions.length < 2) return null;
+
+  const recent = allSessions.slice(0, Math.min(3, allSessions.length));
+  const prior = allSessions.slice(3, Math.min(6, allSessions.length));
+  const recentAvg = recent.reduce((s, x) => s + x.score, 0) / recent.length;
+
+  if (prior.length >= 2) {
+    const priorAvg = prior.reduce((s, x) => s + x.score, 0) / prior.length;
+    if (recentAvg >= priorAvg + 1.5) {
+      return {
+        message: `Your last ${recent.length} sessions averaged ${Math.round(recentAvg)}/10 — up ${Math.round(recentAvg - priorAvg)} points from before. Whatever you changed, keep it.`,
+      };
+    }
+    if (priorAvg >= recentAvg + 1.5) {
+      return {
+        message: `Your last ${recent.length} sessions averaged ${Math.round(recentAvg)}/10, down from ${Math.round(priorAvg)}. Try dropping the difficulty one level — rebuilding on solid ground is faster than grinding on hard.`,
+        cta: { label: "Open Speak Up", href: "/speak-up" },
+      };
+    }
+  }
+
+  const withGoal = allSessions.filter(
+    (s): s is { score: number; practiceGoal: string; createdAt: Date } => s.practiceGoal !== null
+  );
+  if (withGoal.length >= 4) {
+    const byGoal: Record<string, { total: number; count: number }> = {};
+    for (const s of withGoal) {
+      if (!byGoal[s.practiceGoal]) byGoal[s.practiceGoal] = { total: 0, count: 0 };
+      byGoal[s.practiceGoal].total += s.score;
+      byGoal[s.practiceGoal].count++;
+    }
+    const overallAvg = allSessions.reduce((s, x) => s + x.score, 0) / allSessions.length;
+    let weakest: string | null = null;
+    let weakestAvg = Infinity;
+    for (const [goal, data] of Object.entries(byGoal)) {
+      if (data.count >= 2) {
+        const avg = data.total / data.count;
+        if (avg < weakestAvg && avg < overallAvg - 0.8) { weakestAvg = avg; weakest = goal; }
+      }
+    }
+    if (weakest) {
+      return {
+        message: `Your "${weakest}" sessions average ${Math.round(weakestAvg)}/10 — your lowest area, against a ${Math.round(overallAvg)}/10 overall. Make it your focus for the next two sessions.`,
+        cta: { label: "Practice now", href: "/speak-up" },
+      };
+    }
+  }
+
+  if (allSessions.length >= 4 && recentAvg >= 8) {
+    return {
+      message: `You are averaging ${Math.round(recentAvg)}/10 recently. Raise the difficulty to Hard or try a scenario type you normally avoid — easy wins stop building new skills.`,
+    };
+  }
+
+  if (strugglingCount >= 5 && allSessions.length <= 4) {
+    return {
+      message: `${strugglingCount} cards keep failing in review. Saying a word is different from recognising it — use them in Speak Up and they will stick faster.`,
+      cta: { label: "Open Speak Up", href: "/speak-up" },
+    };
+  }
+
+  return null;
 }
 
 function computeWeakestGoal(sessions: { score: number; practiceGoal: string | null }[]): string | null {
@@ -269,14 +346,14 @@ async function Dashboard({ uid }: { uid: string | null }) {
               {data.practiceStats.speakCount > 0 && data.practiceStats.speakAvg !== null ? (
                 <div className="flex-1 min-w-[8rem] rounded-2xl border border-white/8 bg-white/[0.03] p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Speak Up</p>
-                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.speakAvg}<span className="text-sm font-normal text-slate-500">/100</span></p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.speakAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
                   <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.speakCount} session{data.practiceStats.speakCount === 1 ? "" : "s"}</p>
                 </div>
               ) : null}
               {data.practiceStats.socialCount > 0 && data.practiceStats.socialAvg !== null ? (
                 <div className="flex-1 min-w-[8rem] rounded-2xl border border-white/8 bg-white/[0.03] p-4">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Conversation Lab</p>
-                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.socialAvg}<span className="text-sm font-normal text-slate-500">/100</span></p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.socialAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
                   <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.socialCount} session{data.practiceStats.socialCount === 1 ? "" : "s"}</p>
                 </div>
               ) : null}
@@ -285,6 +362,18 @@ async function Dashboard({ uid }: { uid: string | null }) {
               <p className="mt-4 text-xs leading-5 text-slate-400">
                 Focus area: <span className="font-semibold text-slate-200">{data.practiceStats.weakestGoal}</span> — your scores here run lower than anywhere else.
               </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {data.coachingInsight ? (
+          <div className="rounded-[2rem] border border-sky-300/20 bg-sky-400/5 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-sky-400 mb-3">What to focus on</p>
+            <p className="text-sm leading-7 text-slate-200">{data.coachingInsight.message}</p>
+            {data.coachingInsight.cta ? (
+              <Link href={data.coachingInsight.cta.href} className="mt-3 inline-flex text-xs font-semibold text-sky-300 transition hover:text-sky-200">
+                {data.coachingInsight.cta.label} →
+              </Link>
             ) : null}
           </div>
         ) : null}

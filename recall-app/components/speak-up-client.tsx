@@ -360,11 +360,18 @@ export function SpeakUpClient({
     const recognition = new SR() as any;
     recognition.lang = "en-US";
     recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.onresult = (e: unknown) => {
-      const ev = e as { results: { [key: number]: { [key: number]: { transcript: string } } } };
-      const transcript = Array.from({ length: Object.keys(ev.results).length }, (_, i) => ev.results[i][0].transcript).join(" ");
-      setDraft((prev) => (prev ? prev + " " + transcript : transcript));
+    recognition.interimResults = true;
+    let accumulated = draft;
+    recognition.onresult = (event: {
+      resultIndex: number;
+      results: { isFinal: boolean; 0: { transcript: string } }[];
+    }) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) accumulated += event.results[i][0].transcript + " ";
+        else interim += event.results[i][0].transcript;
+      }
+      setDraft(accumulated + interim);
     };
     recognition.onerror = () => {
       setError("Microphone access denied or unavailable. Check your browser permissions and try again.");

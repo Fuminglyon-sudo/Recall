@@ -251,7 +251,7 @@ function scoreBorder(s: number) {
   return "border-red-400/25 bg-red-400/8";
 }
 
-export function SocialSkillsClient() {
+export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?: string[] } = {}) {
   const [categoryFilter, setCategoryFilter] = useState<Category>("all");
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [activeScenario, setActiveScenario] = useState<Scenario | null>(null);
@@ -544,6 +544,21 @@ export function SocialSkillsClient() {
   if (!activeScenario) {
     return (
       <div className="space-y-8">
+        {/* Struggling words bridge */}
+        {strugglingWords.length > 0 ? (
+          <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/8 p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">From your review</p>
+            <p className="mt-2 text-sm text-slate-300">
+              {strugglingWords.length === 1 ? "This word is" : "These words are"} not sticking yet. Pick any scenario and try to work {strugglingWords.length === 1 ? "it" : "one of them"} naturally into the conversation.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {strugglingWords.map((w) => (
+                <span key={w} className="rounded-full border border-amber-300/25 bg-amber-400/12 px-3 py-1 text-sm font-medium text-amber-200">{w}</span>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {/* Category filter */}
         <div className="flex flex-wrap gap-2">
           {(["all", "professional", "social", "everyday"] as Category[]).map((cat) => (
