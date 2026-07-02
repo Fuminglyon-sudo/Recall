@@ -176,10 +176,11 @@ model SpeakUpSession {
   score        Int
   strongPoints Json
   improvements Json
-  modelAnswer  String
-  messages     Json
+  modelAnswer        String
+  modelConversation  Json?
+  messages           Json
   // null = admin session; set for all new users
-  userId       String?
+  userId             String?
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 

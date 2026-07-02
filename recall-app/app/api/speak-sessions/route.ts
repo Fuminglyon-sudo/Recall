@@ -20,6 +20,7 @@ const saveSchema = z.object({
   strongPoints: z.array(z.string()),
   improvements: z.array(z.string()),
   modelAnswer: z.string(),
+  modelConversation: z.array(z.object({ role: z.enum(["speaker", "listener"]), content: z.string() })).nullable().optional(),
   messages: z.array(messageSchema),
 });
 
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
         strongPoints: parsed.data.strongPoints,
         improvements: parsed.data.improvements,
         modelAnswer: parsed.data.modelAnswer,
+        modelConversation: parsed.data.modelConversation ?? undefined,
         messages: parsed.data.messages,
       },
     });

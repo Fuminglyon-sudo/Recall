@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Mic, ArrowLeft, ChevronRight, RotateCcw, Flag, Bookmark, BookmarkCheck } from "lucide-react";
+import { Mic, ArrowLeft, ChevronDown, ChevronRight, RotateCcw, Flag, Bookmark, BookmarkCheck } from "lucide-react";
 
 type Category = "all" | "professional" | "social" | "everyday";
 type Difficulty = "easy" | "medium" | "hard";
@@ -268,6 +268,7 @@ export function SocialSkillsClient() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [convOpen, setConvOpen] = useState(false);
   const [practiceGoal, setPracticeGoal] = useState<SocialPracticeGoal | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -442,6 +443,7 @@ export function SocialSkillsClient() {
         setMessages((prev) => [...prev, { role: "character", content: data.message }]);
       } else {
         setFeedback(data);
+        setConvOpen(false);
       }
     } catch {
       setError("Something went wrong. Check your connection and try again.");
@@ -501,6 +503,7 @@ export function SocialSkillsClient() {
       };
 
       setFeedback(data);
+      setConvOpen(false);
     } catch {
       setError("Something went wrong. Check your connection and try again.");
     } finally {
@@ -781,13 +784,22 @@ export function SocialSkillsClient() {
           </div>
         ) : null}
 
-        <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            Your conversation
-          </p>
-          {messages.map((msg, i) => (
-            <SocialBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
-          ))}
+        <div className="rounded-[2rem] border border-white/8 bg-white/[0.02]">
+          <button
+            type="button"
+            onClick={() => setConvOpen((v) => !v)}
+            className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-white/[0.02]"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Your conversation</p>
+            <ChevronDown className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${convOpen ? "rotate-180" : ""}`} />
+          </button>
+          {convOpen ? (
+            <div className="border-t border-white/8 p-5 space-y-3">
+              {messages.map((msg, i) => (
+                <SocialBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
+              ))}
+            </div>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap gap-3">

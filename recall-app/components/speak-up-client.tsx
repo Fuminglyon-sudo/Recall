@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, Bookmark, BookmarkCheck, ChevronRight, RotateCcw, Mic } from "lucide-react";
+import { ArrowLeft, Bookmark, BookmarkCheck, ChevronDown, ChevronRight, RotateCcw, Mic } from "lucide-react";
 
 type Deck = { id: string; name: string };
 
@@ -37,6 +37,7 @@ type GradeResult = {
   strongPoints: string[];
   improvements: string[];
   modelAnswer: string;
+  modelConversation?: Array<{ role: "speaker" | "listener"; content: string }>;
 };
 
 const CATEGORY_LABELS: Record<Category, string> = {
@@ -284,6 +285,7 @@ export function SpeakUpClient({
   const [error, setError] = useState<string | null>(null);
   const [savedSession, setSavedSession] = useState(false);
   const [savingSession, setSavingSession] = useState(false);
+  const [convOpen, setConvOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
 
@@ -333,6 +335,7 @@ export function SpeakUpClient({
           strongPoints: result.strongPoints,
           improvements: result.improvements,
           modelAnswer: result.modelAnswer,
+          modelConversation: result.modelConversation ?? null,
           messages,
         }),
       });
@@ -410,7 +413,7 @@ export function SpeakUpClient({
       });
 
       if (!res.ok) throw new Error("Request failed");
-      const data = (await res.json()) as { type: string; followupQuestion?: string; score?: number; strongPoints?: string[]; improvements?: string[]; modelAnswer?: string };
+      const data = (await res.json()) as { type: string; followupQuestion?: string; score?: number; strongPoints?: string[]; improvements?: string[]; modelAnswer?: string; modelConversation?: Array<{ role: "speaker" | "listener"; content: string }> };
 
       if (data.type === "followup" && data.followupQuestion) {
         setMessages((prev) => [...prev, { role: "listener", content: data.followupQuestion! }]);
@@ -421,7 +424,9 @@ export function SpeakUpClient({
           strongPoints: data.strongPoints ?? [],
           improvements: data.improvements ?? [],
           modelAnswer: data.modelAnswer ?? "",
+          modelConversation: data.modelConversation,
         });
+        setConvOpen(false);
         setExchangeCount(nextExchange);
       }
     } catch {
@@ -662,22 +667,49 @@ export function SpeakUpClient({
           />
         ) : null}
 
-        {/* Conversation review */}
-        <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-4">Conversation</p>
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/8 p-3">
-              <p className="text-xs text-emerald-300 mb-1 font-medium">Scenario</p>
-              <p className="text-sm text-slate-300">{active.setting}</p>
-              <p className="mt-2 text-sm font-medium text-emerald-200">&quot;{activeQuestion}&quot;</p>
+        {/* How it could have gone */}
+        {result.modelConversation && result.modelConversation.length > 0 ? (
+          <div className="rounded-[2rem] border border-violet-300/20 bg-violet-400/5 p-5 space-y-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-violet-300">How it could have gone</p>
+              <p className="mt-1 text-xs leading-5 text-slate-500">One way this conversation could have flowed, if you had been at your best from the start.</p>
             </div>
-            {messages.map((m, i) => (
-              <div key={i} className={`rounded-2xl border p-3 ${m.role === "speaker" ? "border-white/10 bg-white/5" : "border-slate-500/20 bg-slate-800/40"}`}>
-                <p className="text-xs text-slate-500 mb-1 font-medium">{m.role === "speaker" ? "You" : persona.label}</p>
-                <p className="text-sm text-slate-300">{m.content}</p>
+            {result.modelConversation.map((m, i) => (
+              <div key={i} className={`rounded-[2rem] border px-5 py-4 ${m.role === "speaker" ? "border-violet-300/20 bg-violet-400/8" : "border-white/8 bg-white/[0.03]"}`}>
+                <p className={`mb-2 text-[10px] font-semibold uppercase tracking-widest ${m.role === "speaker" ? "text-violet-300" : "text-slate-500"}`}>
+                  {m.role === "speaker" ? "You (model)" : persona.label}
+                </p>
+                <p className={`text-sm leading-7 ${m.role === "speaker" ? "font-medium text-white" : "text-slate-300"}`}>{m.content}</p>
               </div>
             ))}
           </div>
+        ) : null}
+
+        {/* Conversation review — collapsed by default */}
+        <div className="rounded-[2rem] border border-white/10 bg-white/[0.03]">
+          <button
+            type="button"
+            onClick={() => setConvOpen((v) => !v)}
+            className="flex w-full items-center justify-between px-5 py-4 text-left transition hover:bg-white/[0.02]"
+          >
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Your conversation</p>
+            <ChevronDown className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${convOpen ? "rotate-180" : ""}`} />
+          </button>
+          {convOpen ? (
+            <div className="border-t border-white/8 p-5 space-y-4">
+              <div className="rounded-2xl border border-emerald-300/20 bg-emerald-400/8 p-3">
+                <p className="text-xs text-emerald-300 mb-1 font-medium">Scenario</p>
+                <p className="text-sm text-slate-300">{active.setting}</p>
+                <p className="mt-2 text-sm font-medium text-emerald-200">&quot;{activeQuestion}&quot;</p>
+              </div>
+              {messages.map((m, i) => (
+                <div key={i} className={`rounded-2xl border p-3 ${m.role === "speaker" ? "border-white/10 bg-white/5" : "border-slate-500/20 bg-slate-800/40"}`}>
+                  <p className="text-xs text-slate-500 mb-1 font-medium">{m.role === "speaker" ? "You" : persona.label}</p>
+                  <p className="text-sm text-slate-300">{m.content}</p>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
 
         <div className="flex gap-3">

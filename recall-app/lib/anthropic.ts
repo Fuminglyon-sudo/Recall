@@ -130,7 +130,7 @@ export type ConversationRequest = {
 
 export type ConversationStep =
   | { type: "followup"; followupQuestion: string }
-  | { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string };
+  | { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string; modelConversation?: Array<{ role: "speaker" | "listener"; content: string }> };
 
 export async function conductPitchConversation(input: ConversationRequest): Promise<ConversationStep> {
   if (!client) return fallbackStep(input.exchangeCount);
@@ -531,12 +531,13 @@ Wrapping up:
   "score": integer 1–10 (rate: clarity, authenticity, specificity, confidence, emotional resonance),
   "strongPoints": ["1–2 items — each must cite a specific phrase from their answer that worked. Format: quote the phrase in quotation marks, then one sentence explaining why it landed."],
   "improvements": ["1–2 items — each must: (1) quote the specific phrase that weakened their response in quotation marks, (2) say briefly what was weak about it, (3) give a revised version of that exact phrase showing how it could land better"],
-  "modelAnswer": "3–5 sentence ideal version of how they could have answered the original question — natural, human, specific, memorable"
+  "modelAnswer": "3–5 sentence ideal version of how they could have answered the original question — natural, human, specific, memorable",
+  "modelConversation": only include if score is 7 or below — an array showing how this conversation could have gone from start to finish if they had been at their best. Write speaker lines as confident, clear, and specific. Write listener lines as they would naturally react to those stronger inputs. Keep each turn 2–4 sentences. Aim for 3–6 exchanges. Format: [{"role":"speaker","content":"..."},{"role":"listener","content":"..."},...]. Omit entirely if score is 8 or above.
 }`;
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 650,
+    max_tokens: 1400,
     temperature: 0.55,
     system: "Return only valid JSON. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
@@ -548,13 +549,15 @@ Wrapping up:
       const q = (parsed as { type: "followup"; followupQuestion: string }).followupQuestion;
       return { type: "followup", followupQuestion: q ?? "Tell me more about that." };
     }
-    const p = parsed as { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string };
+    const p = parsed as { type: "final"; score: number; strongPoints: string[]; improvements: string[]; modelAnswer: string; modelConversation?: Array<{ role: "speaker" | "listener"; content: string }> };
+    const score = Math.min(10, Math.max(1, Math.round(Number(p.score))));
     return {
       type: "final",
-      score: Math.min(10, Math.max(1, Math.round(Number(p.score)))),
+      score,
       strongPoints: Array.isArray(p.strongPoints) ? p.strongPoints : [],
       improvements: Array.isArray(p.improvements) ? p.improvements : [],
       modelAnswer: p.modelAnswer ?? "",
+      modelConversation: score <= 7 && Array.isArray(p.modelConversation) ? p.modelConversation : undefined,
     };
   } catch {
     return speakUpFallback(input.exchangeCount);
