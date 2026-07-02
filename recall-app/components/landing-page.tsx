@@ -1,562 +1,367 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import {
-  BrainCircuit,
-  Repeat2,
-  Sparkles,
-  BookOpen,
-  CalendarCheck2,
-  ArrowRight,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  TrendingUp,
-  Zap,
-  FileText,
-  Bell,
-  Mic,
-  MessageCircle,
-  Globe,
-} from "lucide-react";
-import { LandingUserMenu } from "./landing-user-menu";
-import { LandingFaq } from "./landing-faq";
+import { ArrowRight, ArrowDown, BrainCircuit } from "lucide-react";
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
   userName?: string | null;
 }
 
-const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
-  ["SM-2 spaced repetition",    true,  true,  false, false],
-  ["AI-drafted card content",   true,  false, false, false],
-  ["Free recall sessions",      true,  false, false, false],
-  ["Clean, focused UI",         true,  false, true,  false],
-  ["CSV export & import",       true,  true,  false, false],
-  ["Push reminders",            true,  false, true,  false],
-  ["Build your own vocabulary", true,  true,  false, true ],
-  ["Free forever",              true,  true,  true,  true ],
+type Slide = {
+  id: string;
+  image: string | null;
+  eyebrow: string | null;
+  headline: string;
+  body: string | null;
+  features: Array<{ label: string; href: string; desc: string }> | null;
+};
+
+const SLIDES: Slide[] = [
+  {
+    id: "pain",
+    image: "/scenerios/speak-up-interview-intro.webp",
+    eyebrow: null,
+    headline: "You're in the room.\nAnd you can't find the words.",
+    body: "The thought is there. Clear, fully formed. But when the moment comes — it stays locked inside your head.",
+    features: null,
+  },
+  {
+    id: "escape",
+    image: "/scenerios/lab-elevator.webp",
+    eyebrow: null,
+    headline: "So you wait\nfor it to pass.",
+    body: "You keep it vague. You check your phone. Walking home, you find the sentence you should have said.",
+    features: null,
+  },
+  {
+    id: "turn",
+    image: "/scenerios/speak-up-big-decision.webp",
+    eyebrow: "What changes everything",
+    headline: "What if you'd already\npracticed this exact moment?",
+    body: "Not scripted. Not memorised. Just practiced — so when it mattered, the right words were already close.",
+    features: null,
+  },
+  {
+    id: "product",
+    image: "/scenerios/speak-up-raise.webp",
+    eyebrow: "Recall",
+    headline: "A practice\nthat compounds.",
+    body: "Real scenarios. Honest coaching. A system that builds the version of you that knows what to say — before you walk through the door.",
+    features: null,
+  },
+  {
+    id: "features",
+    image: "/scenerios/lab-networking.webp",
+    eyebrow: "The loop",
+    headline: "Three things.\nDone consistently.",
+    body: null,
+    features: [
+      {
+        label: "Daily Review",
+        href: "/today",
+        desc: "SM-2 spaced repetition. The right card at the right moment. Words that actually stay.",
+      },
+      {
+        label: "Speak Up",
+        href: "/speak-up",
+        desc: "High-stakes scenarios. Honest AI feedback. The room where you rehearse before the room that counts.",
+      },
+      {
+        label: "Conversation Lab",
+        href: "/conversation-lab",
+        desc: "Open, sustain, and end conversations naturally — with anyone, in any room.",
+      },
+    ],
+  },
+  {
+    id: "cta",
+    image: null,
+    eyebrow: null,
+    headline: "Build the version of you\nthat knows what to say.",
+    body: "Free to use. No card required. Start your first session today.",
+    features: null,
+  },
 ];
 
-export function LandingPage({ isLoggedIn = false, userName }: LandingPageProps) {
+export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const slideRefs = useRef<(HTMLElement | null)[]>([]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = slideRefs.current.findIndex((el) => el === entry.target);
+            if (idx >= 0) setActiveSlide(idx);
+          }
+        });
+      },
+      { root: container, threshold: 0.55 }
+    );
+
+    slideRefs.current.forEach((slide) => {
+      if (slide) observer.observe(slide);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  function scrollToSlide(index: number) {
+    slideRefs.current[index]?.scrollIntoView({ behavior: "smooth" });
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      e.preventDefault();
+      scrollToSlide(Math.min(activeSlide + 1, SLIDES.length - 1));
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      scrollToSlide(Math.max(activeSlide - 1, 0));
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-slate-950 text-white antialiased">
+    <div
+      className="relative antialiased"
+      style={{ height: "100dvh", overflow: "hidden", background: "#010d1a" }}
+    >
+      {/* ── Floating nav ─────────────────────────────────────────────────── */}
+      <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-6 sm:px-10">
+        <Link href="/landing" className="flex items-center gap-2.5">
+          <div className="rounded-xl bg-emerald-400/20 p-1.5 text-emerald-300">
+            <BrainCircuit className="h-4 w-4" />
+          </div>
+          <span
+            className="text-sm font-bold tracking-tight text-white"
+            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+          >
+            Recall
+          </span>
+        </Link>
 
-      {/* ── Nav ──────────────────────────────────────────────────────────── */}
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link href="/landing" className="flex items-center gap-2.5">
-            <div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300">
-              <BrainCircuit className="h-4 w-4" />
-            </div>
-            <span className="text-sm font-bold tracking-tight text-white">Recall</span>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/about"
+            className="hidden text-sm text-white/55 transition hover:text-white sm:block"
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
+          >
+            About
           </Link>
-
-          <nav className="hidden items-center gap-7 text-sm text-slate-400 md:flex">
-            <Link href="#how-it-works" className="transition hover:text-white">How it works</Link>
-            <Link href="#features" className="transition hover:text-white">Features</Link>
-            <Link href="#faq" className="transition hover:text-white">FAQ</Link>
-            <Link href="/about" className="transition hover:text-white">About</Link>
-            <Link href="/contact" className="transition hover:text-white">Contact</Link>
-          </nav>
-
           {isLoggedIn ? (
-            <LandingUserMenu userName={userName} />
+            <Link
+              href="/"
+              className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+            >
+              Dashboard
+            </Link>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link href="/login" className="hidden text-sm text-slate-400 transition hover:text-white sm:block">
-                Sign in
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
-              >
-                Get started free
-              </Link>
-            </div>
+            <Link
+              href="/login"
+              className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+            >
+              Sign in
+            </Link>
           )}
         </div>
       </header>
 
-      <main>
-        {/* ── Hero ─────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden pb-24 pt-40">
-          <div className="pointer-events-none absolute inset-0 -z-10">
-            <div className="absolute left-1/2 top-[-80px] h-[700px] w-[900px] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-[140px]" />
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-slate-950 to-transparent" />
-          </div>
+      {/* ── Vertical dot nav ─────────────────────────────────────────────── */}
+      <div className="fixed right-4 top-1/2 z-50 flex -translate-y-1/2 flex-col items-center gap-3 sm:right-6">
+        {SLIDES.map((s, i) => (
+          <button
+            key={s.id}
+            onClick={() => scrollToSlide(i)}
+            aria-label={`Slide ${i + 1}`}
+            className="flex items-center justify-center transition-all duration-300"
+            style={{
+              width: "20px",
+              height: "6px",
+              borderRadius: "3px",
+              background: activeSlide === i ? "#4ade80" : "rgba(255,255,255,0.25)",
+              transform: activeSlide === i ? "scaleX(1.4)" : "scaleX(1)",
+            }}
+          />
+        ))}
+      </div>
 
-          <div className="mx-auto max-w-6xl px-6 text-center">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/8 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-emerald-300">
-              <Zap className="h-3 w-3" />
-              SM-2 spaced repetition · Free
-            </div>
+      {/* ── Scroll container ─────────────────────────────────────────────── */}
+      <div
+        ref={containerRef}
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        style={{
+          height: "100dvh",
+          overflowY: "scroll",
+          scrollSnapType: "y mandatory",
+          outline: "none",
+        }}
+      >
+        {SLIDES.map((slide, i) => {
+          const isLast = i === SLIDES.length - 1;
 
-            <h1 className="mx-auto max-w-4xl text-5xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-[72px] lg:leading-[1.08]">
-              The words are there.{" "}
-              <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
-                Recall brings them closer.
-              </span>
-            </h1>
+          if (isLast) {
+            return (
+              <section
+                key={slide.id}
+                ref={(el) => { slideRefs.current[i] = el; }}
+                style={{ scrollSnapAlign: "start", height: "100dvh" }}
+                className="relative flex flex-col items-center justify-center overflow-hidden px-6 text-center"
+              >
+                {/* Glow */}
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: "radial-gradient(ellipse 60% 50% at 50% 55%, rgba(74,222,128,0.10) 0%, transparent 70%)" }}
+                />
 
-            <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-400">
-              Recall uses spaced repetition to help you capture words, concepts, and ideas — then
-              brings each one back at exactly the moment you need it. Quiet sessions.
-              Language that feels like yours.
-            </p>
-
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              {isLoggedIn ? (
-                <Link
-                  href="/"
-                  className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 shadow-lg shadow-emerald-400/20 transition hover:bg-emerald-300 hover:shadow-emerald-300/30"
-                >
-                  Go to your dashboard
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 shadow-lg shadow-emerald-400/20 transition hover:bg-emerald-300 hover:shadow-emerald-300/30"
+                <div className="relative max-w-2xl space-y-7">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">Recall</p>
+                  <h2
+                    className="font-extrabold leading-tight text-white"
+                    style={{
+                      fontSize: "clamp(2rem, 5vw, 3.5rem)",
+                      whiteSpace: "pre-line",
+                      textWrap: "balance",
+                    } as React.CSSProperties}
                   >
-                    Start for free
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href="#how-it-works"
-                    className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-7 py-3.5 text-base font-semibold text-white transition hover:bg-white/10"
-                  >
-                    See how it works
-                  </Link>
-                </>
-              )}
-            </div>
-
-            <div className="mx-auto mt-16 grid max-w-xl grid-cols-3 gap-6 border-t border-white/8 pt-10">
-              {[
-                { value: "SM-2", label: "Proven algorithm" },
-                { value: "AI",   label: "AI-assisted cards" },
-                { value: "Free", label: "No card required" },
-              ].map(({ value, label }) => (
-                <div key={label} className="space-y-1">
-                  <p className="text-3xl font-black text-white">{value}</p>
-                  <p className="text-xs text-slate-500">{label}</p>
+                    {slide.headline}
+                  </h2>
+                  <p className="mx-auto max-w-sm text-base leading-7 text-slate-400">
+                    {slide.body}
+                  </p>
+                  {isLoggedIn ? (
+                    <Link
+                      href="/"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 shadow-lg transition hover:bg-emerald-300"
+                      style={{ boxShadow: "0 0 32px rgba(74,222,128,0.2)" }}
+                    >
+                      Go to dashboard <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 shadow-lg transition hover:bg-emerald-300"
+                      style={{ boxShadow: "0 0 32px rgba(74,222,128,0.2)" }}
+                    >
+                      Get started free <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
-        {/* ── Feature strip ─────────────────────────────────────────────────── */}
-        <div className="border-y border-white/8 bg-white/[0.025] py-5">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-slate-400">
-              {[
-                "SM-2 spaced repetition",
-                "AI-drafted cards",
-                "Speak Up scenarios",
-                "Conversation Lab",
-                "Free recall sessions",
-                "CSV export & import",
-                "Push reminders",
-              ].map((f) => (
-                <span key={f} className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Problem / Why ─────────────────────────────────────────────────── */}
-        <section className="py-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-              <div className="space-y-7">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">The problem</p>
-                <h2 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl">
-                  You're learning words.<br />
-                  But you're not <em className="not-italic text-emerald-300">keeping</em> them.
-                </h2>
-                <p className="text-base leading-7 text-slate-400">
-                  The forgetting curve is steep. Without a structured review system, most of what you
-                  read disappears within days. Highlighting, re-reading, and random flashcards don't
-                  fight it efficiently — they just feel productive.
-                </p>
-                <p className="text-base leading-7 text-slate-400">
-                  Recall uses SM-2, the same algorithm behind Anki and SuperMemo, to schedule the
-                  right card at the right time. You spend less time reviewing and remember more.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { icon: Clock,       title: "5-minute sessions",         body: "Only due cards surface each day. No wading through a full deck." },
-                  { icon: TrendingUp,  title: "Intervals compound",        body: "Cards you know get longer gaps. You never review what's already solid." },
-                  { icon: BrainCircuit, title: "Free recall",              body: "Write what you remember before you flip. The single highest-ROI review technique." },
-                  { icon: Sparkles,    title: "Claude writes the first draft", body: "Type a word. Claude fills definition, hook, and example. You own it." },
-                ].map(({ icon: Icon, title, body }) => (
-                  <div key={title} className="space-y-3 rounded-3xl border border-white/10 bg-white/5 p-5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <p className="text-sm font-semibold text-white">{title}</p>
-                    <p className="text-xs leading-5 text-slate-400">{body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── How it works ──────────────────────────────────────────────────── */}
-        <section id="how-it-works" className="scroll-mt-20 border-t border-white/8 bg-white/[0.02] py-28">
-          <div className="mx-auto max-w-6xl space-y-16 px-6">
-            <div className="mx-auto max-w-2xl space-y-4 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">How it works</p>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Capture. Review. Practice.</h2>
-              <p className="text-slate-400">
-                Three things, done consistently, that compound into language you can actually use.
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-3">
-              {[
-                { n: "01", title: "Capture", body: "Something stands out — a word, a concept, an idea. Type the front, let Claude draft the definition, example, and memory hook in seconds." },
-                { n: "02", title: "Review", body: "Each day, your queue shows exactly what's due. Grade how well you remembered each card. Cards you know drift farther away. Ones you struggle with return sooner." },
-                { n: "03", title: "Practice", body: "Speak Up puts you in high-stakes scenarios — a raise negotiation, a difficult call, an investor pitch. Conversation Lab drops you into real social moments. Words you can use under pressure are words you actually own." },
-              ].map(({ n, title, body }) => (
-                <div key={n} className="relative space-y-5 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8">
-                  <span className="absolute -right-2 -top-4 select-none text-7xl font-black text-white/[0.05]">{n}</span>
-                  <p className="relative text-xs font-bold uppercase tracking-widest text-emerald-400">{n}</p>
-                  <p className="text-xl font-bold text-white">{title}</p>
-                  <p className="text-sm leading-6 text-slate-400">{body}</p>
+                {/* Footer strip */}
+                <div className="absolute bottom-7 flex flex-wrap justify-center gap-5 text-xs text-slate-700">
+                  <Link href="/about" className="transition hover:text-slate-400">About</Link>
+                  <Link href="/guide" className="transition hover:text-slate-400">Guide</Link>
+                  <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
+                  <span>© {new Date().getFullYear()} Recall</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              </section>
+            );
+          }
 
-        {/* ── Feature deep-dives ────────────────────────────────────────────── */}
-        <section id="features" className="scroll-mt-20 py-28 space-y-32">
-          {([
-            {
-              label: "Spaced repetition",
-              title: "Designed around how memory actually works",
-              body: "The SM-2 algorithm calculates the optimal interval between reviews based on how accurately you remembered each card. Cards drift from daily to weekly to monthly as they strengthen — shrinking your workload automatically over time. New cards are introduced gradually so you never feel overwhelmed.",
-              icon: Repeat2,
-              bullets: [
-                "Automatic interval scheduling",
-                "Per-card ease factor adjustment",
-                "New, learning, familiar, and mastered levels",
-                "Separate queue for new vs. due cards",
-              ],
-            },
-            {
-              label: "AI assistance",
-              title: "Stop staring at a blank card",
-              body: "Type a word or phrase. Claude drafts the definition, a memory hook, an example sentence, and simple synonyms in seconds. You edit anything you like — the card is yours. Creating a high-quality card takes thirty seconds instead of five minutes.",
-              icon: Sparkles,
-              bullets: [
-                "One-click draft generation",
-                "Definition, hook, example, and synonyms",
-                "Edit freely before saving",
-                "Works for any language or subject",
-              ],
-            },
-            {
-              label: "Free recall",
-              title: "The most underused memory technique",
-              body: "Before seeing your cards, write down everything you remember from a deck without any cues. Free recall — retrieval practice without hints — is one of the highest-ROI techniques in cognitive science. Recall makes it a first-class part of your review, not an afterthought.",
-              icon: BrainCircuit,
-              bullets: [
-                "Write-first, compare-second workflow",
-                "No peeking enforced before you recall",
-                "SM-2 grades update on submission",
-                "Confirmation feedback after each session",
-              ],
-            },
-          ] as const).map(({ label, title, body, icon: Icon, bullets }, i) => (
-            <div
-              key={label}
-              className={`mx-auto max-w-6xl px-6 grid gap-14 lg:grid-cols-2 lg:items-center ${
-                i % 2 === 1 ? "lg:[&>*:first-child]:order-last" : ""
-              }`}
+          return (
+            <section
+              key={slide.id}
+              ref={(el) => { slideRefs.current[i] = el; }}
+              style={{ scrollSnapAlign: "start", height: "100dvh" }}
+              className="relative flex flex-col justify-end overflow-hidden px-7 pb-16 sm:px-14 sm:pb-20"
             >
-              <div className="space-y-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">{label}</p>
-                <h3 className="text-2xl font-extrabold text-white sm:text-3xl">{title}</h3>
-                <p className="text-base leading-7 text-slate-400">{body}</p>
-                <ul className="space-y-3">
-                  {bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Background image */}
+              <Image
+                src={slide.image!}
+                alt=""
+                fill
+                className="object-cover"
+                priority={i <= 1}
+                sizes="100vw"
+              />
 
-              <div className="flex min-h-[260px] items-center justify-center rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-950/40 via-slate-900/60 to-slate-950 p-10">
-                <div className="space-y-4 text-center">
-                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/20">
-                    <Icon className="h-9 w-9" />
-                  </div>
-                  <p className="text-xs text-slate-600">Screenshot coming soon</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </section>
+              {/* Gradient overlay — dark base, fades up */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to top, #010d1a 0%, rgba(1,13,26,0.78) 40%, rgba(1,13,26,0.35) 70%, rgba(1,13,26,0.20) 100%)",
+                }}
+              />
 
-        {/* ── Audacity section ─────────────────────────────────────────────── */}
-        <section className="border-t border-white/8 py-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="grid gap-16 lg:grid-cols-2 lg:items-start">
-              {/* Narrative */}
-              <div className="space-y-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">The opportunity cost</p>
-                <h2 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl">
-                  The world rewards the ones<br className="hidden sm:block" /> who speak up.
+              {/* Side vignette — makes left-anchored text always readable */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(to right, rgba(1,13,26,0.55) 0%, transparent 60%)",
+                }}
+              />
+
+              {/* Content */}
+              <div className="relative max-w-2xl space-y-4">
+                {slide.eyebrow ? (
+                  <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+                    {slide.eyebrow}
+                  </p>
+                ) : null}
+
+                <h2
+                  className="font-extrabold leading-[1.08] text-white"
+                  style={{
+                    fontSize: "clamp(2rem, 5.5vw, 4rem)",
+                    whiteSpace: "pre-line",
+                    textShadow: "0 2px 20px rgba(0,0,0,0.5)",
+                  }}
+                >
+                  {slide.headline}
                 </h2>
-                <p className="text-base leading-7 text-slate-400">
-                  Think of the last time an opportunity walked past you.
-                </p>
-                <p className="text-base leading-7 text-slate-400">
-                  The promotion that went to someone with less experience but more confidence. The
-                  connection you wanted to make but never approached. The networking event where
-                  someone from Lagos, Singapore, or São Paulo extended a hand — and you had nothing
-                  to say beyond hello, and the moment passed.
-                </p>
-                <p className="text-base leading-7 text-slate-400">
-                  The world is not always fair. But it consistently rewards the ones who know what
-                  to say, who can hold their position under pressure, and who can find something
-                  real in common with anyone they meet.
-                </p>
-                <p className="text-base leading-7 text-slate-300">
-                  Audacity is not a personality trait. It is a practice.
-                  Recall has three features built for exactly this.
-                </p>
-              </div>
 
-              {/* Feature cards */}
-              <div className="space-y-4">
-                {([
-                  {
-                    icon: Mic,
-                    label: "Speak Up",
-                    href: "/speak-up",
-                    tagline: "The room where you rehearse before the room that counts.",
-                    body: "High-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call. Practise until the right words arrive before the moment does, not after.",
-                  },
-                  {
-                    icon: MessageCircle,
-                    label: "Conversation Lab",
-                    href: "/conversation-lab",
-                    tagline: "Become someone conversations come easily to.",
-                    body: "Open-ended practice across contexts, registers, and situations. The place where speaking up stops feeling like a risk and starts feeling like who you are.",
-                  },
-                  {
-                    icon: Globe,
-                    label: "Countries",
-                    href: "/countries",
-                    tagline: "Know something real about where people are from.",
-                    body: "The capital. The greeting in their language. Something that makes their country distinct. Walk into any room in the world with something genuine to say — and watch the conversation open.",
-                  },
-                ] as const).map(({ icon: Icon, label, href, tagline, body }) => (
-                  <Link
-                    key={label}
-                    href={isLoggedIn ? href : "/login"}
-                    className="group flex gap-4 rounded-3xl border border-white/10 bg-white/5 p-5 transition hover:border-emerald-400/30 hover:bg-white/8"
+                {slide.body ? (
+                  <p
+                    className="max-w-lg text-base leading-7 text-slate-300 sm:text-lg"
+                    style={{ textShadow: "0 1px 8px rgba(0,0,0,0.6)" }}
                   >
-                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-bold text-white">{label}</p>
-                        <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
-                      </div>
-                      <p className="text-xs font-medium text-emerald-300/80">{tagline}</p>
-                      <p className="text-xs leading-5 text-slate-400">{body}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+                    {slide.body}
+                  </p>
+                ) : null}
 
-        {/* ── More features strip ───────────────────────────────────────────── */}
-        <section className="border-t border-white/8 bg-white/[0.02] py-20">
-          <div className="mx-auto max-w-6xl px-6 space-y-12">
-            <div className="mx-auto max-w-2xl space-y-3 text-center">
-              <h2 className="text-2xl font-extrabold text-white sm:text-3xl">Everything else, without the noise</h2>
-              <p className="text-slate-400">The features that make a practice sustainable.</p>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                { icon: BookOpen,     title: "Personal decks",    body: "Organise cards by topic, language, or project. All decks feed into a single daily review queue." },
-                { icon: CalendarCheck2, title: "Streak calendar",  body: "28-day review calendar. Small, consistent sessions matter more than long occasional ones." },
-                { icon: FileText,    title: "CSV export & import", body: "Export any deck to CSV. Import cards in bulk. Your data is always portable." },
-                { icon: Bell,        title: "Push reminders",     body: "Opt-in daily reminders so you never miss a review. Works on mobile and desktop." },
-              ].map(({ icon: Icon, title, body }) => (
-                <div key={title} className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-300">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <p className="font-semibold text-white">{title}</p>
-                  <p className="text-sm leading-6 text-slate-400">{body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Comparison table ──────────────────────────────────────────────── */}
-        <section className="py-28">
-          <div className="mx-auto max-w-6xl space-y-12 px-6">
-            <div className="mx-auto max-w-2xl space-y-4 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Comparison</p>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Built for people who want language that comes when they need it</h2>
-              <p className="text-slate-400">
-                Most tools ask you to manage the practice. Recall manages it for you — so you can just show up.
-              </p>
-            </div>
-
-            <div className="overflow-x-auto rounded-3xl border border-white/10">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.04]">
-                    <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
-                      Feature
-                    </th>
-                    {["Recall", "Anki", "Duolingo", "Paper cards"].map((col, i) => (
-                      <th
-                        key={col}
-                        className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest ${
-                          i === 0 ? "text-emerald-300" : "text-slate-500"
-                        }`}
+                {slide.features ? (
+                  <div className="mt-2 grid gap-2.5 sm:grid-cols-3 pt-2">
+                    {slide.features.map((f) => (
+                      <Link
+                        key={f.label}
+                        href={isLoggedIn ? f.href : "/login"}
+                        className="group rounded-2xl border border-white/12 bg-slate-950/65 p-4 backdrop-blur-sm transition hover:border-emerald-400/30 hover:bg-slate-950/80"
                       >
-                        {col}
-                      </th>
+                        <p className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                          {f.label}
+                          <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:opacity-100" />
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-slate-400">{f.desc}</p>
+                      </Link>
                     ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/8">
-                  {COMPARISON_ROWS.map(([feature, ...vals]) => (
-                    <tr key={feature} className="transition hover:bg-white/[0.02]">
-                      <td className="px-6 py-3.5 font-medium text-slate-200">{feature}</td>
-                      {vals.map((v, i) => (
-                        <td key={i} className="px-6 py-3.5 text-center">
-                          {v ? (
-                            <CheckCircle2
-                              className={`mx-auto h-4 w-4 ${i === 0 ? "text-emerald-400" : "text-slate-500"}`}
-                            />
-                          ) : (
-                            <XCircle className="mx-auto h-4 w-4 text-slate-800" />
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-        <section id="faq" className="scroll-mt-20 border-t border-white/8 bg-white/[0.02] py-28">
-          <div className="mx-auto max-w-3xl space-y-12 px-6">
-            <div className="space-y-3 text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">FAQ</p>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Common questions</h2>
-            </div>
-            <LandingFaq />
-          </div>
-        </section>
-
-        {/* ── CTA banner ────────────────────────────────────────────────────── */}
-        <section className="py-28">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="relative overflow-hidden rounded-3xl border border-emerald-400/20 bg-gradient-to-br from-emerald-950/70 via-slate-900/80 to-slate-950 p-14 text-center">
-              <div className="pointer-events-none absolute inset-0">
-                <div className="absolute left-1/2 top-1/2 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-500/12 blur-[120px]" />
+                  </div>
+                ) : null}
               </div>
-              <div className="relative space-y-6">
-                <h2 className="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
-                  The words you reach for — finally within reach
-                </h2>
-                <p className="mx-auto max-w-lg text-slate-400">
-                  Free to use. Your first card can be added today.
-                </p>
-                {isLoggedIn ? (
-                  <Link
-                    href="/"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-8 py-4 text-base font-bold text-slate-950 shadow-lg shadow-emerald-400/25 transition hover:bg-emerald-300"
-                  >
-                    Back to dashboard
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-8 py-4 text-base font-bold text-slate-950 shadow-lg shadow-emerald-400/25 transition hover:bg-emerald-300"
-                  >
-                    Get started for free
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
 
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="border-t border-white/8">
-        <div className="mx-auto max-w-6xl px-6 py-14">
-          <div className="grid gap-10 sm:grid-cols-4">
-            <div className="sm:col-span-2 space-y-4">
-              <Link href="/landing" className="flex items-center gap-2.5">
-                <div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300">
-                  <BrainCircuit className="h-4 w-4" />
-                </div>
-                <span className="text-sm font-bold text-white">Recall</span>
-              </Link>
-              <p className="max-w-xs text-sm leading-6 text-slate-500">
-                A calm flashcard app built on spaced repetition.
-                Remember what matters.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Product</p>
-              <ul className="space-y-2.5 text-sm text-slate-400">
-                <li><Link href="/login" className="transition hover:text-white">Get started</Link></li>
-                <li><Link href="/guide" className="transition hover:text-white">Guide</Link></li>
-                {isLoggedIn && (
-                  <li><Link href="/" className="transition hover:text-white">Dashboard</Link></li>
-                )}
-                <li><Link href="/login" className="transition hover:text-white">Sign in</Link></li>
-              </ul>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Company</p>
-              <ul className="space-y-2.5 text-sm text-slate-400">
-                <li><Link href="/about" className="transition hover:text-white">About</Link></li>
-                <li><Link href="/contact" className="transition hover:text-white">Contact</Link></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/8 pt-8 sm:flex-row sm:items-center">
-            <p className="text-xs text-slate-600">© {new Date().getFullYear()} Recall. All rights reserved.</p>
-            <p className="text-xs text-slate-700">Built with spaced repetition and care.</p>
-          </div>
-        </div>
-      </footer>
+              {/* Scroll cue — first slide only */}
+              {i === 0 ? (
+                <button
+                  onClick={() => scrollToSlide(1)}
+                  className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/30 transition hover:text-white/60"
+                >
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.2em]">Scroll</span>
+                  <ArrowDown className="h-3.5 w-3.5 animate-bounce" />
+                </button>
+              ) : null}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
