@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { SummonLogo } from "@/components/summon-logo";
 import { POSTS, formatDate } from "./data";
 
@@ -35,6 +35,10 @@ export default function BlogPage() {
             <SummonLogo fontSize="1.9rem" />
           </Link>
           <nav className="flex items-center gap-5 text-sm text-slate-400">
+            <Link href="/landing" className="flex items-center gap-1.5 transition hover:text-white">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Home
+            </Link>
             <Link href="/about" className="transition hover:text-white">About</Link>
             <Link href="/blog" className="text-white font-medium">Blog</Link>
             <Link href="/contact" className="transition hover:text-white">Contact</Link>

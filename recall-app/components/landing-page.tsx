@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown, LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { SummonLogo } from "./summon-logo";
 
 interface LandingPageProps {
@@ -114,8 +114,21 @@ const SLIDES: Slide[] = [
 
 export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLElement | null)[]>([]);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    function handleOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [menuOpen]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -240,9 +253,62 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
               Contact
             </Link>
             {isLoggedIn ? (
-              <Link href="/" className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300">
-                Dashboard
-              </Link>
+              <div ref={menuRef} style={{ position: "relative" }}>
+                <button
+                  onClick={() => setMenuOpen((o) => !o)}
+                  className="flex items-center gap-1.5 rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+                >
+                  Dashboard
+                  <ChevronDown
+                    className="h-3.5 w-3.5 transition-transform"
+                    style={{ transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                  />
+                </button>
+
+                {menuOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 8px)",
+                      right: 0,
+                      minWidth: "168px",
+                      background: "rgba(10, 20, 38, 0.97)",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      borderRadius: "0.875rem",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      boxShadow: "0 20px 56px rgba(0,0,0,0.7)",
+                      overflow: "hidden",
+                      zIndex: 100,
+                    }}
+                  >
+                    <Link
+                      href="/"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 transition hover:bg-white/6 hover:text-white"
+                    >
+                      <LayoutDashboard className="h-4 w-4 text-slate-500" />
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/settings"
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 transition hover:bg-white/6 hover:text-white"
+                    >
+                      <Settings className="h-4 w-4 text-slate-500" />
+                      Settings
+                    </Link>
+                    <div style={{ height: "1px", background: "rgba(255,255,255,0.07)", margin: "2px 0" }} />
+                    <a
+                      href="/api/logout"
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-400 transition hover:bg-white/6 hover:text-rose-400"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </a>
+                  </div>
+                )}
+              </div>
             ) : (
               <Link href="/login" className="rounded-xl bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300">
                 Sign in
