@@ -32,6 +32,54 @@ const FAQS = [
     q: "What happens when I delete my account?",
     a: "Deleting your account permanently removes all your decks, cards, review history, and profile data. You can do this from Settings → Delete account. It requires typing your email address to confirm — there is no undo.",
   },
+  {
+    q: "What devices can I use Summon on?",
+    a: "Summon is a web app that works in any modern browser — Chrome, Safari, Firefox, Edge. It's fully mobile-responsive, so it works well on your phone or tablet without needing to install anything. A native iOS and Android app is on the roadmap.",
+  },
+  {
+    q: "Does Summon work offline?",
+    a: "Core features currently require an internet connection. If you lose connectivity mid-session, your progress is saved locally and synced when you reconnect. Offline review mode — useful for commutes — is on the roadmap.",
+  },
+  {
+    q: "Does Summon track my streak or daily progress?",
+    a: "Yes. Your dashboard shows your current review streak, a 30-day activity heatmap, total cards mastered, and the next 8 days of upcoming reviews so you can see what's coming. Consistency over long periods matters more than any single session — the streak is there to reflect that, not to guilt you.",
+  },
+  {
+    q: "How many cards will I need to review each day?",
+    a: "That depends on how many cards you have and how well you know them. Summon introduces 3 new cards per day by default. Most consistent users have a daily queue of 10–25 cards, which takes 5–10 minutes. The key is not letting the queue pile up — daily short sessions beat infrequent long ones by a significant margin.",
+  },
+  {
+    q: "What happens if I miss a day?",
+    a: "Nothing catastrophic. Your due cards wait for you. If you miss several days, more cards will be due when you return — Summon prioritises overdue cards first so you work through the backlog efficiently. Your streak resets, but your card mastery and review history are untouched.",
+  },
+  {
+    q: "What do the review grades (Again / Hard / Good / Easy / Perfect) actually do?",
+    a: "Each grade adjusts how soon the card returns and how hard the algorithm considers it. Again (0) brings it back in minutes. Hard (1–2) shortens the next interval. Good (3) keeps the interval roughly on track. Easy (4) and Perfect (5) extend the interval significantly. Grading yourself honestly — not generously — is what makes the algorithm work. Inflated grades just mean you forget things before they come back.",
+  },
+  {
+    q: "What do the mastery levels — New, Learning, Familiar, Mastered — mean?",
+    a: "New means the card hasn't been reviewed yet. Learning means you've reviewed it but it's still in early repetition — coming back frequently. Familiar means consistent good recall over several sessions — intervals are stretching into weeks. Mastered means strong, reliable recall across many sessions — the card surfaces infrequently, maybe monthly. Cards move up and down based on your grades.",
+  },
+  {
+    q: "Can I share a deck with someone else?",
+    a: "Not directly yet — deck sharing is on the roadmap. For now, you can export any deck as a CSV file and share it for someone else to import into their account. The export button is on each deck's settings page.",
+  },
+  {
+    q: "Is my data private? Can anyone see my Speak Up sessions?",
+    a: "Your sessions are private. Speak Up conversations and Conversation Lab exchanges are not stored beyond the session — they exist to give you feedback, not to build a record. Your card data is tied to your account and never shared or sold.",
+  },
+  {
+    q: "How is Summon different from Anki or Quizlet?",
+    a: "Anki uses the same SM-2 algorithm as Summon and is powerful — but it requires you to build everything yourself and has a steep learning curve. Quizlet is primarily a recognition tool with limited scheduling depth. Summon adds Summon-drafted cards (no blank-card friction), Speak Up for high-stakes speaking practice, and Conversation Lab for social fluency. It's built for professionals who want to communicate better — not students drilling for exams.",
+  },
+  {
+    q: "What's the difference between Speak Up and Conversation Lab?",
+    a: "Speak Up is for high-stakes prepared scenarios — a job interview, a salary negotiation, a pitch, pushing back on a decision. You rehearse before a specific kind of moment happens. Conversation Lab is for social fluency — you open a conversation in a natural setting (a networking event, a long flight, a dinner party) with no script or guided prompts, then get coaching on your conversational moves. One builds professional confidence under pressure; the other builds social ease.",
+  },
+  {
+    q: "How does Speak Up scoring work?",
+    a: "After a Speak Up session you receive a score from 0–10, your strongest moment in the exchange, one specific thing to improve next time, the exact exchange where the conversation shifted, and a model response showing how the answer could have landed. The score reflects clarity, structure, how well you held your position, and your confidence signals — not just whether your answer was technically correct.",
+  },
 ];
 
 export function LandingFaq() {
