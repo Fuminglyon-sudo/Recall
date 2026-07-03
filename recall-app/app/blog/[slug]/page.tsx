@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SummonLogo } from "@/components/summon-logo";
-import { POSTS, getPost, formatDate, type Block } from "../data";
+import { ReadingProgressBar } from "@/components/reading-progress-bar";
+import { BlogContentGate } from "@/components/blog-content-gate";
+import { POSTS, getPost, formatDate } from "../data";
 
 export function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
@@ -35,63 +37,6 @@ export async function generateMetadata({
   };
 }
 
-function renderBlock(block: Block, index: number) {
-  if (block.type === "h2") {
-    return (
-      <h2
-        key={index}
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "clamp(1.3rem, 2.5vw, 1.7rem)",
-          fontWeight: 700,
-          lineHeight: 1.2,
-          color: "#f1f5f9",
-          marginTop: "2.5rem",
-          marginBottom: "0.75rem",
-        }}
-      >
-        {block.text}
-      </h2>
-    );
-  }
-  if (block.type === "ul") {
-    return (
-      <ul
-        key={index}
-        style={{
-          margin: "1rem 0",
-          paddingLeft: "1.4rem",
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.6rem",
-        }}
-      >
-        {block.items.map((item, i) => (
-          <li
-            key={i}
-            style={{ fontSize: "1.05rem", lineHeight: 1.75, color: "#94a3b8" }}
-          >
-            {item}
-          </li>
-        ))}
-      </ul>
-    );
-  }
-  return (
-    <p
-      key={index}
-      style={{
-        fontSize: "1.05rem",
-        lineHeight: 1.8,
-        color: "#94a3b8",
-        margin: "1rem 0",
-      }}
-    >
-      {block.text}
-    </p>
-  );
-}
-
 export default async function BlogPostPage({
   params,
 }: {
@@ -107,6 +52,8 @@ export default async function BlogPostPage({
 
   return (
     <div className="min-h-screen bg-slate-950 text-white antialiased">
+      <ReadingProgressBar />
+
       {/* Nav */}
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
@@ -151,7 +98,7 @@ export default async function BlogPostPage({
         <div className="mb-8 h-px bg-white/8" />
 
         {/* Content */}
-        <div>{post.content.map((block, i) => renderBlock(block, i))}</div>
+        <BlogContentGate blocks={post.content} />
 
         {/* CTA */}
         <div

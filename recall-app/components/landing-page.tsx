@@ -67,7 +67,7 @@ const SLIDES: Slide[] = [
       { text: "\n" },
       { text: "that compounds.", italic: true },
     ],
-    body: "Real scenarios. Honest coaching. A system that builds the version of you that knows what to say — before you walk through the door.",
+    body: "You type a word — AI drafts the card. You pick a scenario — AI plays the room and coaches your response. You open a conversation — AI tells you what to do next. Three loops that reinforce each other, every day.",
     features: null,
   },
   {
@@ -84,17 +84,17 @@ const SLIDES: Slide[] = [
       {
         label: "Daily Review",
         href: "/today",
-        desc: "SM-2 spaced repetition. The right card at the right moment. Words that actually stay.",
+        desc: "AI drafts definition, hook, and example in seconds. SM-2 schedules each card at the exact moment you're about to forget it — no earlier, no later.",
       },
       {
         label: "Speak Up",
         href: "/speak-up",
-        desc: "High-stakes scenarios. Honest AI feedback. The room where you rehearse before the room that counts.",
+        desc: "Pick a scenario — job interview, salary conversation, pitch. Set the pressure. Speak. The AI responds in character, then tells you what landed and how to do it better.",
       },
       {
         label: "Conversation Lab",
         href: "/conversation-lab",
-        desc: "Open, sustain, and end conversations naturally — with anyone, in any room.",
+        desc: "Ten social scenarios: networking events, long flights, dinner parties. Pick a character. Open the conversation yourself. Get coaching on your opener and one move for next time.",
       },
     ],
   },

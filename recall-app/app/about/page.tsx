@@ -211,14 +211,14 @@ export default function AboutPage() {
                   label: "Speak Up",
                   href: "/speak-up",
                   tagline: "The room where you rehearse before the room that counts.",
-                  body: "High-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call. Practise until the right words arrive before the moment does, not after.",
+                  body: "Pick a scenario: the raise conversation, a pitch, pushing back in a meeting. Set the pressure level. Speak your answer. The AI responds in character, then gives you honest feedback and a stronger version to try again.",
                 },
                 {
                   icon: MessageCircle,
                   label: "Conversation Lab",
                   href: "/conversation-lab",
                   tagline: "Become someone conversations come easily to.",
-                  body: "Open-ended practice across contexts, registers, and situations. The place where speaking up stops feeling like a risk and starts feeling like who you are.",
+                  body: "Ten real social scenarios — networking mixers, dinner parties, long-haul flights. Pick your character type. Open the conversation yourself, no guided prompts. Get coaching on your opener and one move to try next time.",
                 },
                 {
                   icon: Globe,
