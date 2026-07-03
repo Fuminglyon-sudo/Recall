@@ -1,8 +1,29 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUserId, ADMIN_USER_ID } from "@/lib/session";
+import { getCurrentUserId, ADMIN_USER_ID, scopedUserId } from "@/lib/session";
 import { auth, signOut } from "@/lib/next-auth";
+
+export async function updateDailyCardLimit(formData: FormData): Promise<void> {
+  const userId = await getCurrentUserId();
+  if (!userId || userId === ADMIN_USER_ID) return;
+  const uid = scopedUserId(userId);
+  if (!uid) return;
+
+  const value = parseInt(String(formData.get("dailyNewCards") ?? ""), 10);
+  if (isNaN(value) || value < 1 || value > 50) return; // HTML min/max guards this
+
+  await prisma.userSettings.upsert({
+    where: { userId: uid },
+    create: { id: crypto.randomUUID(), userId: uid, dailyNewCards: value },
+    update: { dailyNewCards: value },
+  });
+
+  revalidatePath("/settings");
+  revalidatePath("/today");
+  revalidatePath("/");
+}
 
 export async function deleteAccount(
   _prev: { error: string } | null,

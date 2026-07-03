@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
+import { Volume2, WifiOff } from "lucide-react";
 import { MasteryBadge } from "./mastery-badge";
 
 const GRADES = [
@@ -37,6 +38,19 @@ export function ReviewCard({
   const [association, setAssociation] = useState("");
   const [pendingGrade, setPendingGrade] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [offline, setOffline] = useState(false);
+
+  useEffect(() => {
+    setOffline(!navigator.onLine);
+    const on = () => setOffline(false);
+    const off = () => setOffline(true);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
 
   const isFirstReview = card.repetitions === 0;
 
@@ -69,6 +83,7 @@ export function ReviewCard({
             <h2 className="mt-2 text-2xl font-semibold text-white">{card.front}</h2>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <PronounceButton text={card.front} />
             <MasteryBadge interval={card.interval} repetitions={card.repetitions} />
             {card.partOfSpeech ? (
               <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-200">
@@ -127,31 +142,59 @@ export function ReviewCard({
 
           <div className="space-y-3 pt-3 border-t border-white/8">
             <p className="text-sm font-medium text-slate-300">How well did you recall it?</p>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-              {GRADES.map(({ value, label, style }) => {
-                const isThis = pendingGrade === value && isPending;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => handleGrade(value)}
-                    disabled={isPending}
-                    className={`flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-semibold transition ${style} ${isPending ? "cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    {isThis ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    ) : (
-                      <span className="text-base">{value}</span>
-                    )}
-                    <span className="text-[10px] font-normal opacity-70">{label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {offline ? (
+              <div className="flex items-center gap-2 text-xs text-amber-300">
+                <WifiOff className="h-3.5 w-3.5 shrink-0" />
+                You&apos;re offline — grading resumes when you reconnect.
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+                {GRADES.map(({ value, label, style }) => {
+                  const isThis = pendingGrade === value && isPending;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => handleGrade(value)}
+                      disabled={isPending}
+                      className={`flex flex-col items-center gap-1 rounded-2xl border px-2 py-3 text-sm font-semibold transition ${style} ${isPending ? "cursor-not-allowed opacity-50" : ""}`}
+                    >
+                      {isThis ? (
+                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      ) : (
+                        <span className="text-base">{value}</span>
+                      )}
+                      <span className="text-[10px] font-normal opacity-70">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function PronounceButton({ text }: { text: string }) {
+  function speak() {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = "en-US";
+    window.speechSynthesis.speak(utt);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={speak}
+      title={`Pronounce "${text}"`}
+      className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs text-slate-400 transition hover:bg-white/10 hover:text-white"
+    >
+      <Volume2 className="h-3.5 w-3.5" />
+    </button>
   );
 }
 

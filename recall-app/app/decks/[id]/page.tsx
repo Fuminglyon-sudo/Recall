@@ -6,6 +6,7 @@ import { AppShell } from "@/components/app-shell";
 import { computeDistribution, MASTERY } from "@/lib/mastery";
 import { CardAccordion } from "@/components/card-accordion";
 import { DeckIO } from "@/components/deck-io";
+import { DeckSharePanel } from "@/components/deck-share-panel";
 import { updateCard, resetCard } from "../actions";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
@@ -51,8 +52,9 @@ export default async function DeckDetailPage({ params }: { params: Promise<{ id:
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">{deck.description ?? "Cards you want to revisit without pressure."}</h1>
           <p className="mt-3 text-sm leading-7 text-slate-300">{deck.cards.length} cards in this deck. Click any card to expand and edit it.</p>
 
-          <div className="mt-5 border-t border-white/8 pt-5">
+          <div className="mt-5 border-t border-white/8 pt-5 space-y-5">
             <DeckIO deckId={deck.id} />
+            <DeckSharePanel deckId={deck.id} shareToken={deck.shareToken ?? null} />
           </div>
 
           {deck.cards.length > 0 ? (

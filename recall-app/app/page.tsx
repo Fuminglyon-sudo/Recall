@@ -19,6 +19,8 @@ import { WordOfTheDay } from "@/components/word-of-the-day";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { PushPrompt } from "@/components/push-prompt";
 import { LandingPage } from "@/components/landing-page";
+import { AchievementsDisplay } from "@/components/achievements-display";
+import { RecoverStreakButton } from "@/components/recover-streak-button";
 
 // ── SEO metadata (shown to crawlers on the landing route) ───────────────────
 export const metadata: Metadata = {
@@ -70,7 +72,10 @@ async function getDashboardData(uid: string | null) {
   const in8Days = new Date(tomorrowStart);
   in8Days.setDate(in8Days.getDate() + 7);
 
-  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates, speakSessions, socialSessions] = await Promise.all([
+  const yesterday = new Date(todayStart);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates, speakSessions, socialSessions, userSettings, userAchievements] = await Promise.all([
     prisma.streak.findFirst({ where: { userId: uid } }),
     prisma.deck.findMany({
       where: { userId: uid },
@@ -108,6 +113,8 @@ async function getDashboardData(uid: string | null) {
       take: 10,
       select: { score: true, practiceGoal: true, createdAt: true },
     }),
+    uid ? prisma.userSettings.findFirst({ where: { userId: uid } }) : Promise.resolve(null),
+    uid ? prisma.userAchievement.findMany({ where: { userId: uid }, orderBy: { unlockedAt: "desc" } }) : Promise.resolve([]),
   ]);
 
   const reviewDays = [...new Set(reviewLogsRaw.map((l) => l.reviewedAt.toISOString().split("T")[0]))];
@@ -136,7 +143,8 @@ async function getDashboardData(uid: string | null) {
 
   const allDueCards = decks.flatMap((d) => d.cards).filter((c) => c.dueAt <= today);
   const reviewsDue = allDueCards.filter((c) => c.repetitions > 0).length;
-  const newDue = Math.min(allDueCards.filter((c) => c.repetitions === 0).length, 3);
+  const maxNewCards = userSettings?.dailyNewCards ?? 3;
+  const newDue = Math.min(allDueCards.filter((c) => c.repetitions === 0).length, maxNewCards);
   const dueTodayCount = reviewsDue + newDue;
 
   const allCards = decks.flatMap((d: typeof decks[number]) => d.cards);
@@ -152,10 +160,23 @@ async function getDashboardData(uid: string | null) {
   const weakestGoal = computeWeakestGoal([...speakSessions, ...socialSessions]);
   const coachingInsight = computeCoachingInsight(speakSessions, socialSessions, strugglingCount);
 
+  const lastDate = streak?.lastReviewDate ?? null;
+  const streakBroken =
+    !lastDate ||
+    (!isSameCalendarDay(lastDate, todayStart) && !isSameCalendarDay(lastDate, yesterday));
+  const recoveryUsedAt = streak?.recoveryUsedAt ?? null;
+  const recoveryAvailable =
+    !recoveryUsedAt ||
+    (Date.now() - recoveryUsedAt.getTime()) / (1000 * 60 * 60 * 24) >= 7;
+  const longestStreak = streak?.longestStreak ?? 0;
+  const showStreakRecovery = streakBroken && longestStreak > 0 && recoveryAvailable;
+
   return {
     dueToday: dueTodayCount,
     totalCards: allCards.length,
     currentStreak: streak?.currentStreak ?? 0,
+    longestStreak,
+    showStreakRecovery,
     reviewedToday: streak?.lastReviewDate ? isSameCalendarDay(streak.lastReviewDate, todayStart) : false,
     mastery,
     voiceTone: voiceProfile?.tone ?? "",
@@ -172,6 +193,7 @@ async function getDashboardData(uid: string | null) {
     upcomingByDay,
     wordOfDay,
     strugglingCount,
+    achievements: userAchievements,
     practiceStats: { speakAvg, socialAvg, weakestGoal, speakCount: speakSessions.length, socialCount: socialSessions.length },
     coachingInsight,
   };
@@ -293,6 +315,10 @@ async function Dashboard({ uid }: { uid: string | null }) {
 
         {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? (
           <PushPrompt vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
+        ) : null}
+
+        {data.showStreakRecovery ? (
+          <RecoverStreakButton longestStreak={data.longestStreak} />
         ) : null}
 
         <div className="grid gap-4 sm:grid-cols-3">
@@ -492,6 +518,8 @@ async function Dashboard({ uid }: { uid: string | null }) {
             </div>
           </CalmCard>
         </div>
+
+        <AchievementsDisplay earned={data.achievements ?? []} />
 
         <DeckList decks={data.decks} />
       </section>

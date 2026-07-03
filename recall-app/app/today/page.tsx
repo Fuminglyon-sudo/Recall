@@ -4,11 +4,10 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { ReviewCard } from "@/components/review-card";
+import { OfflineBanner } from "@/components/offline-banner";
 import { gradeCard } from "./actions";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
-
-const MAX_NEW = 3;
 
 export default async function TodayPage() {
   const userId = await getCurrentUserId();
@@ -16,6 +15,10 @@ export default async function TodayPage() {
   const uid = scopedUserId(userId);
 
   const ready = await isDatabaseReady();
+  const settings =
+    ready && uid
+      ? await prisma.userSettings.findFirst({ where: { userId: uid } })
+      : null;
   const allDue = ready
     ? await prisma.card.findMany({
         where: { dueAt: { lte: new Date() }, deck: { userId: uid } },
@@ -23,6 +26,8 @@ export default async function TodayPage() {
         include: { deck: true },
       })
     : [];
+
+  const MAX_NEW = settings?.dailyNewCards ?? 3;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -62,6 +67,7 @@ export default async function TodayPage() {
   return (
     <AppShell>
       <section className="mx-auto max-w-3xl space-y-6">
+        <OfflineBanner />
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
           <p className="text-sm font-medium text-emerald-300">Today</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">

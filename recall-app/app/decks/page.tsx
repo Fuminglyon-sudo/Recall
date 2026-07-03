@@ -4,10 +4,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
-import { createDeck } from "./actions";
+import { createDeck, cloneStarterDeck } from "./actions";
 import { SubmitButton } from "@/components/forms";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { STARTER_DECKS } from "@/lib/starter-decks";
 
 export default async function DecksPage() {
   const userId = await getCurrentUserId();
@@ -49,21 +50,48 @@ export default async function DecksPage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
-          <p className="text-sm font-medium text-emerald-300">New deck</p>
-          <h2 className="mt-3 text-2xl font-semibold text-white">A new space for the words that belong here.</h2>
-          <form action={createDeck} className="mt-6 space-y-5">
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-200">Name</span>
-              <input name="name" className="input-base" placeholder="e.g. Words I reach for" required />
-            </label>
-            <label className="block space-y-2">
-              <span className="text-sm font-medium text-slate-200">Description</span>
-              <textarea name="description" rows={4} className="input-base" placeholder="What belongs in this deck?" />
-            </label>
-            <SubmitButton label="Create deck" pendingLabel="Creating deck..." />
-          </form>
-        </section>
+        <div className="space-y-6">
+          <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
+            <p className="text-sm font-medium text-emerald-300">New deck</p>
+            <h2 className="mt-3 text-2xl font-semibold text-white">A new space for the words that belong here.</h2>
+            <form action={createDeck} className="mt-6 space-y-5">
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">Name</span>
+                <input name="name" className="input-base" placeholder="e.g. Words I reach for" required />
+              </label>
+              <label className="block space-y-2">
+                <span className="text-sm font-medium text-slate-200">Description</span>
+                <textarea name="description" rows={4} className="input-base" placeholder="What belongs in this deck?" />
+              </label>
+              <SubmitButton label="Create deck" pendingLabel="Creating deck..." />
+            </form>
+          </section>
+
+          <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
+            <p className="text-sm font-medium text-emerald-300">Starter packs</p>
+            <h2 className="mt-3 text-xl font-semibold text-white">Hit the ground running.</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Hand-curated decks for professionals — definitions, examples, memory hooks, and synonyms included.
+            </p>
+            <div className="mt-5 space-y-3">
+              {STARTER_DECKS.map((deck) => (
+                <form key={deck.id} action={cloneStarterDeck}>
+                  <input type="hidden" name="deckId" value={deck.id} />
+                  <div className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white">{deck.name}</p>
+                      <p className="mt-0.5 text-xs leading-5 text-slate-400">
+                        {deck.description}
+                      </p>
+                      <p className="mt-1 text-[10px] text-slate-600">{deck.cards.length} cards</p>
+                    </div>
+                    <SubmitButton label="Add" pendingLabel="Adding…" />
+                  </div>
+                </form>
+              ))}
+            </div>
+          </section>
+        </div>
       </div>
     </AppShell>
   );

@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, Bookmark, BookmarkCheck, ChevronDown, ChevronRight, RotateCcw, Mic } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, BookmarkCheck, ChevronDown, ChevronRight, RotateCcw, Mic, History } from "lucide-react";
 
 type Deck = { id: string; name: string };
 
@@ -250,6 +251,41 @@ function scoreLabel(s: number): string {
   return "Keep practising";
 }
 
+const FILLER_WORDS = [
+  "um", "uh", "er", "ah", "hmm",
+  "you know", "kind of", "sort of",
+  "basically", "literally", "actually",
+];
+
+function computeFillerMetrics(messages: Message[]): {
+  fillerCount: number;
+  totalWords: number;
+  breakdown: [string, number][];
+} {
+  const speakerText = messages
+    .filter((m) => m.role === "speaker")
+    .map((m) => m.content)
+    .join(" ")
+    .toLowerCase();
+
+  const totalWords = speakerText.split(/\s+/).filter(Boolean).length;
+  const breakdown: [string, number][] = [];
+  let fillerCount = 0;
+
+  for (const filler of FILLER_WORDS) {
+    const escaped = filler.replace(/\s+/g, "\\s+");
+    const regex = new RegExp(`\\b${escaped}\\b`, "gi");
+    const matches = speakerText.match(regex);
+    if (matches && matches.length > 0) {
+      breakdown.push([filler, matches.length]);
+      fillerCount += matches.length;
+    }
+  }
+
+  breakdown.sort(([, a], [, b]) => b - a);
+  return { fillerCount, totalWords, breakdown };
+}
+
 function scoreColor(s: number): string {
   if (s >= 8) return "text-emerald-300";
   if (s >= 5) return "text-amber-300";
@@ -426,15 +462,43 @@ export function SpeakUpClient({
         setMessages((prev) => [...prev, { role: "listener", content: data.followupQuestion! }]);
         setExchangeCount(nextExchange);
       } else if (data.type === "final") {
-        setResult({
+        const finalResult: GradeResult = {
           score: data.score ?? 5,
           strongPoints: data.strongPoints ?? [],
           improvements: data.improvements ?? [],
           modelAnswer: data.modelAnswer ?? "",
           modelConversation: data.modelConversation,
-        });
+        };
+        setResult(finalResult);
         setConvOpen(false);
         setExchangeCount(nextExchange);
+
+        // Auto-save immediately using the result data from this closure
+        if (active && persona) {
+          setSavingSession(true);
+          fetch("/api/speak-sessions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              scenarioId: active.id,
+              scenarioTag: active.tag,
+              personaId: persona.id,
+              personaLabel: persona.label,
+              difficulty,
+              practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label : null,
+              exchangeCount: nextExchange,
+              score: finalResult.score,
+              strongPoints: finalResult.strongPoints,
+              improvements: finalResult.improvements,
+              modelAnswer: finalResult.modelAnswer,
+              modelConversation: finalResult.modelConversation ?? null,
+              messages: nextMessages,
+            }),
+          })
+            .then((res) => { if (res.ok) setSavedSession(true); })
+            .catch(() => { /* fail silently */ })
+            .finally(() => setSavingSession(false));
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -449,6 +513,15 @@ export function SpeakUpClient({
 
     return (
       <div className="space-y-6">
+        <div className="flex justify-end">
+          <Link
+            href="/speak-up/history"
+            className="flex items-center gap-1.5 text-xs text-slate-500 transition hover:text-slate-300"
+          >
+            <History className="h-3.5 w-3.5" /> Session history
+          </Link>
+        </div>
+
         {/* Struggling words bridge */}
         {strugglingWords.length > 0 ? (
           <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/8 p-5">
@@ -657,6 +730,43 @@ export function SpeakUpClient({
           </div>
         )}
 
+        {/* Filler word metrics */}
+        {(() => {
+          const { fillerCount, totalWords, breakdown } = computeFillerMetrics(messages);
+          if (totalWords === 0) return null;
+          const pct = Math.round((fillerCount / totalWords) * 100);
+          return (
+            <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-3">Filler words</p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-2xl font-bold tabular-nums text-white">{fillerCount}</p>
+                <p className="text-sm text-slate-400">
+                  across {totalWords} words
+                  {fillerCount > 0 ? ` · ${pct}% filler rate` : " · no fillers detected"}
+                </p>
+              </div>
+              {breakdown.length > 0 ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {breakdown.slice(0, 5).map(([word, count]) => (
+                    <span key={word} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300">
+                      &ldquo;{word}&rdquo; ×{count}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+              {fillerCount === 0 ? (
+                <p className="mt-2 text-xs text-emerald-300">Clean delivery — no filler words detected.</p>
+              ) : pct <= 3 ? (
+                <p className="mt-2 text-xs text-emerald-300">Low filler rate. Strong fluency.</p>
+              ) : pct <= 8 ? (
+                <p className="mt-2 text-xs text-amber-300">Moderate filler use. Try pausing instead of filling.</p>
+              ) : (
+                <p className="mt-2 text-xs text-rose-300">High filler rate. Silence is more powerful than &ldquo;um&rdquo;.</p>
+              )}
+            </div>
+          );
+        })()}
+
         {/* Model answer */}
         {result.modelAnswer && (
           <div className="rounded-[2rem] border border-violet-300/20 bg-violet-400/8 p-5">
@@ -735,21 +845,22 @@ export function SpeakUpClient({
           </button>
         </div>
 
-        <button
-          onClick={() => void saveSession()}
-          disabled={savedSession || savingSession}
-          className={`flex w-full items-center justify-center gap-2 rounded-[2rem] border px-4 py-3 text-sm font-medium transition ${
-            savedSession
-              ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300 cursor-default"
-              : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
-          } disabled:opacity-60`}
-        >
+        <div className={`flex items-center justify-center gap-2 rounded-[2rem] border px-4 py-3 text-sm font-medium ${
+          savedSession
+            ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+            : "border-white/10 bg-white/[0.03] text-slate-500"
+        }`}>
           {savedSession ? (
-            <><BookmarkCheck className="h-4 w-4" /> Session saved</>
+            <><BookmarkCheck className="h-4 w-4" /> Session saved to history</>
           ) : (
-            <><Bookmark className="h-4 w-4" /> {savingSession ? "Saving…" : "Save session"}</>
+            <span>{savingSession ? "Saving session…" : "Session not saved"}</span>
           )}
-        </button>
+          {savedSession ? (
+            <Link href="/speak-up/history" className="ml-auto text-xs text-emerald-400/70 hover:text-emerald-300 transition">
+              View history →
+            </Link>
+          ) : null}
+        </div>
       </div>
     );
   }

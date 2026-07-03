@@ -1,7 +1,10 @@
 import { AppShell } from "@/components/app-shell";
-import { getCurrentUserId, ADMIN_USER_ID } from "@/lib/session";
+import { getCurrentUserId, ADMIN_USER_ID, scopedUserId } from "@/lib/session";
 import { auth } from "@/lib/next-auth";
+import { prisma } from "@/lib/prisma";
 import { DeleteAccountForm } from "./delete-form";
+import { SubmitButton } from "@/components/forms";
+import { updateDailyCardLimit } from "./actions";
 import { Settings } from "lucide-react";
 
 export const metadata = {
@@ -15,6 +18,10 @@ export default async function SettingsPage() {
   const session = isAdminUser ? null : await auth();
   const email = session?.user?.email ?? "";
   const name = session?.user?.name ?? email;
+
+  const uid = userId && !isAdminUser ? scopedUserId(userId) : null;
+  const userSettings = uid ? await prisma.userSettings.findFirst({ where: { userId: uid } }) : null;
+  const currentDailyNewCards = userSettings?.dailyNewCards ?? 3;
 
   return (
     <AppShell>
@@ -64,6 +71,34 @@ export default async function SettingsPage() {
             </div>
           )}
         </div>
+
+        {/* Review settings — non-admin only */}
+        {!isAdminUser ? (
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-4">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Daily review</p>
+            <div>
+              <p className="text-sm font-medium text-white">New cards per day</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">
+                Summon introduces this many brand-new cards each day. Reviews of cards you already know are always shown in full. Default is 3.
+              </p>
+            </div>
+            <form action={updateDailyCardLimit} className="flex items-end gap-4">
+              <label className="block space-y-2 flex-1 max-w-[8rem]">
+                <span className="text-xs font-medium text-slate-300">Cards per day</span>
+                <input
+                  name="dailyNewCards"
+                  type="number"
+                  min={1}
+                  max={50}
+                  defaultValue={currentDailyNewCards}
+                  className="input-base"
+                  required
+                />
+              </label>
+              <SubmitButton label="Save" pendingLabel="Saving…" />
+            </form>
+          </div>
+        ) : null}
 
         {/* Danger zone — Google users only */}
         {!isAdminUser && email ? (

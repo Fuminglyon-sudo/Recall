@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { achievementsFromSpeakUp } from "@/lib/achievements";
 
 const messageSchema = z.object({
   role: z.enum(["speaker", "listener"]),
@@ -57,6 +58,30 @@ export async function POST(req: NextRequest) {
         messages: parsed.data.messages,
       },
     });
+
+    // Award speak-up achievements (skip for null uid / admin)
+    if (uid) {
+      try {
+        const existingAchievements = await prisma.userAchievement.findMany({
+          where: { userId: uid },
+          select: { achievementId: true },
+        });
+        const existingIds = new Set(existingAchievements.map((a) => a.achievementId));
+        const earned = achievementsFromSpeakUp({ score: parsed.data.score });
+        const toAward = earned.filter((id) => !existingIds.has(id));
+        if (toAward.length > 0) {
+          await prisma.userAchievement.createMany({
+            data: toAward.map((achievementId) => ({
+              id: crypto.randomUUID(),
+              userId: uid,
+              achievementId,
+            })),
+          });
+        }
+      } catch {
+        // Non-critical
+      }
+    }
 
     return NextResponse.json({ id: session.id });
   } catch (err) {

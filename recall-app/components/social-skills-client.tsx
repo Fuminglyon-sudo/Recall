@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Mic, ArrowLeft, ChevronDown, ChevronRight, RotateCcw, Flag, Bookmark, BookmarkCheck } from "lucide-react";
+import Link from "next/link";
+import { Mic, ArrowLeft, ChevronDown, ChevronRight, RotateCcw, Flag, History } from "lucide-react";
 
 type Category = "all" | "professional" | "social" | "everyday";
 type Difficulty = "easy" | "medium" | "hard";
@@ -504,18 +505,10 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
 
       setFeedback(data);
       setConvOpen(false);
-    } catch {
-      setError("Something went wrong. Check your connection and try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  async function saveSession() {
-    if (!activeScenario || !feedback || saved || saving) return;
-    setSaving(true);
-    try {
-      const res = await fetch("/api/social-sessions", {
+      // auto-save using local vars to avoid stale closure
+      setSaving(true);
+      fetch("/api/social-sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -525,18 +518,20 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
           characterLabel: activeCharacter.label,
           difficulty,
           practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.label : undefined,
-          exchangeCount,
-          score: feedback.score,
-          strongPoints: feedback.strongPoints,
-          improvements: feedback.improvements,
-          powerMove: feedback.powerMove,
-          messages,
-          modelConversation: feedback.modelConversation ?? undefined,
+          exchangeCount: finalCount,
+          score: data.score,
+          strongPoints: data.strongPoints,
+          improvements: data.improvements,
+          powerMove: data.powerMove,
+          messages: finalMessages,
+          modelConversation: data.modelConversation ?? undefined,
         }),
-      });
-      if (res.ok) setSaved(true);
+      }).then((res) => { if (res.ok) setSaved(true); })
+        .finally(() => setSaving(false));
+    } catch {
+      setError("Something went wrong. Check your connection and try again.");
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   }
 
@@ -544,6 +539,14 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
   if (!activeScenario) {
     return (
       <div className="space-y-8">
+        <Link
+          href="/conversation-lab/history"
+          className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"
+        >
+          <History className="h-4 w-4" />
+          Session history
+        </Link>
+
         {/* Struggling words bridge */}
         {strugglingWords.length > 0 ? (
           <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/8 p-5">
@@ -817,28 +820,18 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
           ) : null}
         </div>
 
+        {saving ? (
+          <p className="text-xs text-slate-500">Saving session…</p>
+        ) : saved ? (
+          <div className="flex items-center gap-3 text-xs">
+            <span className="text-emerald-400">Session saved to history</span>
+            <Link href="/conversation-lab/history" className="text-emerald-300 transition hover:text-emerald-200">
+              View history →
+            </Link>
+          </div>
+        ) : null}
+
         <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => void saveSession()}
-            disabled={saving || saved}
-            className={`flex items-center gap-2 rounded-2xl border px-5 py-3 text-sm font-semibold transition ${
-              saved
-                ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300 cursor-default"
-                : "border-white/10 bg-white/5 text-white hover:bg-white/10"
-            } disabled:opacity-60`}
-          >
-            {saved ? (
-              <>
-                <BookmarkCheck className="h-4 w-4" />
-                Saved
-              </>
-            ) : (
-              <>
-                <Bookmark className="h-4 w-4" />
-                {saving ? "Saving…" : "Save session"}
-              </>
-            )}
-          </button>
           <button
             onClick={() => {
               setFeedback(null);
