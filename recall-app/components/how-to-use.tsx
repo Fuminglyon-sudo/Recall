@@ -7,7 +7,7 @@ const GRADES = [
   { value: "0", label: "Blackout", desc: "Complete blank — couldn't recall anything at all." },
   { value: "1", label: "Wrong", desc: "Had an answer, but it was incorrect." },
   { value: "2", label: "Hard", desc: "Correct but required serious effort to retrieve." },
-  { value: "3", label: "Okay", desc: "Recalled correctly, but it felt effortful." },
+  { value: "3", label: "Okay", desc: "Summoned correctly, but it felt effortful." },
   { value: "4", label: "Good", desc: "Correct with only a brief hesitation." },
   { value: "5", label: "Perfect", desc: "Instant, effortless recall — no doubt at all." },
 ];
@@ -58,7 +58,7 @@ export function HowToUse() {
         className="flex w-full items-center justify-between px-6 py-4 text-left transition hover:bg-white/[0.03]"
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-white">How to use Recall</span>
+          <span className="text-sm font-medium text-white">How to use Summon</span>
           <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-slate-500">
             guide
           </span>
@@ -77,7 +77,7 @@ export function HowToUse() {
           <div>
             <p className="mb-3 text-xs uppercase tracking-[0.2em] text-slate-500">How it works</p>
             <p className="text-sm leading-7 text-slate-300">
-              Recall uses{" "}
+              Summon uses{" "}
               <span className="font-medium text-white">spaced repetition</span> — cards you know
               well come back less often; cards you struggle with return sooner. Each day shows you
               all <span className="font-medium text-white">due reviews</span> plus up to{" "}

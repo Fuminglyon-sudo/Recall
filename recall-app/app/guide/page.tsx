@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Guide — How to Use Recall",
+  title: "Guide — How to Use Summon",
   description:
-    "A complete guide to using Recall: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, and building social fluency with Conversation Lab.",
+    "A complete guide to using Summon: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, and building social fluency with Conversation Lab.",
   keywords: [
-    "Recall guide",
+    "Summon guide",
     "how to use spaced repetition",
     "flashcard guide",
     "Speak Up guide",
@@ -41,7 +41,7 @@ const GRADES = [
   { value: "0", label: "Blackout", color: "text-red-400", dot: "bg-red-500", desc: "Complete blank — nothing came to mind at all." },
   { value: "1", label: "Wrong", color: "text-red-300", dot: "bg-red-400", desc: "Had an answer but it was incorrect." },
   { value: "2", label: "Hard", color: "text-orange-300", dot: "bg-orange-400", desc: "Got it right but only after serious effort." },
-  { value: "3", label: "Okay", color: "text-yellow-300", dot: "bg-yellow-400", desc: "Recalled correctly but it felt laboured." },
+  { value: "3", label: "Okay", color: "text-yellow-300", dot: "bg-yellow-400", desc: "Summoned correctly but it felt laboured." },
   { value: "4", label: "Good", color: "text-emerald-300", dot: "bg-emerald-400", desc: "Correct with only a brief hesitation." },
   { value: "5", label: "Perfect", color: "text-teal-300", dot: "bg-teal-400", desc: "Instant, effortless recall — no doubt at all." },
 ];
@@ -128,12 +128,12 @@ const FEATURES: Feature[] = [
   },
   {
     href: "/free-recall",
-    label: "Free Recall",
+    label: "Free Summon",
     icon: BrainCircuit,
     tagline: "The exercise that shows you what you actually know.",
     what: "Pick a deck, then write every word or concept you can remember in 5 minutes — no hints, no cards. Your results are scored and, critically, fed back into your review schedule: remembered cards get a boost, missed cards are moved up so they return sooner.",
     tips: [
-      "Do Free Recall before your Today review occasionally, not after. Attempting retrieval cold and then immediately seeing the cards in Today creates a powerful learning contrast.",
+      "Do Free Summon before your Today review occasionally, not after. Attempting retrieval cold and then immediately seeing the cards in Today creates a powerful learning contrast.",
       "Don't look at the deck beforehand. The point is to surface what you have genuinely internalised, not what you can recall after priming.",
       "Pay close attention to the Missed list — those are your real weak spots, not the ones that feel hard during regular review.",
       "The All Decks option is more challenging and more revealing than single-deck recall. Use it for a full health check.",
@@ -321,7 +321,7 @@ export default async function GuidePage() {
             A quiet guide to each part of the app — and how to use it well.
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-            Recall is built around one idea: the things you want to say should come out naturally,
+            Summon is built around one idea: the things you want to say should come out naturally,
             without searching. Spaced repetition handles the memory side. The practice features handle
             the fluency side. Use them together consistently and both compound.
           </p>

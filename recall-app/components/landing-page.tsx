@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { SummonLogo } from "./summon-logo";
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
@@ -60,7 +61,7 @@ const SLIDES: Slide[] = [
   {
     id: "product",
     image: "/scenerios/speak-up-raise.webp",
-    eyebrow: "Recall",
+    eyebrow: "Summon",
     headlineParts: [
       { text: "A practice" },
       { text: "\n" },
@@ -189,19 +190,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
         {/* ── Floating nav ──────────────────────────────────────────────── */}
         <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-6 sm:px-10">
           <Link href="/landing">
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "1.9rem",
-                color: "#fff",
-                textShadow: "0 1px 12px rgba(0,0,0,0.9)",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Recall
-            </span>
+            <SummonLogo fontSize="1.9rem" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
           </Link>
 
           <div className="flex items-center gap-3">
@@ -370,7 +359,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                         textTransform: "uppercase",
                       }}
                     >
-                      Recall
+                      Summon
                     </p>
 
                     <h2
@@ -433,7 +422,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
 
                     <p style={{ fontSize: "0.75rem", color: "#475569", marginTop: "0.5rem" }}>
                       <Link href="/about" className="transition hover:text-slate-400">
-                        Learn more about Recall →
+                        Learn more about Summon →
                       </Link>
                     </p>
                   </div>
@@ -443,7 +432,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                     <Link href="/blog" className="transition hover:text-slate-400">Blog</Link>
                     <Link href="/guide" className="transition hover:text-slate-400">Guide</Link>
                     <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
-                    <span>© {new Date().getFullYear()} Recall</span>
+                    <span>© {new Date().getFullYear()} Summon</span>
                   </div>
                 </section>
               );

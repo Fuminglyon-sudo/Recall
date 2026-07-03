@@ -4,7 +4,7 @@ import { GoogleSignInButton } from "./google-button";
 
 export const metadata: Metadata = {
   title: "Sign In",
-  description: "Sign in to your Recall account to continue your vocabulary practice and speaking sessions.",
+  description: "Sign in to your Summon account to continue your vocabulary practice and speaking sessions.",
   robots: { index: false, follow: false },
 };
 
@@ -23,7 +23,7 @@ export default async function LoginPage({
         {/* Header */}
         <div className="mb-8 text-center">
           <p className="text-4xl mb-3">🧠</p>
-          <p className="text-sm font-medium text-emerald-300">Recall</p>
+          <p className="text-sm font-medium text-emerald-300">Summon</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">Welcome</h1>
           <p className="mt-1 text-sm text-slate-400">Sign in to continue your practice.</p>
         </div>

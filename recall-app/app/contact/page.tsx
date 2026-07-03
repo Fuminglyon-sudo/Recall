@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SummonLogo } from "@/components/summon-logo";
 import { ArrowLeft, Mail, MessageCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Recall",
+  title: "Contact Summon",
   description:
-    "Have a question about Recall, spaced repetition, or how the app works? Reach out to the team — we'd love to hear from you.",
+    "Have a question about Summon, spaced repetition, or how the app works? Reach out to the team — we'd love to hear from you.",
 };
 
 export default function ContactPage() {
@@ -15,18 +16,7 @@ export default function ContactPage() {
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
           <Link href="/landing">
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "1.9rem",
-                color: "#fff",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Recall
-            </span>
+            <SummonLogo fontSize="1.9rem" />
           </Link>
           <Link href="/landing" className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
             <ArrowLeft className="h-4 w-4" />
@@ -81,7 +71,7 @@ export default function ContactPage() {
       </main>
 
       <footer className="border-t border-white/8 py-8 text-center text-xs text-slate-700">
-        © {new Date().getFullYear()} Recall.{" "}
+        © {new Date().getFullYear()} Summon.{" "}
         <Link href="/landing" className="hover:text-slate-400 transition">Home</Link>
         {" · "}
         <Link href="/about" className="hover:text-slate-400 transition">About</Link>

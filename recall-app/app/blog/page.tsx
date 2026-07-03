@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { SummonLogo } from "@/components/summon-logo";
 import { POSTS, formatDate } from "./data";
 
 export const metadata: Metadata = {
-  title: "Blog — Recall",
+  title: "Blog — Summon",
   description:
-    "Articles on spaced repetition, vocabulary building, conversation skills, speaking confidence, and the science of memory. From the Recall team.",
+    "Articles on spaced repetition, vocabulary building, conversation skills, speaking confidence, and the science of memory. From the Summon team.",
   keywords: [
     "spaced repetition blog",
     "vocabulary tips",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     "memory research",
   ],
   openGraph: {
-    title: "Blog — Recall",
+    title: "Blog — Summon",
     description:
       "Articles on spaced repetition, vocabulary, conversation skills, and the science of memory.",
     type: "website",
@@ -31,18 +32,7 @@ export default function BlogPage() {
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
           <Link href="/landing">
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "1.9rem",
-                color: "#fff",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Recall
-            </span>
+            <SummonLogo fontSize="1.9rem" />
           </Link>
           <nav className="flex items-center gap-5 text-sm text-slate-400">
             <Link href="/about" className="transition hover:text-white">About</Link>
@@ -65,7 +55,7 @@ export default function BlogPage() {
               textTransform: "uppercase",
             }}
           >
-            The Recall Blog
+            The Summon Blog
           </p>
           <h1
             style={{
@@ -134,7 +124,7 @@ export default function BlogPage() {
 
       <footer className="border-t border-white/8 mt-16 py-10">
         <div className="mx-auto max-w-3xl px-6 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
-          <span>© {new Date().getFullYear()} Recall</span>
+          <span>© {new Date().getFullYear()} Summon</span>
           <div className="flex gap-5">
             <Link href="/about" className="transition hover:text-slate-400">About</Link>
             <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>

@@ -23,11 +23,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Recall — Vocabulary, Speaking & Conversation Practice",
-    template: "%s | Recall",
+    default: "Summon — Vocabulary, Speaking & Conversation Practice",
+    template: "%s | Summon",
   },
   description:
-    "Recall helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free forever — no credit card needed.",
+    "Summon helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free forever — no credit card needed.",
   keywords: [
     "spaced repetition",
     "vocabulary builder",
@@ -40,22 +40,22 @@ export const metadata: Metadata = {
     "speak up",
     "conversation lab",
   ],
-  authors: [{ name: "Recall" }],
-  creator: "Recall",
+  authors: [{ name: "Summon" }],
+  creator: "Summon",
   openGraph: {
-    siteName: "Recall",
+    siteName: "Summon",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Recall — Vocabulary, Speaking & Conversation Practice",
+    title: "Summon — Vocabulary, Speaking & Conversation Practice",
     description:
       "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI feedback. Free forever.",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Recall",
+    title: "Summon",
   },
   formatDetection: { telephone: false },
 };

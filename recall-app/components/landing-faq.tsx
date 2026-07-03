@@ -5,27 +5,27 @@ import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Is Recall really free?",
-    a: "Yes — Recall is free to use. Sign in with Google and your account is ready instantly. There are no paywalled features, no trial periods, and no card required.",
+    q: "Is Summon really free?",
+    a: "Yes — Summon is free to use. Sign in with Google and your account is ready instantly. There are no paywalled features, no trial periods, and no card required.",
   },
   {
     q: "What is spaced repetition?",
-    a: "Spaced repetition is a learning technique that schedules reviews at increasing intervals over time. Instead of reviewing everything every day, you only review a card when you're about to forget it. Recall uses the SM-2 algorithm — the same one that powers Anki and SuperMemo — to calculate these intervals automatically.",
+    a: "Spaced repetition is a learning technique that schedules reviews at increasing intervals over time. Instead of reviewing everything every day, you only review a card when you're about to forget it. Summon uses the SM-2 algorithm — the same one that powers Anki and SuperMemo — to calculate these intervals automatically.",
   },
   {
     q: "How does the AI card drafting work?",
-    a: "When you type a word or concept into a new card, Recall sends it to Claude (Anthropic's AI model). Claude returns a definition, a memory hook, an example sentence, and synonyms. You can edit any of it before saving. The goal is to cut the time it takes to create a good card from minutes to seconds.",
+    a: "When you type a word or concept into a new card, Summon sends it to Claude (Anthropic's AI model). Claude returns a definition, a memory hook, an example sentence, and synonyms. You can edit any of it before saving. The goal is to cut the time it takes to create a good card from minutes to seconds.",
   },
   {
     q: "What is free recall and why does it matter?",
-    a: "Free recall means retrieving information from memory without any cues — like writing down everything you remember from a deck before you flip any cards. Research consistently shows it produces stronger memory than passive re-reading. Recall makes it a first-class part of your review session.",
+    a: "Free recall means retrieving information from memory without any cues — like writing down everything you remember from a deck before you flip any cards. Research consistently shows it produces stronger memory than passive re-reading. Summon makes it a first-class part of your review session.",
   },
   {
-    q: "Can I use Recall for languages other than English?",
-    a: "Yes. Recall works for any vocabulary in any language. The AI drafting supports multiple languages — just type the word in the language you're studying and Claude will respond accordingly.",
+    q: "Can I use Summon for languages other than English?",
+    a: "Yes. Summon works for any vocabulary in any language. The AI drafting supports multiple languages — just type the word in the language you're studying and Claude will respond accordingly.",
   },
   {
-    q: "How do I get my cards into Recall?",
+    q: "How do I get my cards into Summon?",
     a: "You can add cards one at a time (with AI drafting), or import a CSV file in bulk. Each deck has an export button too, so you can back up your cards or move them between accounts.",
   },
   {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SummonLogo } from "./summon-logo";
 import {
   LayoutDashboard,
   CalendarCheck2,
@@ -150,18 +151,7 @@ function SidebarContent({
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between p-5 pb-2">
         <Link href="/landing" onClick={onClose}>
-          <span
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontWeight: 700,
-              fontSize: "1.9rem",
-              color: "#fff",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Recall
-          </span>
+          <SummonLogo fontSize="1.9rem" duration={1.0} />
         </Link>
         {onClose ? (
           <button
@@ -226,18 +216,7 @@ export function Sidebar({
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-white/8 bg-slate-950/90 px-4 backdrop-blur-xl lg:hidden">
         <Link href="/landing">
-          <span
-            style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontWeight: 700,
-              fontSize: "1.8rem",
-              color: "#fff",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Recall
-          </span>
+          <SummonLogo fontSize="1.8rem" duration={1.0} />
         </Link>
         <button
           onClick={() => setOpen(true)}

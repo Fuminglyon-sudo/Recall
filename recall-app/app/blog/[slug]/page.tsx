@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { SummonLogo } from "@/components/summon-logo";
 import { POSTS, getPost, formatDate, type Block } from "../data";
 
 export function generateStaticParams() {
@@ -19,7 +20,7 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.description,
-    keywords: [post.category, "spaced repetition", "vocabulary", "conversation skills", "Recall"],
+    keywords: [post.category, "spaced repetition", "vocabulary", "conversation skills", "Summon"],
     openGraph: {
       title: post.title,
       description: post.description,
@@ -110,18 +111,7 @@ export default async function BlogPostPage({
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
           <Link href="/landing">
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "1.9rem",
-                color: "#fff",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Recall
-            </span>
+            <SummonLogo fontSize="1.9rem" />
           </Link>
           <Link
             href="/blog"
@@ -181,7 +171,7 @@ export default async function BlogPostPage({
             Put this into practice.
           </p>
           <p className="text-slate-400 text-sm mx-auto max-w-sm" style={{ lineHeight: 1.7 }}>
-            Recall gives you spaced repetition, high-stakes speaking practice, and Conversation Lab — all in one place. Free to use.
+            Summon gives you spaced repetition, high-stakes speaking practice, and Conversation Lab — all in one place. Free to use.
           </p>
           <Link
             href="/login"
@@ -232,7 +222,7 @@ export default async function BlogPostPage({
 
       <footer className="border-t border-white/8 mt-10 py-10">
         <div className="mx-auto max-w-2xl px-6 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
-          <span>© {new Date().getFullYear()} Recall</span>
+          <span>© {new Date().getFullYear()} Summon</span>
           <div className="flex gap-5">
             <Link href="/blog" className="transition hover:text-slate-400">Blog</Link>
             <Link href="/about" className="transition hover:text-slate-400">About</Link>

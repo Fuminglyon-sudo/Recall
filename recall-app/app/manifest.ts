@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Recall",
-    short_name: "Recall",
+    name: "Summon",
+    short_name: "Summon",
     description: "Spaced repetition for vocabulary, countries, and founder articulation.",
     start_url: "/",
     display: "standalone",

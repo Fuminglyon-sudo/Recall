@@ -22,13 +22,13 @@ import { LandingPage } from "@/components/landing-page";
 
 // ── SEO metadata (shown to crawlers on the landing route) ───────────────────
 export const metadata: Metadata = {
-  title: "Recall — Spaced repetition for words, ideas, and language",
+  title: "Summon — Spaced repetition for words, ideas, and language",
   description:
-    "Recall is a calm flashcard app powered by spaced repetition (SM-2) and Claude AI. Build vocabulary, capture ideas, and review what matters — one card at a time.",
+    "Summon is a calm flashcard app powered by spaced repetition (SM-2) and Claude AI. Build vocabulary, capture ideas, and review what matters — one card at a time.",
   openGraph: {
-    title: "Recall — Spaced repetition for words, ideas, and language",
+    title: "Summon — Spaced repetition for words, ideas, and language",
     description:
-      "A calm place to keep words, ideas, and language close. Recall uses SM-2 spaced repetition and Claude AI to help you remember what matters.",
+      "A calm place to keep words, ideas, and language close. Summon uses SM-2 spaced repetition and Claude AI to help you remember what matters.",
     type: "website",
   },
 };
@@ -282,7 +282,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
     <AppShell>
       <section className="space-y-6">
         <div className="space-y-3">
-          <p className="text-sm font-medium text-emerald-300">Recall</p>
+          <p className="text-sm font-medium text-emerald-300">Summon</p>
           <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             A calm place to keep words, ideas, and language close.
           </h1>

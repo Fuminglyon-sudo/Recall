@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SummonLogo } from "@/components/summon-logo";
 import {
   BrainCircuit,
   ArrowLeft,
@@ -20,11 +21,11 @@ import {
 import { LandingFaq } from "@/components/landing-faq";
 
 export const metadata: Metadata = {
-  title: "About Recall — Spaced Repetition, Speak Up & Conversation Lab",
+  title: "About Summon — Spaced Repetition, Speak Up & Conversation Lab",
   description:
-    "Recall is a free learning system built on SM-2 spaced repetition, AI-powered flashcards, Speak Up speaking practice, and Conversation Lab social coaching. Learn how it works and why it's different from other apps.",
+    "Summon is a free learning system built on SM-2 spaced repetition, AI-powered flashcards, Speak Up speaking practice, and Conversation Lab social coaching. Learn how it works and why it's different from other apps.",
   keywords: [
-    "how Recall works",
+    "how Summon works",
     "spaced repetition algorithm",
     "SM-2",
     "Speak Up practice",
@@ -34,16 +35,16 @@ export const metadata: Metadata = {
     "free spaced repetition",
   ],
   openGraph: {
-    title: "About Recall — Spaced Repetition, Speak Up & Conversation Lab",
+    title: "About Summon — Spaced Repetition, Speak Up & Conversation Lab",
     description:
-      "How Recall works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. Free forever.",
+      "How Summon works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. Free forever.",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "About Recall",
+    title: "About Summon",
     description:
-      "How Recall works: SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice.",
+      "How Summon works: SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice.",
   },
 };
 
@@ -68,18 +69,7 @@ export default function AboutPage() {
       <header className="sticky top-0 z-40 border-b border-white/8 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
           <Link href="/landing">
-            <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "1.9rem",
-                color: "#fff",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Recall
-            </span>
+            <SummonLogo fontSize="1.9rem" />
           </Link>
           <Link href="/landing" className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
             <ArrowLeft className="h-4 w-4" />
@@ -92,7 +82,7 @@ export default function AboutPage() {
 
         {/* ── Hero ──────────────────────────────────────────────────────────── */}
         <section className="py-20 space-y-6 border-b border-white/8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">About Recall</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">About Summon</p>
           <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl" style={{ textWrap: "balance" } as React.CSSProperties}>
             For everyone who has felt perfectly understood in their own head —
             and perfectly lost the moment the words needed to come out.
@@ -103,7 +93,7 @@ export default function AboutPage() {
             find, walking home, the sentence you should have said.
           </p>
           <p className="max-w-2xl text-lg leading-8 text-slate-400">
-            Recall is for people who live in that space. Who are done letting the right words come
+            Summon is for people who live in that space. Who are done letting the right words come
             too late — and want to build, quietly and without pressure, the vocabulary and presence
             that makes them feel at home in any room, any conversation, any moment that matters.
           </p>
@@ -124,7 +114,7 @@ export default function AboutPage() {
                 fight it efficiently — they just feel productive.
               </p>
               <p className="text-base leading-7 text-slate-400">
-                Recall uses SM-2, the same algorithm behind Anki and SuperMemo, to schedule the
+                Summon uses SM-2, the same algorithm behind Anki and SuperMemo, to schedule the
                 right card at the right time. You spend less time reviewing and remember more.
               </p>
             </div>
@@ -210,7 +200,7 @@ export default function AboutPage() {
               </p>
               <p className="text-base leading-7 text-slate-300">
                 Audacity is not a personality trait. It is a practice.
-                Recall has three features built for exactly this.
+                Summon has three features built for exactly this.
               </p>
             </div>
 
@@ -290,7 +280,7 @@ export default function AboutPage() {
             {
               label: "Free recall",
               title: "The most underused memory technique",
-              body: "Before seeing your cards, write down everything you remember from a deck without any cues. Free recall — retrieval practice without hints — is one of the highest-ROI techniques in cognitive science. Recall makes it a first-class part of your review, not an afterthought.",
+              body: "Before seeing your cards, write down everything you remember from a deck without any cues. Free recall — retrieval practice without hints — is one of the highest-ROI techniques in cognitive science. Summon makes it a first-class part of your review, not an afterthought.",
               bullets: [
                 "Write-first, compare-second workflow",
                 "No peeking enforced before you recall",
@@ -363,7 +353,7 @@ export default function AboutPage() {
                 Built for people who want language that comes when they need it
               </h2>
               <p className="text-slate-400">
-                Most tools ask you to manage the practice. Recall manages it for you — so you can just show up.
+                Most tools ask you to manage the practice. Summon manages it for you — so you can just show up.
               </p>
             </div>
 
@@ -374,7 +364,7 @@ export default function AboutPage() {
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">
                       Feature
                     </th>
-                    {["Recall", "Anki", "Duolingo", "Paper cards"].map((col, i) => (
+                    {["Summon", "Anki", "Duolingo", "Paper cards"].map((col, i) => (
                       <th
                         key={col}
                         className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest ${
@@ -431,7 +421,7 @@ export default function AboutPage() {
               {[
                 { icon: Repeat2,      title: "Science over streaks",  body: "SM-2 scheduling is more effective than gamification. We track your streak because consistency matters, not because it should be a game." },
                 { icon: Sparkles,     title: "AI assists, you decide", body: "Claude drafts a definition. You edit it before it becomes a card. Your memory, your words, your learning." },
-                { icon: BrainCircuit, title: "Calm by design",         body: "No social features, no leaderboards, no engagement tricks. Recall is a tool, not an app trying to own your attention." },
+                { icon: BrainCircuit, title: "Calm by design",         body: "No social features, no leaderboards, no engagement tricks. Summon is a tool, not an app trying to own your attention." },
               ].map(({ icon: Icon, title, body }) => (
                 <div key={title} className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">
@@ -464,7 +454,7 @@ export default function AboutPage() {
       </main>
 
       <footer className="border-t border-white/8 py-8 text-center text-xs text-slate-700">
-        © {new Date().getFullYear()} Recall.{" "}
+        © {new Date().getFullYear()} Summon.{" "}
         <Link href="/landing" className="hover:text-slate-400 transition">Home</Link>
         {" · "}
         <Link href="/guide" className="hover:text-slate-400 transition">Guide</Link>

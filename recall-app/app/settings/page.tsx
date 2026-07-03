@@ -5,7 +5,7 @@ import { DeleteAccountForm } from "./delete-form";
 import { Settings } from "lucide-react";
 
 export const metadata = {
-  title: "Settings — Recall",
+  title: "Settings — Summon",
 };
 
 export default async function SettingsPage() {
