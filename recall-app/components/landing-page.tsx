@@ -3,15 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BrainCircuit } from "lucide-react";
-import { Cormorant_Garamond } from "next/font/google";
-
-const display = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-});
+import { ArrowRight } from "lucide-react";
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
@@ -177,23 +169,36 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           0%, 100% { filter: drop-shadow(0 0 5px rgba(74,222,128,0.4)); }
           55%       { filter: drop-shadow(0 0 14px rgba(74,222,128,0.9)); }
         }
+        @keyframes triangleBack {
+          0%   { opacity: 0.35; transform: translateX(0px);  }
+          55%  { opacity: 1;    transform: translateX(-7px); }
+          100% { opacity: 0.35; transform: translateX(0px);  }
+        }
+        @keyframes triangleBackGlow {
+          0%, 100% { filter: drop-shadow(0 0 5px rgba(74,222,128,0.4)); }
+          55%       { filter: drop-shadow(0 0 14px rgba(74,222,128,0.9)); }
+        }
         .slides-container::-webkit-scrollbar { display: none; }
         .slides-container { scrollbar-width: none; -ms-overflow-style: none; }
       `}</style>
 
       <div
-        className={`relative antialiased ${display.variable}`}
+        className="relative antialiased"
         style={{ height: "100dvh", overflow: "hidden", background: "#010d1a" }}
       >
         {/* ── Floating nav ──────────────────────────────────────────────── */}
         <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-6 sm:px-10">
-          <Link href="/landing" className="flex items-center gap-2.5">
-            <div className="rounded-xl bg-emerald-400/20 p-1.5 text-emerald-300">
-              <BrainCircuit className="h-4 w-4" />
-            </div>
+          <Link href="/landing">
             <span
-              className="text-sm font-bold tracking-tight text-white"
-              style={{ textShadow: "0 1px 10px rgba(0,0,0,0.9)" }}
+              style={{
+                fontFamily: "var(--font-display)",
+                fontStyle: "italic",
+                fontWeight: 600,
+                fontSize: "1.5rem",
+                color: "#fff",
+                textShadow: "0 1px 12px rgba(0,0,0,0.9)",
+                letterSpacing: "-0.01em",
+              }}
             >
               Recall
             </span>
@@ -239,6 +244,27 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
             )}
           </div>
         </header>
+
+        {/* ── Flashing left triangle (back, slides 2–6) ────────────────── */}
+        {activeSlide > 0 && (
+          <button
+            onClick={() => scrollToSlide(activeSlide - 1)}
+            aria-label="Previous slide"
+            className="fixed left-5 top-1/2 z-50 sm:left-8"
+            style={{ transform: "translateY(-50%)" }}
+          >
+            <div
+              style={{
+                animation: "triangleBack 1.6s ease-in-out infinite, triangleBackGlow 1.6s ease-in-out infinite",
+                width: 0,
+                height: 0,
+                borderTop: "16px solid transparent",
+                borderBottom: "16px solid transparent",
+                borderRight: "26px solid #4ade80",
+              }}
+            />
+          </button>
+        )}
 
         {/* ── Flashing right triangle ───────────────────────────────────── */}
         {!isLast && (

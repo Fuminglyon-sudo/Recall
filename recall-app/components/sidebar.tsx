@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Brain,
   LayoutDashboard,
   CalendarCheck2,
   Layers3,
@@ -150,14 +149,19 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between p-5 pb-2">
-        <Link href="/landing" className="flex items-center gap-3" onClick={onClose}>
-          <div className="rounded-2xl bg-emerald-400/15 p-2.5 text-emerald-300">
-            <Brain className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-white">Recall</p>
-            <p className="text-xs text-slate-500">Small, calm, local.</p>
-          </div>
+        <Link href="/landing" onClick={onClose}>
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontWeight: 600,
+              fontSize: "1.5rem",
+              color: "#fff",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Recall
+          </span>
         </Link>
         {onClose ? (
           <button
@@ -221,11 +225,19 @@ export function Sidebar({
 
       {/* Mobile top bar */}
       <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-white/8 bg-slate-950/90 px-4 backdrop-blur-xl lg:hidden">
-        <Link href="/landing" className="flex items-center gap-2.5">
-          <div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300">
-            <Brain className="h-4 w-4" />
-          </div>
-          <p className="text-sm font-semibold text-white">Recall</p>
+        <Link href="/landing">
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              fontStyle: "italic",
+              fontWeight: 600,
+              fontSize: "1.4rem",
+              color: "#fff",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Recall
+          </span>
         </Link>
         <button
           onClick={() => setOpen(true)}
