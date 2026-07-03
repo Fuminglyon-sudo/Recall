@@ -43,7 +43,7 @@ const TABS = [
   {
     name: "Add card",
     href: "/cards/new",
-    desc: "Manually save a new word, phrase, or memory. Type the front and the AI drafts a definition, example, hook, and synonyms you can edit before saving.",
+    desc: "Manually save a new word, phrase, or memory. Type the front and Summon drafts a definition, example, hook, and synonyms you can edit before saving.",
   },
 ];
 

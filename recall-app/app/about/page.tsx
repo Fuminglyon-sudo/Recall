@@ -50,7 +50,7 @@ export const metadata: Metadata = {
 
 const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
   ["SM-2 spaced repetition",    true,  true,  false, false],
-  ["AI-drafted card content",   true,  false, false, false],
+  ["Summon-drafted cards",       true,  false, false, false],
   ["Free recall sessions",      true,  false, false, false],
   ["Clean, focused UI",         true,  false, true,  false],
   ["CSV export & import",       true,  true,  false, false],
@@ -211,7 +211,7 @@ export default function AboutPage() {
                   label: "Speak Up",
                   href: "/speak-up",
                   tagline: "The room where you rehearse before the room that counts.",
-                  body: "Pick a scenario: the raise conversation, a pitch, pushing back in a meeting. Set the pressure level. Speak your answer. The AI responds in character, then gives you honest feedback and a stronger version to try again.",
+                  body: "Pick a scenario: the raise conversation, a pitch, pushing back in a meeting. Set the pressure level. Speak your answer. Summon responds in character, then gives you honest feedback and a stronger version to try again.",
                 },
                 {
                   icon: MessageCircle,
@@ -267,9 +267,9 @@ export default function AboutPage() {
               ],
             },
             {
-              label: "AI assistance",
+              label: "Smart drafting",
               title: "Stop staring at a blank card",
-              body: "Type a word or phrase. Claude drafts the definition, a memory hook, an example sentence, and simple synonyms in seconds. You edit anything you like — the card is yours. Creating a high-quality card takes thirty seconds instead of five minutes.",
+              body: "Type a word or phrase. Summon drafts the definition, a memory hook, an example sentence, and simple synonyms in seconds. You edit anything you like — the card is yours. Creating a high-quality card takes thirty seconds instead of five minutes.",
               bullets: [
                 "One-click draft generation",
                 "Definition, hook, example, and synonyms",
@@ -420,7 +420,7 @@ export default function AboutPage() {
             <div className="grid gap-5 sm:grid-cols-3">
               {[
                 { icon: Repeat2,      title: "Science over streaks",  body: "SM-2 scheduling is more effective than gamification. We track your streak because consistency matters, not because it should be a game." },
-                { icon: Sparkles,     title: "AI assists, you decide", body: "Claude drafts a definition. You edit it before it becomes a card. Your memory, your words, your learning." },
+                { icon: Sparkles,     title: "Summon assists, you decide", body: "Summon drafts a definition. You edit it before it becomes a card. Your memory, your words, your learning." },
                 { icon: BrainCircuit, title: "Calm by design",         body: "No social features, no leaderboards, no engagement tricks. Summon is a tool, not an app trying to own your attention." },
               ].map(({ icon: Icon, title, body }) => (
                 <div key={title} className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6">

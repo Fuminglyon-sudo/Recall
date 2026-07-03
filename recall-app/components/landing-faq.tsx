@@ -13,8 +13,8 @@ const FAQS = [
     a: "Spaced repetition is a learning technique that schedules reviews at increasing intervals over time. Instead of reviewing everything every day, you only review a card when you're about to forget it. Summon uses the SM-2 algorithm — the same one that powers Anki and SuperMemo — to calculate these intervals automatically.",
   },
   {
-    q: "How does the AI card drafting work?",
-    a: "When you type a word or concept into a new card, Summon sends it to Claude (Anthropic's AI model). Claude returns a definition, a memory hook, an example sentence, and synonyms. You can edit any of it before saving. The goal is to cut the time it takes to create a good card from minutes to seconds.",
+    q: "How does Summon card drafting work?",
+    a: "When you type a word or concept into a new card, Summon generates a definition, a memory hook, an example sentence, and synonyms in seconds. You can edit any of it before saving. The goal is to cut the time it takes to create a good card from minutes to seconds.",
   },
   {
     q: "What is free recall and why does it matter?",
@@ -22,11 +22,11 @@ const FAQS = [
   },
   {
     q: "Can I use Summon for languages other than English?",
-    a: "Yes. Summon works for any vocabulary in any language. The AI drafting supports multiple languages — just type the word in the language you're studying and Claude will respond accordingly.",
+    a: "Yes. Summon works for any vocabulary in any language. Summon's card drafting supports multiple languages — just type the word in the language you're studying and it will respond accordingly.",
   },
   {
     q: "How do I get my cards into Summon?",
-    a: "You can add cards one at a time (with AI drafting), or import a CSV file in bulk. Each deck has an export button too, so you can back up your cards or move them between accounts.",
+    a: "You can add cards one at a time (with Summon's drafting), or import a CSV file in bulk. Each deck has an export button too, so you can back up your cards or move them between accounts.",
   },
   {
     q: "What happens when I delete my account?",

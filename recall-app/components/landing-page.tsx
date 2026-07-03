@@ -67,7 +67,7 @@ const SLIDES: Slide[] = [
       { text: "\n" },
       { text: "that compounds.", italic: true },
     ],
-    body: "You type a word — AI drafts the card. You pick a scenario — AI plays the room and coaches your response. You open a conversation — AI tells you what to do next. Three loops that reinforce each other, every day.",
+    body: "You type a word — Summon drafts the card. You pick a scenario — Summon plays the room and coaches your response. You open a conversation — Summon tells you what to do next. Three loops that reinforce each other, every day.",
     features: null,
   },
   {
@@ -84,12 +84,12 @@ const SLIDES: Slide[] = [
       {
         label: "Daily Review",
         href: "/today",
-        desc: "AI drafts definition, hook, and example in seconds. SM-2 schedules each card at the exact moment you're about to forget it — no earlier, no later.",
+        desc: "Summon drafts definition, hook, and example in seconds. SM-2 schedules each card at the exact moment you're about to forget it — no earlier, no later.",
       },
       {
         label: "Speak Up",
         href: "/speak-up",
-        desc: "Pick a scenario — job interview, salary conversation, pitch. Set the pressure. Speak. The AI responds in character, then tells you what landed and how to do it better.",
+        desc: "Pick a scenario — job interview, salary conversation, pitch. Set the pressure. Speak. Summon responds in character, then tells you what landed and how to do it better.",
       },
       {
         label: "Conversation Lab",
