@@ -154,8 +154,8 @@ function SidebarContent({
             style={{
               fontFamily: "var(--font-display)",
               fontStyle: "italic",
-              fontWeight: 600,
-              fontSize: "1.5rem",
+              fontWeight: 700,
+              fontSize: "1.9rem",
               color: "#fff",
               letterSpacing: "-0.01em",
             }}
@@ -230,8 +230,8 @@ export function Sidebar({
             style={{
               fontFamily: "var(--font-display)",
               fontStyle: "italic",
-              fontWeight: 600,
-              fontSize: "1.4rem",
+              fontWeight: 700,
+              fontSize: "1.8rem",
               color: "#fff",
               letterSpacing: "-0.01em",
             }}

@@ -22,8 +22,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Recall",
-  description: "Spaced repetition for vocabulary, countries, and founder articulation.",
+  title: {
+    default: "Recall — Vocabulary, Speaking & Conversation Practice",
+    template: "%s | Recall",
+  },
+  description:
+    "Recall helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free forever — no credit card needed.",
+  keywords: [
+    "spaced repetition",
+    "vocabulary builder",
+    "conversation practice",
+    "speaking confidence",
+    "flashcard app",
+    "SM-2 algorithm",
+    "social skills",
+    "communication skills",
+    "speak up",
+    "conversation lab",
+  ],
+  authors: [{ name: "Recall" }],
+  creator: "Recall",
+  openGraph: {
+    siteName: "Recall",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Recall — Vocabulary, Speaking & Conversation Practice",
+    description:
+      "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI feedback. Free forever.",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

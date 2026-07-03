@@ -20,14 +20,30 @@ import {
 import { LandingFaq } from "@/components/landing-faq";
 
 export const metadata: Metadata = {
-  title: "About Recall — Spaced repetition, Speak Up, and Conversation Lab",
+  title: "About Recall — Spaced Repetition, Speak Up & Conversation Lab",
   description:
-    "Recall is a calm learning system built on spaced repetition (SM-2), AI-powered card drafting, Speak Up speaking practice, and Conversation Lab social coaching. Free forever. Learn how it works.",
+    "Recall is a free learning system built on SM-2 spaced repetition, AI-powered flashcards, Speak Up speaking practice, and Conversation Lab social coaching. Learn how it works and why it's different from other apps.",
+  keywords: [
+    "how Recall works",
+    "spaced repetition algorithm",
+    "SM-2",
+    "Speak Up practice",
+    "Conversation Lab",
+    "vocabulary app comparison",
+    "AI flashcards",
+    "free spaced repetition",
+  ],
   openGraph: {
-    title: "About Recall — Spaced repetition, Speak Up, and Conversation Lab",
+    title: "About Recall — Spaced Repetition, Speak Up & Conversation Lab",
     description:
-      "How Recall works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. The full story.",
+      "How Recall works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. Free forever.",
     type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "About Recall",
+    description:
+      "How Recall works: SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice.",
   },
 };
 
@@ -56,8 +72,8 @@ export default function AboutPage() {
               style={{
                 fontFamily: "var(--font-display)",
                 fontStyle: "italic",
-                fontWeight: 600,
-                fontSize: "1.5rem",
+                fontWeight: 700,
+                fontSize: "1.9rem",
                 color: "#fff",
                 letterSpacing: "-0.01em",
               }}

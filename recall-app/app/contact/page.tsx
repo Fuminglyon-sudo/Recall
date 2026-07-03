@@ -3,8 +3,9 @@ import Link from "next/link";
 import { ArrowLeft, Mail, MessageCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact — Recall",
-  description: "Get in touch with the Recall team.",
+  title: "Contact Recall",
+  description:
+    "Have a question about Recall, spaced repetition, or how the app works? Reach out to the team — we'd love to hear from you.",
 };
 
 export default function ContactPage() {
@@ -18,8 +19,8 @@ export default function ContactPage() {
               style={{
                 fontFamily: "var(--font-display)",
                 fontStyle: "italic",
-                fontWeight: 600,
-                fontSize: "1.5rem",
+                fontWeight: 700,
+                fontSize: "1.9rem",
                 color: "#fff",
                 letterSpacing: "-0.01em",
               }}

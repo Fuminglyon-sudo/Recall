@@ -193,8 +193,8 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
               style={{
                 fontFamily: "var(--font-display)",
                 fontStyle: "italic",
-                fontWeight: 600,
-                fontSize: "1.5rem",
+                fontWeight: 700,
+                fontSize: "1.9rem",
                 color: "#fff",
                 textShadow: "0 1px 12px rgba(0,0,0,0.9)",
                 letterSpacing: "-0.01em",
@@ -211,8 +211,9 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
               style={{
                 fontFamily: "var(--font-display)",
                 fontStyle: "italic",
-                fontSize: "0.9rem",
-                color: "rgba(255,255,255,0.75)",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                color: "rgba(255,255,255,0.85)",
                 textShadow: "0 1px 8px rgba(0,0,0,0.9)",
                 letterSpacing: "0.01em",
               }}
@@ -225,8 +226,9 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
               style={{
                 fontFamily: "var(--font-display)",
                 fontStyle: "italic",
-                fontSize: "0.9rem",
-                color: "rgba(255,255,255,0.75)",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                color: "rgba(255,255,255,0.85)",
                 textShadow: "0 1px 8px rgba(0,0,0,0.9)",
                 letterSpacing: "0.01em",
               }}
@@ -423,6 +425,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
 
                   <div className="absolute bottom-7 flex flex-wrap justify-center gap-5 text-xs text-slate-700">
                     <Link href="/about" className="transition hover:text-slate-400">About</Link>
+                    <Link href="/blog" className="transition hover:text-slate-400">Blog</Link>
                     <Link href="/guide" className="transition hover:text-slate-400">Guide</Link>
                     <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
                     <span>© {new Date().getFullYear()} Recall</span>

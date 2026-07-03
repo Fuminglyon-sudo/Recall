@@ -1,4 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Guide — How to Use Recall",
+  description:
+    "A complete guide to using Recall: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, and building social fluency with Conversation Lab.",
+  keywords: [
+    "Recall guide",
+    "how to use spaced repetition",
+    "flashcard guide",
+    "Speak Up guide",
+    "Conversation Lab guide",
+    "SM-2 tutorial",
+  ],
+};
 import {
   LayoutDashboard,
   CalendarCheck2,

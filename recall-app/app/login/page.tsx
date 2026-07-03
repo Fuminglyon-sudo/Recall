@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 import { GoogleSignInButton } from "./google-button";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  description: "Sign in to your Recall account to continue your vocabulary practice and speaking sessions.",
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage({
   searchParams,
