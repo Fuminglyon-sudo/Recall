@@ -221,6 +221,21 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
               About
             </Link>
             <Link
+              href="/blog"
+              className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontStyle: "italic",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                color: "rgba(255,255,255,0.85)",
+                textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+                letterSpacing: "0.01em",
+              }}
+            >
+              Blog
+            </Link>
+            <Link
               href="/contact"
               className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
               style={{
