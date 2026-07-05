@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SummonLogo } from "@/components/summon-logo";
+import { MarketingFooter } from "@/components/marketing-footer";
 import { ArrowLeft, Mail, MessageCircle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -70,12 +71,7 @@ export default function ContactPage() {
         </div>
       </main>
 
-      <footer className="border-t border-white/8 py-8 text-center text-xs text-slate-700">
-        © {new Date().getFullYear()} Summon.{" "}
-        <Link href="/landing" className="hover:text-slate-400 transition">Home</Link>
-        {" · "}
-        <Link href="/about" className="hover:text-slate-400 transition">About</Link>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

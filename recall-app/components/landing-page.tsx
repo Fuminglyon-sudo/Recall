@@ -207,51 +207,29 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           </Link>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/about"
-              className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                color: "rgba(255,255,255,0.85)",
-                textShadow: "0 1px 8px rgba(0,0,0,0.9)",
-                letterSpacing: "0.01em",
-              }}
-            >
-              About
-            </Link>
-            <Link
-              href="/blog"
-              className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                color: "rgba(255,255,255,0.85)",
-                textShadow: "0 1px 8px rgba(0,0,0,0.9)",
-                letterSpacing: "0.01em",
-              }}
-            >
-              Blog
-            </Link>
-            <Link
-              href="/contact"
-              className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 700,
-                fontSize: "0.95rem",
-                color: "rgba(255,255,255,0.85)",
-                textShadow: "0 1px 8px rgba(0,0,0,0.9)",
-                letterSpacing: "0.01em",
-              }}
-            >
-              Contact
-            </Link>
+            {[
+              { label: "About",    href: "/about" },
+              { label: "Features", href: "/features" },
+              { label: "Blog",     href: "/blog" },
+              { label: "FAQ",      href: "/faq" },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="hidden sm:inline-flex items-center rounded-xl border border-white/20 bg-white/5 px-4 py-1.5 backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontStyle: "italic",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  color: "rgba(255,255,255,0.85)",
+                  textShadow: "0 1px 8px rgba(0,0,0,0.9)",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                {label}
+              </Link>
+            ))}
             {isLoggedIn ? (
               <div ref={menuRef} style={{ position: "relative" }}>
                 <button
@@ -494,10 +472,18 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                   </div>
 
                   <div className="absolute bottom-7 flex flex-wrap justify-center gap-5 text-xs text-slate-700">
-                    <Link href="/about" className="transition hover:text-slate-400">About</Link>
-                    <Link href="/blog" className="transition hover:text-slate-400">Blog</Link>
-                    <Link href="/guide" className="transition hover:text-slate-400">Guide</Link>
-                    <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
+                    {[
+                      { label: "About",    href: "/about" },
+                      { label: "Features", href: "/features" },
+                      { label: "FAQ",      href: "/faq" },
+                      { label: "Blog",     href: "/blog" },
+                      { label: "Guide",    href: "/guide" },
+                      { label: "Contact",  href: "/contact" },
+                      { label: "Privacy",  href: "/privacy" },
+                      { label: "Terms",    href: "/terms" },
+                    ].map(({ label, href }) => (
+                      <Link key={label} href={href} className="transition hover:text-slate-400">{label}</Link>
+                    ))}
                     <span>© {new Date().getFullYear()} Summon</span>
                   </div>
                 </section>

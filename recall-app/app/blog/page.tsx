@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { SummonLogo } from "@/components/summon-logo";
+import { MarketingFooter } from "@/components/marketing-footer";
 import { POSTS, formatDate } from "./data";
 
 export const metadata: Metadata = {
@@ -126,16 +127,7 @@ export default function BlogPage() {
         </div>
       </main>
 
-      <footer className="border-t border-white/8 mt-16 py-10">
-        <div className="mx-auto max-w-3xl px-6 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
-          <span>© {new Date().getFullYear()} Summon</span>
-          <div className="flex gap-5">
-            <Link href="/about" className="transition hover:text-slate-400">About</Link>
-            <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
-            <Link href="/landing" className="transition hover:text-slate-400">Home</Link>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }

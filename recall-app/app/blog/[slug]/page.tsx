@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SummonLogo } from "@/components/summon-logo";
 import { ReadingProgressBar } from "@/components/reading-progress-bar";
 import { BlogContentGate } from "@/components/blog-content-gate";
+import { MarketingFooter } from "@/components/marketing-footer";
 import { POSTS, getPost, formatDate } from "../data";
 
 export function generateStaticParams() {
@@ -167,16 +168,7 @@ export default async function BlogPostPage({
         )}
       </main>
 
-      <footer className="border-t border-white/8 mt-10 py-10">
-        <div className="mx-auto max-w-2xl px-6 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-600">
-          <span>© {new Date().getFullYear()} Summon</span>
-          <div className="flex gap-5">
-            <Link href="/blog" className="transition hover:text-slate-400">Blog</Link>
-            <Link href="/about" className="transition hover:text-slate-400">About</Link>
-            <Link href="/contact" className="transition hover:text-slate-400">Contact</Link>
-          </div>
-        </div>
-      </footer>
+      <MarketingFooter />
     </div>
   );
 }
