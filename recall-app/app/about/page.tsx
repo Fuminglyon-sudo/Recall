@@ -261,7 +261,7 @@ export default function AboutPage() {
             {([
               { src: "/dashboard.png", alt: "Summon dashboard showing review streak, 30-day activity heatmap, and deck list with mastery progress", label: "Dashboard" },
               { src: "/speak_up_cards.png", alt: "Speak Up scenario picker with high-stakes practice categories including salary negotiation, pitching, and pushback", label: "Speak Up" },
-              { src: "/conversatiob_lab.png", alt: "Conversation Lab social scenario picker with networking, dinner party, and flight conversation scenarios", label: "Conversation Lab" },
+              { src: "/conversation_lab.png", alt: "Conversation Lab social scenario picker with networking, dinner party, and flight conversation scenarios", label: "Conversation Lab" },
             ] as const).map(({ src, alt, label }) => (
               <div key={label} className="overflow-hidden rounded-2xl border border-white/10 shadow-lg shadow-black/30">
                 <Image src={src} alt={alt} width={600} height={420} className="w-full h-auto" />
