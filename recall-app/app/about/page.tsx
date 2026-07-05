@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { SummonLogo } from "@/components/summon-logo";
 import {
@@ -254,6 +255,22 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* ── App screenshots gallery ──────────────────────────────────────── */}
+        <section className="py-10 border-b border-white/8">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {([
+              { src: "/dashboard.png", alt: "Summon dashboard showing review streak, 30-day activity heatmap, and deck list with mastery progress", label: "Dashboard" },
+              { src: "/speak_up_cards.png", alt: "Speak Up scenario picker with high-stakes practice categories including salary negotiation, pitching, and pushback", label: "Speak Up" },
+              { src: "/conversatiob_lab.png", alt: "Conversation Lab social scenario picker with networking, dinner party, and flight conversation scenarios", label: "Conversation Lab" },
+            ] as const).map(({ src, alt, label }) => (
+              <div key={label} className="overflow-hidden rounded-2xl border border-white/10 shadow-lg shadow-black/30">
+                <Image src={src} alt={alt} width={600} height={420} className="w-full h-auto" />
+                <p className="border-t border-white/8 bg-slate-900/60 px-4 py-2.5 text-xs text-slate-500">{label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* ── Feature deep-dives ───────────────────────────────────────────── */}
         <section id="features" className="py-20 border-b border-white/8 space-y-20">
           <div className="max-w-2xl space-y-4">
@@ -275,44 +292,27 @@ export default function AboutPage() {
                 ))}
               </ul>
             </div>
-            {/* Mock review card */}
-            <div className="hidden lg:block rounded-3xl border border-white/10 bg-slate-900/60 p-6 space-y-4">
-              <div className="rounded-2xl border border-emerald-300/15 bg-slate-950/60 p-4">
-                <p className="text-[10px] uppercase tracking-widest text-slate-500">Front</p>
-                <p className="mt-1.5 text-lg font-semibold text-white">sanguine</p>
-              </div>
-              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4 space-y-2">
-                <p className="text-[10px] uppercase tracking-widest text-slate-500">Definition</p>
-                <p className="text-sm leading-6 text-slate-200">Optimistic, especially in difficult situations; confidently positive.</p>
-              </div>
-              <div className="grid grid-cols-6 gap-1.5 pt-1">
-                {[["0","Blackout","red"],["1","Wrong","red"],["2","Hard","orange"],["3","Okay","yellow"],["4","Good","emerald"],["5","Perfect","emerald"]].map(([n, label, color]) => (
-                  <div key={n} className={`flex flex-col items-center gap-1 rounded-xl border py-2 text-[10px] ${color === "emerald" ? "border-emerald-400/20 bg-emerald-400/8 text-emerald-300" : color === "orange" ? "border-orange-400/20 bg-orange-400/8 text-orange-300" : color === "yellow" ? "border-yellow-400/20 bg-yellow-400/8 text-yellow-300" : "border-red-400/20 bg-red-400/8 text-red-300"}`}>
-                    <span className="font-semibold">{n}</span>
-                    <span className="opacity-70">{label}</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-center text-[10px] text-slate-600">Next review in 4 days · Familiar</p>
+            <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
+              <Image
+                src="/today_card.png"
+                alt="Summon review card showing a vocabulary word revealed with definition, memory hook, and 6 grading buttons"
+                width={900}
+                height={620}
+                className="w-full h-auto"
+              />
             </div>
           </div>
 
           {/* ── Smart drafting ── */}
           <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
-            <div className="hidden lg:block rounded-3xl border border-white/10 bg-slate-900/60 p-6 space-y-3">
-              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4 space-y-1">
-                <p className="text-[10px] uppercase tracking-widest text-slate-500">Word or phrase</p>
-                <p className="text-sm font-semibold text-white">perspicacious</p>
-              </div>
-              {[["Definition", "Having a ready insight into things; shrewd and having a clear understanding."],["Memory hook", "Per-spica-cious → Per (thoroughly) + specere (to look) → someone who looks through everything clearly."],["Example", "Her perspicacious reading of the room saved the negotiation before it derailed."]].map(([label, val]) => (
-                <div key={label} className="rounded-2xl border border-emerald-300/10 bg-emerald-400/5 p-3 space-y-1">
-                  <p className="text-[10px] uppercase tracking-widest text-emerald-400/70">{label}</p>
-                  <p className="text-xs leading-5 text-slate-300">{val}</p>
-                </div>
-              ))}
-              <div className="flex justify-end pt-1">
-                <div className="rounded-xl bg-emerald-400 px-4 py-1.5 text-xs font-semibold text-slate-950">Save card</div>
-              </div>
+            <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
+              <Image
+                src="/cards_new.png"
+                alt="Summon add card page showing AI-generated definition, memory hook, and example sentence for a word"
+                width={900}
+                height={620}
+                className="w-full h-auto"
+              />
             </div>
             <div className="space-y-6">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Smart drafting</p>
@@ -342,20 +342,14 @@ export default function AboutPage() {
                 ))}
               </ul>
             </div>
-            <div className="hidden lg:block rounded-3xl border border-white/10 bg-slate-900/60 p-6 space-y-4">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-white">Professional Vocabulary · Free recall</p>
-                <p className="text-xs leading-5 text-slate-400">Write every word you remember from this deck — without looking. One word per line is fine.</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 min-h-[100px] space-y-1">
-                {["perspicacious", "sanguine", "equivocal", ""].map((w, i) => (
-                  <p key={i} className={`text-sm ${w ? "text-slate-200" : "text-slate-700"}`}>{w || "▌"}</p>
-                ))}
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-[10px] text-slate-600">3 words recalled so far</p>
-                <div className="rounded-xl bg-emerald-400 px-4 py-1.5 text-xs font-semibold text-slate-950">Check my recall</div>
-              </div>
+            <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
+              <Image
+                src="/deck_learning.png"
+                alt="Summon decks page showing mastery progress bars across New, Learning, Familiar, and Mastered levels"
+                width={900}
+                height={620}
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </section>
