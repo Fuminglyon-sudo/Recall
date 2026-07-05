@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 import { GoogleSignInButton } from "./google-button";
+import { SummonLogo } from "@/components/summon-logo";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -28,8 +29,9 @@ export default async function LoginPage({
         </div>
         {/* Header */}
         <div className="mb-8 text-center">
-          <p className="text-4xl mb-3">🧠</p>
-          <p className="text-sm font-medium text-emerald-300">Summon</p>
+          <div className="flex justify-center mb-4">
+            <SummonLogo fontSize="2.2rem" />
+          </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">Welcome</h1>
           <p className="mt-1 text-sm text-slate-400">Sign in to continue your practice.</p>
         </div>
