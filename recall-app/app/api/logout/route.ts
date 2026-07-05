@@ -1,18 +1,24 @@
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { COOKIE_NAME } from "@/lib/auth";
+
+// Cookies that must be cleared to fully sign out both admin and Google OAuth users.
+// Deletions must be set on the Response object — using cookies() from next/headers
+// does not affect a NextResponse.redirect() because they are separate response paths.
+const COOKIES_TO_CLEAR = [
+  "recall_session",
+  // Auth.js v5 JWT — HTTP (dev) and HTTPS (prod) variants
+  "authjs.session-token",
+  "__Secure-authjs.session-token",
+  "authjs.callback-url",
+  "__Secure-authjs.callback-url",
+  "authjs.csrf-token",
+  "__Host-authjs.csrf-token",
+];
 
 export async function GET(req: NextRequest) {
-  const jar = await cookies();
-  // Clear admin HMAC cookie
-  jar.delete(COOKIE_NAME);
-  // Clear NextAuth/Auth.js JWT cookies (both HTTP and HTTPS variants)
-  jar.delete("authjs.session-token");
-  jar.delete("__Secure-authjs.session-token");
-  jar.delete("authjs.callback-url");
-  jar.delete("__Secure-authjs.callback-url");
-  jar.delete("authjs.csrf-token");
-  jar.delete("__Host-authjs.csrf-token");
   const landingUrl = new URL("/landing", req.url);
-  return NextResponse.redirect(landingUrl);
+  const response = NextResponse.redirect(landingUrl);
+  for (const name of COOKIES_TO_CLEAR) {
+    response.cookies.set({ name, value: "", maxAge: 0, path: "/" });
+  }
+  return response;
 }
