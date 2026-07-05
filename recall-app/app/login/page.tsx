@@ -20,6 +20,12 @@ export default async function LoginPage({
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-sm">
+        {/* Back link */}
+        <div className="mb-6 text-center">
+          <a href="/landing" className="text-xs text-slate-600 transition hover:text-slate-400">
+            ← Back to Summon
+          </a>
+        </div>
         {/* Header */}
         <div className="mb-8 text-center">
           <p className="text-4xl mb-3">🧠</p>

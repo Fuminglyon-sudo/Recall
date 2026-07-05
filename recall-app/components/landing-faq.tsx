@@ -38,7 +38,7 @@ const FAQS = [
   },
   {
     q: "Does Summon work offline?",
-    a: "Core features currently require an internet connection. If you lose connectivity mid-session, your progress is saved locally and synced when you reconnect. Offline review mode — useful for commutes — is on the roadmap.",
+    a: "Partially. If you lose your connection mid-review, Summon detects it and holds the grading buttons until you reconnect — so you never accidentally lose a session. Features that require AI (card drafting, Speak Up, Conversation Lab) need an active connection. Full offline review caching for commutes is on the roadmap.",
   },
   {
     q: "Does Summon track my streak or daily progress?",
@@ -62,7 +62,7 @@ const FAQS = [
   },
   {
     q: "Can I share a deck with someone else?",
-    a: "Not directly yet — deck sharing is on the roadmap. For now, you can export any deck as a CSV file and share it for someone else to import into their account. The export button is on each deck's settings page.",
+    a: "Yes — deck sharing is live. From any deck page, generate a share link. Anyone with the link can preview the cards and clone the entire deck to their own account in one click. You can revoke the link at any time.",
   },
   {
     q: "Is my data private? Can anyone see my Speak Up sessions?",
@@ -95,6 +95,7 @@ export function LandingFaq() {
           <button
             onClick={() => setOpen(open === i ? null : i)}
             className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left"
+            aria-expanded={open === i}
           >
             <span className="text-sm font-medium text-white">{item.q}</span>
             <ChevronDown
@@ -103,11 +104,14 @@ export function LandingFaq() {
               }`}
             />
           </button>
-          {open === i && (
-            <div className="border-t border-white/8 px-6 pb-5 pt-4 text-sm leading-7 text-slate-400">
-              {item.a}
-            </div>
-          )}
+          {/* Answer always in DOM for SEO — hidden visually when collapsed */}
+          <div
+            className="border-t border-white/8 px-6 text-sm leading-7 text-slate-400 transition-all duration-200"
+            style={open === i ? { paddingTop: "1rem", paddingBottom: "1.25rem" } : { maxHeight: 0, overflow: "hidden", paddingTop: 0, paddingBottom: 0, borderTopWidth: 0 }}
+            aria-hidden={open !== i}
+          >
+            {item.a}
+          </div>
         </div>
       ))}
     </div>

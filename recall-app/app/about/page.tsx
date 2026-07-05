@@ -21,9 +21,9 @@ import {
 import { LandingFaq } from "@/components/landing-faq";
 
 export const metadata: Metadata = {
-  title: "About Summon — Spaced Repetition, Speak Up & Conversation Lab",
+  title: "About Summon — Learn Words. Practice Using Them. Keep Both.",
   description:
-    "Summon is a free learning system built on SM-2 spaced repetition, AI-powered flashcards, Speak Up speaking practice, and Conversation Lab social coaching. Learn how it works and why it's different from other apps.",
+    "Summon is a free communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, and Conversation Lab sharpens social fluency. Learn the word. Practice using it. Own it.",
   keywords: [
     "how Summon works",
     "spaced repetition algorithm",
@@ -97,6 +97,13 @@ export default function AboutPage() {
             too late — and want to build, quietly and without pressure, the vocabulary and presence
             that makes them feel at home in any room, any conversation, any moment that matters.
           </p>
+          <div className="inline-flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-300">
+            <span className="text-emerald-300 font-medium">Learn the word.</span>
+            <span className="text-slate-600">→</span>
+            <span className="text-emerald-300 font-medium">Practice using it.</span>
+            <span className="text-slate-600">→</span>
+            <span className="text-emerald-300 font-medium">Own it.</span>
+          </div>
         </section>
 
         {/* ── Why it exists ────────────────────────────────────────────────── */}
@@ -254,68 +261,103 @@ export default function AboutPage() {
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl">Designed around how memory actually works</h2>
           </div>
 
-          {[
-            {
-              label: "Spaced repetition",
-              title: "The SM-2 algorithm, quietly running in the background",
-              body: "SM-2 calculates the optimal interval between reviews based on how accurately you remembered each card. Cards drift from daily to weekly to monthly as they strengthen — shrinking your workload automatically over time. New cards are introduced gradually so you never feel overwhelmed.",
-              bullets: [
-                "Automatic interval scheduling",
-                "Per-card ease factor adjustment",
-                "New, learning, familiar, and mastered levels",
-                "Separate queue for new vs. due cards",
-              ],
-            },
-            {
-              label: "Smart drafting",
-              title: "Stop staring at a blank card",
-              body: "Type a word or phrase. Summon drafts the definition, a memory hook, an example sentence, and simple synonyms in seconds. You edit anything you like — the card is yours. Creating a high-quality card takes thirty seconds instead of five minutes.",
-              bullets: [
-                "One-click draft generation",
-                "Definition, hook, example, and synonyms",
-                "Edit freely before saving",
-                "Works for any language or subject",
-              ],
-            },
-            {
-              label: "Free recall",
-              title: "The most underused memory technique",
-              body: "Before seeing your cards, write down everything you remember from a deck without any cues. Free recall — retrieval practice without hints — is one of the highest-ROI techniques in cognitive science. Summon makes it a first-class part of your review, not an afterthought.",
-              bullets: [
-                "Write-first, compare-second workflow",
-                "No peeking enforced before you recall",
-                "SM-2 grades update on submission",
-                "Confirmation feedback after each session",
-              ],
-            },
-          ].map(({ label, title, body, bullets }, i) => (
-            <div
-              key={label}
-              className={`grid gap-12 lg:grid-cols-2 lg:items-start ${i % 2 === 1 ? "lg:[&>*:first-child]:order-last" : ""}`}
-            >
-              <div className="space-y-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">{label}</p>
-                <h3 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>{title}</h3>
-                <p className="text-base leading-7 text-slate-400">{body}</p>
-                <ul className="space-y-3">
-                  {bullets.map((b) => (
-                    <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
+          {/* ── Spaced repetition ── */}
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+            <div className="space-y-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Spaced repetition</p>
+              <h3 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>The SM-2 algorithm, quietly running in the background</h3>
+              <p className="text-base leading-7 text-slate-400">SM-2 calculates the optimal interval between reviews based on how accurately you remembered each card. Cards drift from daily to weekly to monthly as they strengthen — shrinking your workload automatically over time.</p>
+              <ul className="space-y-3">
+                {["Automatic interval scheduling", "Per-card ease factor adjustment", "New, learning, familiar, and mastered levels", "Separate queue for new vs. due cards"].map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* Mock review card */}
+            <div className="hidden lg:block rounded-3xl border border-white/10 bg-slate-900/60 p-6 space-y-4">
+              <div className="rounded-2xl border border-emerald-300/15 bg-slate-950/60 p-4">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500">Front</p>
+                <p className="mt-1.5 text-lg font-semibold text-white">sanguine</p>
               </div>
-              <div className="hidden lg:flex min-h-[200px] items-center justify-center rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-950/30 via-slate-900/50 to-slate-950 p-8">
-                <div className="text-center space-y-3">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-300 ring-1 ring-emerald-400/15">
-                    <Sparkles className="h-6 w-6" />
+              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4 space-y-2">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500">Definition</p>
+                <p className="text-sm leading-6 text-slate-200">Optimistic, especially in difficult situations; confidently positive.</p>
+              </div>
+              <div className="grid grid-cols-6 gap-1.5 pt-1">
+                {[["0","Blackout","red"],["1","Wrong","red"],["2","Hard","orange"],["3","Okay","yellow"],["4","Good","emerald"],["5","Perfect","emerald"]].map(([n, label, color]) => (
+                  <div key={n} className={`flex flex-col items-center gap-1 rounded-xl border py-2 text-[10px] ${color === "emerald" ? "border-emerald-400/20 bg-emerald-400/8 text-emerald-300" : color === "orange" ? "border-orange-400/20 bg-orange-400/8 text-orange-300" : color === "yellow" ? "border-yellow-400/20 bg-yellow-400/8 text-yellow-300" : "border-red-400/20 bg-red-400/8 text-red-300"}`}>
+                    <span className="font-semibold">{n}</span>
+                    <span className="opacity-70">{label}</span>
                   </div>
-                  <p className="text-xs text-slate-700">Screenshots coming soon</p>
+                ))}
+              </div>
+              <p className="text-center text-[10px] text-slate-600">Next review in 4 days · Familiar</p>
+            </div>
+          </div>
+
+          {/* ── Smart drafting ── */}
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+            <div className="hidden lg:block rounded-3xl border border-white/10 bg-slate-900/60 p-6 space-y-3">
+              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4 space-y-1">
+                <p className="text-[10px] uppercase tracking-widest text-slate-500">Word or phrase</p>
+                <p className="text-sm font-semibold text-white">perspicacious</p>
+              </div>
+              {[["Definition", "Having a ready insight into things; shrewd and having a clear understanding."],["Memory hook", "Per-spica-cious → Per (thoroughly) + specere (to look) → someone who looks through everything clearly."],["Example", "Her perspicacious reading of the room saved the negotiation before it derailed."]].map(([label, val]) => (
+                <div key={label} className="rounded-2xl border border-emerald-300/10 bg-emerald-400/5 p-3 space-y-1">
+                  <p className="text-[10px] uppercase tracking-widest text-emerald-400/70">{label}</p>
+                  <p className="text-xs leading-5 text-slate-300">{val}</p>
                 </div>
+              ))}
+              <div className="flex justify-end pt-1">
+                <div className="rounded-xl bg-emerald-400 px-4 py-1.5 text-xs font-semibold text-slate-950">Save card</div>
               </div>
             </div>
-          ))}
+            <div className="space-y-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Smart drafting</p>
+              <h3 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>Stop staring at a blank card</h3>
+              <p className="text-base leading-7 text-slate-400">Type a word or phrase. Summon drafts the definition, a memory hook, an example sentence, and synonyms in seconds. You edit anything you like — the card is yours. Creating a high-quality card takes thirty seconds instead of five minutes.</p>
+              <ul className="space-y-3">
+                {["One-click draft generation", "Definition, hook, example, and synonyms", "Edit freely before saving", "Works for any language or subject"].map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* ── Free recall ── */}
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
+            <div className="space-y-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Free recall</p>
+              <h3 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>The most underused memory technique</h3>
+              <p className="text-base leading-7 text-slate-400">Before seeing your cards, write down everything you remember from a deck without any cues. Free recall — retrieval practice without hints — is one of the highest-ROI techniques in cognitive science. Summon makes it a first-class part of your review, not an afterthought.</p>
+              <ul className="space-y-3">
+                {["Write-first, compare-second workflow", "No peeking enforced before you recall", "SM-2 grades update on submission", "Confirmation feedback after each session"].map((b) => (
+                  <li key={b} className="flex items-start gap-3 text-sm text-slate-300">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="hidden lg:block rounded-3xl border border-white/10 bg-slate-900/60 p-6 space-y-4">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold text-white">Professional Vocabulary · Free recall</p>
+                <p className="text-xs leading-5 text-slate-400">Write every word you remember from this deck — without looking. One word per line is fine.</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-4 min-h-[100px] space-y-1">
+                {["perspicacious", "sanguine", "equivocal", ""].map((w, i) => (
+                  <p key={i} className={`text-sm ${w ? "text-slate-200" : "text-slate-700"}`}>{w || "▌"}</p>
+                ))}
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] text-slate-600">3 words recalled so far</p>
+                <div className="rounded-xl bg-emerald-400 px-4 py-1.5 text-xs font-semibold text-slate-950">Check my recall</div>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ── Everything else ───────────────────────────────────────────────── */}
@@ -438,16 +480,20 @@ export default function AboutPage() {
         {/* ── CTA ─────────────────────────────────────────────────────────── */}
         <section className="py-20">
           <div className="rounded-3xl border border-emerald-400/15 bg-gradient-to-br from-emerald-950/50 via-slate-900/60 to-slate-950 p-12 text-center space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/8 px-4 py-1.5 text-xs font-medium text-emerald-300">
+              Free while in beta · Pro tier coming
+            </div>
             <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>
               The words you reach for — finally within reach
             </h2>
-            <p className="text-slate-400">Free to use. Your first card can be added today.</p>
+            <p className="text-slate-400">Free to use during beta. All features included — no card, no trial period, no limits.</p>
             <Link
               href="/login"
               className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 transition hover:bg-emerald-300"
             >
               Get started free
             </Link>
+            <p className="text-xs text-slate-600">Early users get grandfathered pricing when Pro launches.</p>
           </div>
         </section>
 
