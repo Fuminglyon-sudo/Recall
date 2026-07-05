@@ -31,7 +31,11 @@ export default async function NewCardPage({ searchParams }: { searchParams: Prom
             Type the front of the card, ask Summon to draft the rest, edit anything you want, then save.
           </p>
           <div className="mt-8">
-            {decks.length > 0 ? (
+            {!ready ? (
+              <div className="rounded-3xl border border-amber-300/20 bg-amber-400/10 p-5 text-sm leading-7 text-amber-100">
+                The database is not ready yet. Run <code>prisma migrate deploy</code> against your PostgreSQL database, then redeploy or refresh.
+              </div>
+            ) : decks.length > 0 ? (
               <DraftCardForm
                 decks={decks}
                 createCardAction={createCard}
@@ -40,8 +44,17 @@ export default async function NewCardPage({ searchParams }: { searchParams: Prom
                 submitButton={<SubmitButton label="Save card" pendingLabel="Saving card..." />}
               />
             ) : (
-              <div className="rounded-3xl border border-amber-300/20 bg-amber-400/10 p-5 text-sm leading-7 text-amber-100">
-                The database is not ready yet. Run [`prisma migrate deploy`](package.json:1) against your PostgreSQL database, then redeploy or refresh.
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-3">
+                <p className="text-sm font-semibold text-white">Create a deck first</p>
+                <p className="text-sm leading-6 text-slate-400">
+                  Cards live inside decks. Go to your decks page to create one, or add a starter pack in seconds.
+                </p>
+                <a
+                  href="/decks"
+                  className="inline-flex items-center rounded-2xl bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
+                >
+                  Go to decks →
+                </a>
               </div>
             )}
           </div>
