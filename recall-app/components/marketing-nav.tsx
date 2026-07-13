@@ -32,8 +32,6 @@ export function MarketingNav() {
 
         {/* Right side */}
         <div className="flex items-center gap-1.5">
-          <ThemeToggle className="rounded-xl p-2 text-slate-400 transition hover:text-slate-200" />
-
           {/* Pill nav — matching the landing page style, themed via CSS vars */}
           {NAV_LINKS.map(({ label, href }) => {
             const active = pathname === href || pathname.startsWith(href + "/");
@@ -68,6 +66,7 @@ export function MarketingNav() {
           >
             Sign in
           </Link>
+          <ThemeToggle className="rounded-xl p-2.5 text-slate-400 transition hover:text-slate-200 hover:bg-white/6" />
         </div>
       </div>
     </header>

@@ -224,10 +224,10 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           </button>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle className="rounded-xl p-2 text-white/70 transition hover:text-white hover:bg-white/10" />
             {[
               { label: "About",    href: "/about" },
               { label: "Features", href: "/features" },
+              { label: "Pricing",  href: "/pricing" },
               { label: "Blog",     href: "/blog" },
               { label: "FAQ",      href: "/faq" },
             ].map(({ label, href }) => (
@@ -298,6 +298,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                 Sign in
               </Link>
             )}
+            <ThemeToggle className="rounded-xl p-2.5 text-white/70 transition hover:text-white hover:bg-white/10" />
           </div>
         </header>
 

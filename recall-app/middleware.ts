@@ -30,6 +30,7 @@ export async function middleware(req: NextRequest) {
     pathname === "/landing" ||
     pathname === "/about" ||
     pathname === "/features" ||
+    pathname === "/pricing" ||
     pathname === "/faq" ||
     pathname === "/privacy" ||
     pathname === "/terms" ||
