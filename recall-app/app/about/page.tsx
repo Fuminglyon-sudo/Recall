@@ -287,7 +287,7 @@ export default function AboutPage() {
         <section className="py-20">
           <div className="rounded-3xl border border-emerald-400/15 bg-gradient-to-br from-emerald-950/50 via-slate-900/60 to-slate-950 p-12 text-center space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/8 px-4 py-1.5 text-xs font-medium text-emerald-300">
-              First 100 spots free forever · Then $9.99/mo
+              First 50 spots free forever · Then $9.99/mo
             </div>
             <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>
               The words you reach for — finally within reach

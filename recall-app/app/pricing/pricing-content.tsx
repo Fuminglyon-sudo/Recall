@@ -33,7 +33,7 @@ const PRO_FEATURES = [
 
 const PRICING_FAQ = [
   {
-    q: "What happens after the 100 founder spots are gone?",
+    q: "What happens after the 50 founder spots are gone?",
     a: "New sign-ups move to the Pro plan at $9.99/month or $99/year. The founders who claimed their spot keep it free — forever, regardless of what Pro grows to include.",
   },
   {
@@ -99,9 +99,9 @@ export function PricingContent({
                 letterSpacing: "0.04em",
                 padding: "0.15em 0.5em",
                 borderRadius: "9999px",
-                background: "rgba(52,211,153,0.15)",
-                color: "#6ee7b7",
-                border: "1px solid rgba(52,211,153,0.25)",
+                background: "var(--save-badge-bg)",
+                color: "var(--save-badge-color)",
+                border: "1px solid var(--save-badge-border)",
               }}
             >
               SAVE 17%
@@ -117,9 +117,9 @@ export function PricingContent({
         <div
           className="relative flex flex-col rounded-3xl p-8 space-y-6"
           style={{
-            border: "1px solid rgba(52,211,153,0.35)",
-            background: "linear-gradient(135deg, rgba(6,78,59,0.25) 0%, rgba(2,44,34,0.18) 50%, rgba(1,13,26,0.55) 100%)",
-            boxShadow: "0 0 60px rgba(52,211,153,0.08), inset 0 1px 0 rgba(52,211,153,0.15)",
+            border: "1px solid var(--founder-card-border)",
+            background: "var(--founder-card-bg)",
+            boxShadow: "var(--founder-card-shadow)",
           }}
         >
           <span
@@ -131,11 +131,11 @@ export function PricingContent({
               fontWeight: 700,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              color: "#6ee7b7",
-              border: "1px solid rgba(52,211,153,0.3)",
+              color: "var(--founder-badge-color)",
+              border: "1px solid var(--founder-badge-border)",
               borderRadius: "9999px",
               padding: "0.3em 0.75em",
-              background: "rgba(52,211,153,0.08)",
+              background: "var(--founder-badge-bg)",
               width: "fit-content",
             }}
           >
@@ -152,7 +152,7 @@ export function PricingContent({
           <div className="space-y-1.5">
             <div
               className="h-1.5 rounded-full overflow-hidden"
-              style={{ background: "rgba(255,255,255,0.08)" }}
+              style={{ background: "var(--founder-bar-track)" }}
             >
               <div
                 className="h-full rounded-full"
@@ -182,7 +182,7 @@ export function PricingContent({
           >
             Claim your spot <ArrowRight className="h-4 w-4" />
           </Link>
-          <p className="text-center text-xs text-slate-600">
+          <p className="text-center text-xs text-slate-500">
             No credit card required · Spots are first-come, first-served
           </p>
         </div>
@@ -191,8 +191,8 @@ export function PricingContent({
         <div
           className="relative flex flex-col rounded-3xl p-8 space-y-6"
           style={{
-            border: "1px solid rgba(255,255,255,0.1)",
-            background: "rgba(255,255,255,0.04)",
+            border: "1px solid var(--pro-card-border)",
+            background: "var(--pro-card-bg)",
           }}
         >
           <span
@@ -204,11 +204,11 @@ export function PricingContent({
               fontWeight: 700,
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              color: "#94a3b8",
-              border: "1px solid rgba(255,255,255,0.1)",
+              color: "var(--pro-badge-color)",
+              border: "1px solid var(--pro-badge-border)",
               borderRadius: "9999px",
               padding: "0.3em 0.75em",
-              background: "rgba(255,255,255,0.04)",
+              background: "var(--pro-badge-bg)",
               width: "fit-content",
             }}
           >
@@ -234,7 +234,7 @@ export function PricingContent({
 
           <div
             className="rounded-xl p-3"
-            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+            style={{ background: "var(--pro-trial-bg)", border: "1px solid var(--pro-trial-border)" }}
           >
             <p className="text-xs text-slate-400">
               <span className="text-white font-semibold">14-day free trial</span> — full access, no card required.
@@ -255,13 +255,13 @@ export function PricingContent({
             href="/login"
             className="flex items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-base font-bold text-white transition"
             style={{
-              border: "1px solid rgba(255,255,255,0.15)",
-              background: "rgba(255,255,255,0.07)",
+              border: "1px solid var(--pro-cta-border)",
+              background: "var(--pro-cta-bg)",
             }}
           >
             Start free trial <ArrowRight className="h-4 w-4" />
           </Link>
-          <p className="text-center text-xs text-slate-600">
+          <p className="text-center text-xs text-slate-500">
             Cancel anytime · No questions asked
           </p>
         </div>
@@ -272,8 +272,8 @@ export function PricingContent({
         <div
           className="rounded-3xl p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
           style={{
-            border: "1px solid rgba(52,211,153,0.2)",
-            background: "rgba(6,78,59,0.12)",
+            border: "1px solid var(--urgency-bar-border)",
+            background: "var(--urgency-bar-bg)",
           }}
         >
           <div className="space-y-1">

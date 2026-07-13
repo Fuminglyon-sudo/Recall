@@ -127,14 +127,14 @@ const SLIDES: Slide[] = [
       { text: "\n" },
       { text: "that knows what to say.", italic: true },
     ],
-    body: "Train recall, speaking, and social confidence in one daily loop. Free for the first 100 — then $9.99/mo.",
+    body: "Train recall, speaking, and social confidence in one daily loop. Free for the first 50 — then $9.99/mo.",
     caption: null,
     loop: null,
     features: null,
   },
 ];
 
-const PROOF_CHIPS = ["Free for first 100 spots", "No card required", "Built for speaking + memory"];
+const PROOF_CHIPS = ["Free for first 50 spots", "No card required", "Built for speaking + memory"];
 
 export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
   const [activeSlide, setActiveSlide] = useState(0);

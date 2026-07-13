@@ -6,7 +6,7 @@ import { LandingPage } from "@/components/landing-page";
 export const metadata: Metadata = {
   title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking & Conversation Skills",
   description:
-    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speaking and social conversations with AI coaching. Free for the first 100 users — no credit card needed.",
+    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speaking and social conversations with AI coaching. Free for the first 50 users — no credit card needed.",
   keywords: [
     "spaced repetition app",
     "vocabulary builder",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking & Conversation Skills",
     description:
-      "Build vocabulary with spaced repetition. Practice high-stakes speaking and social conversations with AI feedback. Free for the first 100 users.",
+      "Build vocabulary with spaced repetition. Practice high-stakes speaking and social conversations with AI feedback. Free for the first 50 users.",
     type: "website",
     url: "/",
     images: [{ url: "/dashboard.png", width: 1200, height: 630, alt: "Sọrọ Sọkẹ AI" }],

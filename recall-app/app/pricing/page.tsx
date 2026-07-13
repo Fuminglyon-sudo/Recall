@@ -9,20 +9,20 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Pricing — Sọrọ Sọkẹ AI",
   description:
-    "Sọrọ Sọkẹ AI pricing: free for the first 100 founders, then $9.99/month or $99/year for Pro. 14-day free trial, no card required.",
+    "Sọrọ Sọkẹ AI pricing: free for the first 50 founders, then $9.99/month or $99/year for Pro. 14-day free trial, no card required.",
   keywords: ["Soro Soke pricing", "spaced repetition app price", "vocabulary app subscription", "founder pricing", "free trial"],
   robots: { index: true, follow: true },
   alternates: { canonical: "/pricing" },
   openGraph: {
     title: "Pricing — Sọrọ Sọkẹ AI",
-    description: "Free for the first 100 users. Then $9.99/mo or $99/yr. 14-day free trial, no card required.",
+    description: "Free for the first 50 users. Then $9.99/mo or $99/yr. 14-day free trial, no card required.",
     type: "website",
     url: "/pricing",
   },
   twitter: {
     card: "summary",
     title: "Pricing — Sọrọ Sọkẹ AI",
-    description: "Free for the first 100 founders. Then $9.99/mo or $99/yr.",
+    description: "Free for the first 50 founders. Then $9.99/mo or $99/yr.",
   },
 };
 
@@ -31,7 +31,7 @@ async function getFounderData() {
     prisma.user.count({ where: { plan: "founder" } }),
     prisma.siteConfig.findUnique({ where: { key: "founder_spots_total" } }),
   ]);
-  const founderSpotsTotal = parseInt(configRow?.value ?? "100", 10);
+  const founderSpotsTotal = parseInt(configRow?.value ?? "50", 10);
   return { founderSpotsTaken, founderSpotsTotal };
 }
 
@@ -57,7 +57,7 @@ export default async function PricingPage() {
             </span>
           </h1>
           <p className="mx-auto max-w-xl text-lg leading-8 text-slate-400">
-            The first {founderSpotsTotal} people to join get Soro Soke free — forever.
+            The first {founderSpotsTotal} founders get Soro Soke free — forever.
             After that, full access is $9.99/month or $99/year.
           </p>
         </section>

@@ -59,6 +59,31 @@ html:not(.dark) {
   --gate-bg:         rgba(15, 23, 42, 0.92); /* content-gate card backdrop — dark */
   --gate-border:     rgba(255,255,255,0.12); /* content-gate card border — dark */
   --progress-track:  rgba(255,255,255,0.06); /* reading-progress bar track */
+
+  /* Pricing page — Founder card */
+  --founder-card-bg:      linear-gradient(135deg, rgba(6,78,59,0.25) 0%, rgba(2,44,34,0.18) 50%, rgba(1,13,26,0.55) 100%);
+  --founder-card-border:  rgba(52,211,153,0.35);
+  --founder-card-shadow:  0 0 60px rgba(52,211,153,0.08), inset 0 1px 0 rgba(52,211,153,0.15);
+  --founder-badge-bg:     rgba(52,211,153,0.08);
+  --founder-badge-border: rgba(52,211,153,0.3);
+  --founder-badge-color:  #6ee7b7;
+  --founder-bar-track:    rgba(255,255,255,0.08);
+  --urgency-bar-bg:       rgba(6,78,59,0.12);
+  --urgency-bar-border:   rgba(52,211,153,0.2);
+
+  /* Pricing page — Save badge + Pro card */
+  --save-badge-bg:     rgba(52,211,153,0.15);
+  --save-badge-border: rgba(52,211,153,0.25);
+  --save-badge-color:  #6ee7b7;
+  --pro-card-bg:       rgba(255,255,255,0.04);
+  --pro-card-border:   rgba(255,255,255,0.1);
+  --pro-badge-bg:      rgba(255,255,255,0.04);
+  --pro-badge-border:  rgba(255,255,255,0.1);
+  --pro-badge-color:   #94a3b8;
+  --pro-trial-bg:      rgba(255,255,255,0.04);
+  --pro-trial-border:  rgba(255,255,255,0.07);
+  --pro-cta-bg:        rgba(255,255,255,0.07);
+  --pro-cta-border:    rgba(255,255,255,0.15);
 }
 html:not(.dark) {
   --heading:         #0f172a;              /* near-black on light */
@@ -68,6 +93,31 @@ html:not(.dark) {
   --gate-bg:         rgba(248, 250, 252, 0.97); /* content-gate card — near-white */
   --gate-border:     rgba(0,0,0,0.1);      /* content-gate card border — dark */
   --progress-track:  rgba(0,0,0,0.06);     /* reading-progress bar track */
+
+  /* Pricing page — Founder card (light mode: soft green tint, dark text) */
+  --founder-card-bg:      linear-gradient(135deg, rgba(209,250,229,0.7) 0%, rgba(167,243,208,0.45) 50%, rgba(240,253,244,0.85) 100%);
+  --founder-card-border:  rgba(4,120,87,0.3);
+  --founder-card-shadow:  0 0 40px rgba(4,120,87,0.06), inset 0 1px 0 rgba(4,120,87,0.1);
+  --founder-badge-bg:     rgba(4,120,87,0.1);
+  --founder-badge-border: rgba(4,120,87,0.3);
+  --founder-badge-color:  #047857;
+  --founder-bar-track:    rgba(0,0,0,0.08);
+  --urgency-bar-bg:       rgba(4,120,87,0.06);
+  --urgency-bar-border:   rgba(4,120,87,0.25);
+
+  /* Pricing page — Save badge + Pro card */
+  --save-badge-bg:     rgba(4,120,87,0.1);
+  --save-badge-border: rgba(4,120,87,0.25);
+  --save-badge-color:  #047857;
+  --pro-card-bg:       rgb(0 0 0 / 3%);
+  --pro-card-border:   rgb(0 0 0 / 9%);
+  --pro-badge-bg:      rgb(0 0 0 / 3%);
+  --pro-badge-border:  rgb(0 0 0 / 9%);
+  --pro-badge-color:   #475569;
+  --pro-trial-bg:      rgb(0 0 0 / 3%);
+  --pro-trial-border:  rgb(0 0 0 / 7%);
+  --pro-cta-bg:        rgb(0 0 0 / 6%);
+  --pro-cta-border:    rgb(0 0 0 / 15%);
 }
 
 /* ── Explicit light-mode class overrides ───────────────────────────────────

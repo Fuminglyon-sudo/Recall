@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | Sọrọ Sọkẹ AI",
   },
   description:
-    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free for the first 100 users.",
+    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free for the first 50 users.",
   keywords: [
     "spaced repetition",
     "vocabulary builder",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
     description:
-      "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI. Free for the first 100 users.",
+      "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI. Free for the first 50 users.",
     images: ["/dashboard.png"],
   },
   appleWebApp: {
