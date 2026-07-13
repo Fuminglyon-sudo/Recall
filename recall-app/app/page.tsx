@@ -369,6 +369,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Speak Up</p>
                   <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.speakAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
                   <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.speakCount} session{data.practiceStats.speakCount === 1 ? "" : "s"}</p>
+                  <Link href="/speak-up/history" className="mt-2 block text-[10px] font-medium text-slate-500 transition hover:text-slate-300">View history →</Link>
                 </div>
               ) : null}
               {data.practiceStats.socialCount > 0 && data.practiceStats.socialAvg !== null ? (
@@ -376,6 +377,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Conversation Lab</p>
                   <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.socialAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
                   <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.socialCount} session{data.practiceStats.socialCount === 1 ? "" : "s"}</p>
+                  <Link href="/conversation-lab/history" className="mt-2 block text-[10px] font-medium text-slate-500 transition hover:text-slate-300">View history →</Link>
                 </div>
               ) : null}
             </div>
