@@ -514,6 +514,11 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         modelConversation?: Array<{ role: "user" | "character"; content: string }>;
       };
 
+      if (data.type !== "feedback" || typeof data.score !== "number") {
+        setError("Feedback couldn't be generated. Please try again.");
+        return;
+      }
+
       setFeedback(data);
       setConvOpen(false);
 

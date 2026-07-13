@@ -412,11 +412,23 @@ Return strict JSON with ALL of these fields:
         turningPoint: typeof parsed.turningPoint === "string" ? parsed.turningPoint : undefined,
         modelConversation:
           score <= 8 && Array.isArray(parsed.modelConversation)
-            ? parsed.modelConversation
+            ? (parsed.modelConversation as Array<{ role: string; content: string }>).map((m) => ({
+                role: (m.role === "user" ? "user" : "character") as "user" | "character",
+                content: typeof m.content === "string" ? m.content : "",
+              }))
             : undefined,
       };
     } catch {
-      return fallbackSocialStep(input.exchangeCount);
+      return {
+        type: "feedback",
+        score: 5,
+        strongPoints: ["You engaged with the scenario — that is always the first step."],
+        improvements: [
+          "Try showing genuine curiosity by asking one open question about the other person.",
+        ],
+        powerMove:
+          "Try the observation + question formula: make a genuine comment about something in the shared moment, then ask one open question that can't be answered with just yes or no.",
+      };
     }
   }
 
