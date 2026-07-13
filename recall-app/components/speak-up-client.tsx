@@ -384,12 +384,21 @@ export function SpeakUpClient({
   }
 
   // ── Voice recording ────────────────────────────────────────────────────────
-  function startRecording() {
+  async function startRecording() {
     setError(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
     if (!SR) {
       setError("Speech recognition is not supported in this browser. Try Chrome or Edge, or type your answer.");
+      return;
+    }
+    // Prime the mic permission before starting SpeechRecognition — Chrome's SR
+    // API doesn't always inherit an existing permission grant without this step.
+    try {
+      const primer = await navigator.mediaDevices.getUserMedia({ audio: true });
+      primer.getTracks().forEach((t) => t.stop());
+    } catch {
+      setError("Could not access your microphone. Check that it is connected and allowed for this site, then try again.");
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -409,8 +418,16 @@ export function SpeakUpClient({
       }
       setDraft(accumulated + interim);
     };
-    recognition.onerror = () => {
-      setError("Microphone access denied or unavailable. Check your browser permissions and try again.");
+    recognition.onerror = (e: { error?: string }) => {
+      if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+        setError("Speech recognition was blocked. Try opening the site in a regular Chrome tab instead of the installed app, or just type your answer.");
+      } else if (e.error === "network") {
+        setError("Speech recognition needs an internet connection to Google's servers. Check your connection or type your answer instead.");
+      } else if (e.error === "no-speech") {
+        setError("No speech detected. Try speaking louder or closer to the microphone.");
+      } else {
+        setError("Speech recognition failed. Try again or type your answer.");
+      }
       setRecording(false);
     };
     recognition.onend = () => setRecording(false);

@@ -342,6 +342,18 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
     if (SR) {
+      // Prime the mic permission explicitly before starting SpeechRecognition.
+      // Chrome's SR API doesn't always inherit an existing permission grant, so
+      // calling getUserMedia first ensures the browser registers the grant, then
+      // we release the stream and hand off to SR which manages its own stream.
+      try {
+        const primer = await navigator.mediaDevices.getUserMedia({ audio: true });
+        primer.getTracks().forEach((t) => t.stop());
+      } catch {
+        setError("Could not access your microphone. Check that it is connected and allowed for this site, then try again.");
+        return;
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const recognition = new SR() as any;
       recognition.continuous = true;
@@ -360,10 +372,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         setDraft(final + interim);
       };
       recognition.onerror = (e: { error?: string }) => {
-        if (e.error === "not-allowed") {
-          setError("Microphone permission denied. Click the lock icon in your address bar, set Microphone to Allow, then refresh.");
-        } else if (e.error === "service-not-allowed") {
-          setError("Chrome's speech service is unavailable. Make sure the site is loading over HTTPS, then try again — or just type your reply instead.");
+        if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+          setError("Speech recognition was blocked. Try opening the site in a regular Chrome tab instead of the installed app, or just type your reply.");
         } else if (e.error === "network") {
           setError("Speech recognition needs an internet connection to Google's servers. Check your connection or type your reply instead.");
         } else if (e.error === "no-speech") {
