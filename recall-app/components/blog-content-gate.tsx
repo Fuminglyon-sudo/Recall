@@ -133,7 +133,7 @@ export function BlogContentGate({ blocks }: { blocks: Block[] }) {
                 position: "relative",
               }}
             >
-              Create a free Summon account to read the full article — and get access to spaced
+              Create a free Soro Soke account to read the full article — and get access to spaced
               repetition, Speak Up, and Conversation Lab while you&apos;re at it.
             </p>
 

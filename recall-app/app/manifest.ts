@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Summon",
-    short_name: "Summon",
+    name: "Soro Soke AI",
+    short_name: "Soro Soke AI",
     description: "Spaced repetition for vocabulary, countries, and founder articulation.",
     start_url: "/",
     display: "standalone",

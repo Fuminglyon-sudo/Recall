@@ -5,8 +5,8 @@ import { SummonLogo } from "@/components/summon-logo";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Summon",
-  description: "How Summon collects, uses, and protects your personal data.",
+  title: "Privacy Policy — Soro Soke",
+  description: "How Soro Soke collects, uses, and protects your personal data.",
   robots: { index: true, follow: true },
 };
 
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Overview</h2>
             <p>
-              Summon (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is a vocabulary and communication-practice tool. We take your
+              Soro Soke (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is a vocabulary and communication-practice tool. We take your
               privacy seriously. This policy explains what data we collect, why we collect it, and how
               we protect it. We do not sell your data — ever.
             </p>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
                 OAuth service. We store these to identify your account.
               </p>
               <p><span className="text-slate-300 font-medium">Card and deck content.</span>{" "}
-                Everything you type into Summon — vocabulary cards, deck names, memory hooks, example
+                Everything you type into Soro Soke — vocabulary cards, deck names, memory hooks, example
                 sentences — is stored in our database and associated with your account.
               </p>
               <p><span className="text-slate-300 font-medium">Review history.</span>{" "}
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">How we use your information</h2>
             <ul className="space-y-2 list-disc list-inside marker:text-slate-600">
-              <li>To provide and operate the Summon service</li>
+              <li>To provide and operate the Soro Soke service</li>
               <li>To personalise your review schedule using the SM-2 algorithm</li>
               <li>To generate AI-drafted card content when you request it</li>
               <li>To send optional review reminder notifications (only if you opt in)</li>
@@ -97,7 +97,7 @@ export default function PrivacyPage() {
                 authorise providers to use your content to train their models.
               </p>
               <p><span className="text-slate-300 font-medium">Hosting and database.</span>{" "}
-                Summon is hosted on infrastructure that stores your data in secure, encrypted databases.
+                Soro Soke is hosted on infrastructure that stores your data in secure, encrypted databases.
                 Data is stored in the European Union or United States, depending on the provider region.
               </p>
             </div>
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
             <p>
               We use session cookies to keep you signed in. These are essential for the service to
               function and are not used for tracking or advertising. No third-party tracking cookies
-              are set on Summon.
+              are set on Soro Soke.
             </p>
           </section>
 
@@ -134,7 +134,7 @@ export default function PrivacyPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Children</h2>
             <p>
-              Summon is not directed at children under 13. We do not knowingly collect personal
+              Soro Soke is not directed at children under 13. We do not knowingly collect personal
               information from anyone under 13. If you believe a child has provided us with personal
               information, please contact us and we will delete it promptly.
             </p>
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-white">Changes to this policy</h2>
             <p>
               We may update this policy from time to time. When we do, we will update the &quot;last
-              updated&quot; date at the top of this page. Continued use of Summon after changes are posted
+              updated&quot; date at the top of this page. Continued use of Soro Soke after changes are posted
               constitutes your acceptance of the updated policy.
             </p>
           </section>

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Guide — How to Use Summon",
+  title: "Guide — How to Use Soro Soke",
   description:
-    "A complete guide to using Summon: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, and building social fluency with Conversation Lab.",
+    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, and building social fluency with Conversation Lab.",
   keywords: [
-    "Summon guide",
+    "Soro Soke guide",
     "how to use spaced repetition",
     "flashcard guide",
     "Speak Up guide",
@@ -72,7 +72,7 @@ const FEATURES: Feature[] = [
     what: "Shows everything at a glance — today's due count, current streak, mastered cards, word of the day, mastery distribution, a 30-day review heatmap, and the next 8 days of upcoming cards.",
     tips: [
       "Check the upcoming reviews calendar before adding new cards — if a big batch is due in 3 days, wait a day so the load stays even.",
-      "Use the Voice panel to save the tone and phrasing style you want to speak in. It teaches Summon how to rephrase things in your voice.",
+      "Use the Voice panel to save the tone and phrasing style you want to speak in. It teaches Soro Soke how to rephrase things in your voice.",
       "The word of the day rotates through every card you have reviewed at least once — a low-effort daily reminder of something you already know.",
     ],
   },
@@ -106,7 +106,7 @@ const FEATURES: Feature[] = [
     label: "Speak Up",
     icon: Mic,
     tagline: "The room where you rehearse before the room that counts.",
-    what: "Most people lose opportunities not because they lack ability, but because the right words didn't come when the moment did. Speak Up puts you in high-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call — with Summon as a listener who responds at the difficulty level you choose. Each scenario opens with a coaching tip specific to that context before the first exchange. You go back and forth up to 4 times, then receive a score, your strong points, one specific thing to improve, the exact exchange where the conversation shifted, and a model response.",
+    what: "Most people lose opportunities not because they lack ability, but because the right words didn't come when the moment did. Speak Up puts you in high-stakes scenarios — asking for a raise, pushing back on a decision, navigating a difficult call — with Soro Soke as a listener who responds at the difficulty level you choose. Each scenario opens with a coaching tip specific to that context before the first exchange. You go back and forth up to 4 times, then receive a score, your strong points, one specific thing to improve, the exact exchange where the conversation shifted, and a model response.",
     tips: [
       "Set difficulty to Hard intentionally. A listener who pushes back trains you to hold your position under pressure. Easy listeners only confirm what you already do well — that is not practice, it is performance.",
       "Read your feedback before trying the same scenario again. The improvement note is specific — act on it in the very next attempt rather than hoping to do better by instinct.",
@@ -128,12 +128,12 @@ const FEATURES: Feature[] = [
   },
   {
     href: "/free-recall",
-    label: "Free Summon",
+    label: "Free Soro Soke",
     icon: BrainCircuit,
     tagline: "The exercise that shows you what you actually know.",
     what: "Pick a deck, then write every word or concept you can remember in 5 minutes — no hints, no cards. Your results are scored and, critically, fed back into your review schedule: remembered cards get a boost, missed cards are moved up so they return sooner.",
     tips: [
-      "Do Free Summon before your Today review occasionally, not after. Attempting retrieval cold and then immediately seeing the cards in Today creates a powerful learning contrast.",
+      "Do Free Soro Soke before your Today review occasionally, not after. Attempting retrieval cold and then immediately seeing the cards in Today creates a powerful learning contrast.",
       "Don't look at the deck beforehand. The point is to surface what you have genuinely internalised, not what you can recall after priming.",
       "Pay close attention to the Missed list — those are your real weak spots, not the ones that feel hard during regular review.",
       "The All Decks option is more challenging and more revealing than single-deck recall. Use it for a full health check.",
@@ -144,10 +144,10 @@ const FEATURES: Feature[] = [
     label: "Sentence Challenge",
     icon: PenLine,
     tagline: "Using a word is different from knowing it. This is where you find out.",
-    what: "Summon generates a realistic scenario and asks you to write a sentence using a specific word from your decks. It grades your sentence on accuracy, naturalness, and register — and gives you a better version if yours was off.",
+    what: "Soro Soke generates a realistic scenario and asks you to write a sentence using a specific word from your decks. It grades your sentence on accuracy, naturalness, and register — and gives you a better version if yours was off.",
     tips: [
       "Aim for sentences that reflect how you actually speak or write. Generic textbook sentences are graded lower and teach less.",
-      "When Summon provides a better sentence, copy it into the card's example field. That way it becomes part of your review material.",
+      "When Soro Soke provides a better sentence, copy it into the card's example field. That way it becomes part of your review material.",
       "Do Sentence Challenge with words in the Learning mastery level — they are the ones on the edge of becoming familiar, and production practice is what pushes them over.",
     ],
   },
@@ -194,7 +194,7 @@ const FEATURES: Feature[] = [
     what: "Type the front (the word or concept) and optionally ask Claude to draft the definition, part of speech, example sentence, memory hook, and synonyms. Everything is editable before you save.",
     tips: [
       "Add cards in the moment — waiting until later means you will forget the context that made the word feel important.",
-      "Summon's draft is a starting point, not the final answer. Edit the example sentence to use a context relevant to your life or work. Personal examples are always more memorable than generic ones.",
+      "Soro Soke's draft is a starting point, not the final answer. Edit the example sentence to use a context relevant to your life or work. Personal examples are always more memorable than generic ones.",
       "The hook field is the most underused field. A good hook is a story, image, or sound association that makes the word unforgettable. Take 20 seconds to write something weird or personal.",
       "Choose the deck deliberately. A card in the wrong deck gets reviewed out of context and never fully sticks.",
     ],
@@ -207,7 +207,7 @@ const ADMIN_FEATURES: Feature[] = [
     label: "Pitch Practice",
     icon: Mic2,
     tagline: "Sharpen your pitch under realistic pressure.",
-    what: "Choose a scenario — plane conversation, demo day, cold investor intro. Summon plays an investor or evaluator and asks probing questions over 2–5 exchanges. At the end you receive a score out of 10, strong points, specific improvements, and a model answer showing how the response could have landed.",
+    what: "Choose a scenario — plane conversation, demo day, cold investor intro. Soro Soke plays an investor or evaluator and asks probing questions over 2–5 exchanges. At the end you receive a score out of 10, strong points, specific improvements, and a model answer showing how the response could have landed.",
     tips: [
       "Run the same scenario multiple times. The first attempt surfaces gaps; the second and third build the muscle memory to close them.",
       "Treat the model answer as a template, not a script. Rework it in your own language so it sounds like you, then practice it until it is natural.",
@@ -247,11 +247,11 @@ const ADMIN_FEATURES: Feature[] = [
     label: "Founder Words",
     icon: Sparkles,
     tagline: "Generate vocabulary directly from your product context.",
-    what: "Paste text from a pitch deck, product description, investor memo, or coaching session. Summon identifies 3–5 high-value vocabulary terms specific to your context and generates a complete card for each — definition, part of speech, example sentence, memory hook, and synonyms. Save the ones you want directly into any deck.",
+    what: "Paste text from a pitch deck, product description, investor memo, or coaching session. Soro Soke identifies 3–5 high-value vocabulary terms specific to your context and generates a complete card for each — definition, part of speech, example sentence, memory hook, and synonyms. Save the ones you want directly into any deck.",
     tips: [
       "Paste real content, not generic descriptions. The more specific the context, the more precise and useful the generated cards.",
       "After a pitch session, paste the feedback or transcript here immediately while the language is fresh. The terms that came up in the room are exactly the ones worth adding.",
-      "Review the generated cards before saving and edit anything that doesn't sound like you. Summon gives you a strong draft, not a finished product.",
+      "Review the generated cards before saving and edit anything that doesn't sound like you. Soro Soke gives you a strong draft, not a finished product.",
       "Build a dedicated Founder Vocabulary deck and run it through spaced repetition consistently. The goal is to reach the point where this language comes out naturally, without searching for the word.",
     ],
     adminOnly: true,
@@ -321,7 +321,7 @@ export default async function GuidePage() {
             A quiet guide to each part of the app — and how to use it well.
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-            Summon is built around one idea: the things you want to say should come out naturally,
+            Soro Soke is built around one idea: the things you want to say should come out naturally,
             without searching. Spaced repetition handles the memory side. The practice features handle
             the fluency side. Use them together consistently and both compound.
           </p>
@@ -421,7 +421,7 @@ export default async function GuidePage() {
         <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-6 py-5">
           <p className="text-sm leading-7 text-slate-400">
             The single most important habit is opening Today every day. Everything else — the
-            practice features, Summon's tools, the recall exercises — adds speed and depth. But
+            practice features, Soro Soke's tools, the recall exercises — adds speed and depth. But
             consistent daily review is the foundation. Without it, nothing compounds.
           </p>
         </div>

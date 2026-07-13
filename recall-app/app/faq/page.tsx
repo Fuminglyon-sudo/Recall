@@ -6,20 +6,20 @@ import { LandingFaq } from "@/components/landing-faq";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "FAQ — Summon",
+  title: "FAQ — Soro Soke",
   description:
-    "Answers to common questions about Summon: how spaced repetition works, what's included, offline use, privacy, grading, streaks, and what's coming next.",
+    "Answers to common questions about Soro Soke: how spaced repetition works, what's included, offline use, privacy, grading, streaks, and what's coming next.",
   keywords: [
     "spaced repetition FAQ",
     "how does SM-2 work",
-    "Summon questions",
+    "Soro Soke questions",
     "flashcard app FAQ",
     "vocabulary app help",
     "Speak Up practice questions",
   ],
   openGraph: {
-    title: "FAQ — Summon",
-    description: "Everything you want to know about how Summon works — spaced repetition, card drafting, Speak Up, Conversation Lab, and more.",
+    title: "FAQ — Soro Soke",
+    description: "Everything you want to know about how Soro Soke works — spaced repetition, card drafting, Speak Up, Conversation Lab, and more.",
     type: "website",
   },
 };
@@ -45,7 +45,7 @@ export default function FaqPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">FAQ</p>
           <h1 className="text-3xl font-extrabold text-white sm:text-4xl">Common questions</h1>
           <p className="text-slate-400 max-w-xl">
-            Everything you want to know about how Summon works. If your question isn&apos;t here,{" "}
+            Everything you want to know about how Soro Soke works. If your question isn&apos;t here,{" "}
             <Link href="/contact" className="text-emerald-400 hover:text-emerald-300 transition">get in touch</Link>.
           </p>
         </section>

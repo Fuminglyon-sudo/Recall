@@ -17,11 +17,11 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Summon — Learn Words. Practice Using Them. Keep Both.",
+  title: "About Soro Soke — Learn Words. Practice Using Them. Keep Both.",
   description:
-    "Summon is a free communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, and Conversation Lab sharpens social fluency. Learn the word. Practice using it. Own it.",
+    "Soro Soke is a free communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, and Conversation Lab sharpens social fluency. Learn the word. Practice using it. Own it.",
   keywords: [
-    "how Summon works",
+    "how Soro Soke works",
     "spaced repetition algorithm",
     "SM-2",
     "Speak Up practice",
@@ -31,16 +31,16 @@ export const metadata: Metadata = {
     "free spaced repetition",
   ],
   openGraph: {
-    title: "About Summon — Spaced Repetition, Speak Up & Conversation Lab",
+    title: "About Soro Soke — Spaced Repetition, Speak Up & Conversation Lab",
     description:
-      "How Summon works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. Free forever.",
+      "How Soro Soke works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. Free forever.",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "About Summon",
+    title: "About Soro Soke",
     description:
-      "How Summon works: SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice.",
+      "How Soro Soke works: SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice.",
   },
 };
 
@@ -65,7 +65,7 @@ export default function AboutPage() {
 
         {/* ── Hero ── */}
         <section className="py-20 space-y-6 border-b border-white/8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">About Summon</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">About Soro Soke</p>
           <h1 className="text-4xl font-extrabold leading-tight text-white sm:text-5xl" style={{ textWrap: "balance" } as React.CSSProperties}>
             For everyone who has felt perfectly understood in their own head —
             and perfectly lost the moment the words needed to come out.
@@ -76,7 +76,7 @@ export default function AboutPage() {
             find, walking home, the sentence you should have said.
           </p>
           <p className="max-w-2xl text-lg leading-8 text-slate-400">
-            Summon is for people who live in that space. Who are done letting the right words come
+            Soro Soke is for people who live in that space. Who are done letting the right words come
             too late — and want to build, quietly and without pressure, the vocabulary and presence
             that makes them feel at home in any room, any conversation, any moment that matters.
           </p>
@@ -104,7 +104,7 @@ export default function AboutPage() {
                 fight it efficiently — they just feel productive.
               </p>
               <p className="text-base leading-7 text-slate-400">
-                Summon uses SM-2, the same algorithm behind Anki and SuperMemo, to schedule the
+                Soro Soke uses SM-2, the same algorithm behind Anki and SuperMemo, to schedule the
                 right card at the right time. You spend less time reviewing and remember more.
               </p>
             </div>
@@ -189,7 +189,7 @@ export default function AboutPage() {
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-white">FAQ</p>
                 <p className="text-xs leading-5 text-slate-400">
-                  Common questions about how Summon works, what&apos;s included, and what&apos;s coming.
+                  Common questions about how Soro Soke works, what&apos;s included, and what&apos;s coming.
                 </p>
               </div>
               <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-emerald-400" />
@@ -220,7 +220,7 @@ export default function AboutPage() {
               </p>
               <p className="text-base leading-7 text-slate-300">
                 Audacity is not a personality trait. It is a practice.
-                Summon has three features built for exactly this.
+                Soro Soke has three features built for exactly this.
               </p>
             </div>
 
@@ -231,7 +231,7 @@ export default function AboutPage() {
                   label: "Speak Up",
                   href: "/speak-up",
                   tagline: "The room where you rehearse before the room that counts.",
-                  body: "Pick a scenario: the raise conversation, a pitch, pushing back in a meeting. Set the pressure level. Speak your answer. Summon responds in character, then gives you honest feedback and a stronger version to try again.",
+                  body: "Pick a scenario: the raise conversation, a pitch, pushing back in a meeting. Set the pressure level. Speak your answer. Soro Soke responds in character, then gives you honest feedback and a stronger version to try again.",
                 },
                 {
                   icon: MessageCircle,
@@ -277,8 +277,8 @@ export default function AboutPage() {
             <div className="grid gap-5 sm:grid-cols-3">
               {[
                 { icon: Repeat2,      title: "Science over streaks",       body: "SM-2 scheduling is more effective than gamification. We track your streak because consistency matters, not because it should be a game." },
-                { icon: Sparkles,     title: "Summon assists, you decide", body: "Summon drafts a definition. You edit it before it becomes a card. Your memory, your words, your learning." },
-                { icon: BrainCircuit, title: "Calm by design",             body: "No social features, no leaderboards, no engagement tricks. Summon is a tool, not an app trying to own your attention." },
+                { icon: Sparkles,     title: "Soro Soke assists, you decide", body: "Soro Soke drafts a definition. You edit it before it becomes a card. Your memory, your words, your learning." },
+                { icon: BrainCircuit, title: "Calm by design",             body: "No social features, no leaderboards, no engagement tricks. Soro Soke is a tool, not an app trying to own your attention." },
               ].map(({ icon: Icon, title, body }) => (
                 <div key={title} className="space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">

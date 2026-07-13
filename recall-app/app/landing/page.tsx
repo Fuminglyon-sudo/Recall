@@ -4,9 +4,9 @@ import { auth } from "@/lib/next-auth";
 import { LandingPage } from "@/components/landing-page";
 
 export const metadata: Metadata = {
-  title: "Summon — Practice Vocabulary, Speaking & Conversation Skills",
+  title: "Soro Soke — Practice Vocabulary, Speaking & Conversation Skills",
   description:
-    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speeches and social conversations with AI coaching. Summon is free to use — no credit card needed.",
+    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speeches and social conversations with AI coaching. Soro Soke is free to use — no credit card needed.",
   keywords: [
     "spaced repetition app",
     "vocabulary builder",
@@ -18,14 +18,14 @@ export const metadata: Metadata = {
     "speak up practice",
   ],
   openGraph: {
-    title: "Summon — Practice Vocabulary, Speaking & Conversation Skills",
+    title: "Soro Soke — Practice Vocabulary, Speaking & Conversation Skills",
     description:
       "Build vocabulary with spaced repetition. Practice high-stakes speaking and social conversations with AI feedback. Free forever.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Summon — Practice Vocabulary, Speaking & Conversation Skills",
+    title: "Soro Soke — Practice Vocabulary, Speaking & Conversation Skills",
     description:
       "Build vocabulary with spaced repetition. Practice high-stakes speaking and conversations with AI feedback.",
   },

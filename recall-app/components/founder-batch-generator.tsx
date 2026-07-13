@@ -138,7 +138,7 @@ export function FounderBatchGenerator({
         {mode === "daily" ? "Generate fresh founder words for today." : "Generate a small batch of speech-ready cards from your product context."}
       </h2>
       <p className="mt-3 text-sm leading-7 text-slate-300">
-        Paste something you want to say better — a pitch, intro, product explanation, or networking summary — and Summon will draft useful founder vocabulary cards for review.
+        Paste something you want to say better — a pitch, intro, product explanation, or networking summary — and Soro Soke will draft useful founder vocabulary cards for review.
       </p>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-2">

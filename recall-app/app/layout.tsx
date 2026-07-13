@@ -11,7 +11,7 @@ const geistSans = Geist({
 
 const displayFont = Cormorant_Garamond({
   variable: "--font-display",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
@@ -23,11 +23,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Summon — Vocabulary, Speaking & Conversation Practice",
-    template: "%s | Summon",
+    default: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
+    template: "%s | Sọrọ Sọkẹ AI",
   },
   description:
-    "Summon helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free forever — no credit card needed.",
+    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free forever — no credit card needed.",
   keywords: [
     "spaced repetition",
     "vocabulary builder",
@@ -40,22 +40,22 @@ export const metadata: Metadata = {
     "speak up",
     "conversation lab",
   ],
-  authors: [{ name: "Summon" }],
-  creator: "Summon",
+  authors: [{ name: "Sọrọ Sọkẹ AI" }],
+  creator: "Sọrọ Sọkẹ AI",
   openGraph: {
-    siteName: "Summon",
+    siteName: "Sọrọ Sọkẹ AI",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Summon — Vocabulary, Speaking & Conversation Practice",
+    title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
     description:
       "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI feedback. Free forever.",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Summon",
+    title: "Sọrọ Sọkẹ AI",
   },
   formatDetection: { telephone: false },
 };

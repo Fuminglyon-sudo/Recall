@@ -143,7 +143,7 @@ function CountriesLayout({
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-300">
             {shown.length > 0
-              ? "Summon what you know, reveal the details, and grade yourself. One new country arrives each day."
+              ? "Soro Soke what you know, reveal the details, and grade yourself. One new country arrives each day."
               : "You have no countries due right now. A new one arrives tomorrow."}
           </p>
           {shown.length > 0 && (

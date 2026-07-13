@@ -23,7 +23,7 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.description,
-    keywords: [post.category, "spaced repetition", "vocabulary", "conversation skills", "Summon"],
+    keywords: [post.category, "spaced repetition", "vocabulary", "conversation skills", "Soro Soke"],
     openGraph: {
       title: post.title,
       description: post.description,
@@ -119,7 +119,7 @@ export default async function BlogPostPage({
             Put this into practice.
           </p>
           <p className="text-slate-400 text-sm mx-auto max-w-sm" style={{ lineHeight: 1.7 }}>
-            Summon gives you spaced repetition, high-stakes speaking practice, and Conversation Lab — all in one place. Free to use.
+            Soro Soke gives you spaced repetition, high-stakes speaking practice, and Conversation Lab — all in one place. Free to use.
           </p>
           <Link
             href="/login"

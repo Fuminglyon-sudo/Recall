@@ -6,9 +6,9 @@ import { MarketingFooter } from "@/components/marketing-footer";
 import { POSTS, formatDate } from "./data";
 
 export const metadata: Metadata = {
-  title: "Blog — Summon",
+  title: "Blog — Soro Soke",
   description:
-    "Articles on spaced repetition, vocabulary building, conversation skills, speaking confidence, and the science of memory. From the Summon team.",
+    "Articles on spaced repetition, vocabulary building, conversation skills, speaking confidence, and the science of memory. From the Soro Soke team.",
   keywords: [
     "spaced repetition blog",
     "vocabulary tips",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     "memory research",
   ],
   openGraph: {
-    title: "Blog — Summon",
+    title: "Blog — Soro Soke",
     description:
       "Articles on spaced repetition, vocabulary, conversation skills, and the science of memory.",
     type: "website",
@@ -60,7 +60,7 @@ export default function BlogPage() {
               textTransform: "uppercase",
             }}
           >
-            The Summon Blog
+            The Soro Soke Blog
           </p>
           <h1
             style={{

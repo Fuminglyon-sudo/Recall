@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
-export const metadata = { title: "Speak Up History — Summon" };
+export const metadata = { title: "Speak Up History — Soro Soke" };
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   easy: "Warm-up",

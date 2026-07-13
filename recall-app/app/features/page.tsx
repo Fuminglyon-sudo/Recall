@@ -6,9 +6,9 @@ import { SummonLogo } from "@/components/summon-logo";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Features — Summon",
+  title: "Features — Soro Soke",
   description:
-    "Summon features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, and Conversation Lab social coaching. Free to use.",
+    "Soro Soke features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, and Conversation Lab social coaching. Free to use.",
   keywords: [
     "spaced repetition features",
     "AI flashcard app",
@@ -20,15 +20,15 @@ export const metadata: Metadata = {
     "flashcard comparison Anki Duolingo",
   ],
   openGraph: {
-    title: "Features — Summon",
-    description: "How Summon's spaced repetition, smart drafting, and speaking practice features work — and how they compare to Anki, Duolingo, and paper cards.",
+    title: "Features — Soro Soke",
+    description: "How Soro Soke's spaced repetition, smart drafting, and speaking practice features work — and how they compare to Anki, Duolingo, and paper cards.",
     type: "website",
   },
 };
 
 const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
   ["SM-2 spaced repetition",     true,  true,  false, false],
-  ["Summon-drafted cards",        true,  false, false, false],
+  ["Soro Soke-drafted cards",        true,  false, false, false],
   ["Free recall sessions",       true,  false, false, false],
   ["Clean, focused UI",          true,  false, true,  false],
   ["CSV export & import",        true,  true,  false, false],
@@ -64,7 +64,7 @@ export default function FeaturesPage() {
             Designed around how memory actually works
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-slate-400">
-            Every feature in Summon exists because it has a measurable effect on long-term retention.
+            Every feature in Soro Soke exists because it has a measurable effect on long-term retention.
             Nothing is added because it feels productive. Everything is here because it works.
           </p>
         </section>
@@ -73,7 +73,7 @@ export default function FeaturesPage() {
         <section className="py-10 border-b border-white/8">
           <div className="grid gap-4 sm:grid-cols-3">
             {([
-              { src: "/dashboard.png", alt: "Summon dashboard showing review streak, 30-day activity heatmap, and deck list with mastery progress", label: "Dashboard" },
+              { src: "/dashboard.png", alt: "Soro Soke dashboard showing review streak, 30-day activity heatmap, and deck list with mastery progress", label: "Dashboard" },
               { src: "/speak_up_cards.png", alt: "Speak Up scenario picker with high-stakes practice categories", label: "Speak Up" },
               { src: "/conversation_lab.png", alt: "Conversation Lab social scenario picker", label: "Conversation Lab" },
             ] as const).map(({ src, alt, label }) => (
@@ -110,7 +110,7 @@ export default function FeaturesPage() {
             <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
               <Image
                 src="/today_card.png"
-                alt="Summon review card showing a vocabulary word revealed with definition, memory hook, and 6 grading buttons"
+                alt="Soro Soke review card showing a vocabulary word revealed with definition, memory hook, and 6 grading buttons"
                 width={900}
                 height={620}
                 className="w-full h-auto"
@@ -123,7 +123,7 @@ export default function FeaturesPage() {
             <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
               <Image
                 src="/cards_new.png"
-                alt="Summon add card page showing AI-generated definition, memory hook, and example sentence for a word"
+                alt="Soro Soke add card page showing AI-generated definition, memory hook, and example sentence for a word"
                 width={900}
                 height={620}
                 className="w-full h-auto"
@@ -135,7 +135,7 @@ export default function FeaturesPage() {
                 Stop staring at a blank card
               </h2>
               <p className="text-base leading-7 text-slate-400">
-                Type a word or phrase. Summon drafts the definition, a memory hook, an example sentence, and synonyms in seconds.
+                Type a word or phrase. Soro Soke drafts the definition, a memory hook, an example sentence, and synonyms in seconds.
                 You edit anything you like — the card is yours. Creating a high-quality card takes thirty seconds instead of five minutes.
               </p>
               <ul className="space-y-3">
@@ -158,7 +158,7 @@ export default function FeaturesPage() {
               <p className="text-base leading-7 text-slate-400">
                 Before seeing your cards, write down everything you remember from a deck without any cues.
                 Free recall — retrieval practice without hints — is one of the highest-ROI techniques in cognitive science.
-                Summon makes it a first-class part of your review, not an afterthought.
+                Soro Soke makes it a first-class part of your review, not an afterthought.
               </p>
               <ul className="space-y-3">
                 {["Write-first, compare-second workflow", "No peeking enforced before you recall", "SM-2 grades update on submission", "Confirmation feedback after each session"].map((b) => (
@@ -171,7 +171,7 @@ export default function FeaturesPage() {
             <div className="hidden lg:block overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
               <Image
                 src="/deck_learning.png"
-                alt="Summon decks page showing mastery progress bars across New, Learning, Familiar, and Mastered levels"
+                alt="Soro Soke decks page showing mastery progress bars across New, Learning, Familiar, and Mastered levels"
                 width={900}
                 height={620}
                 className="w-full h-auto"
@@ -215,7 +215,7 @@ export default function FeaturesPage() {
                 Built for people who want language that comes when they need it
               </h2>
               <p className="text-slate-400">
-                Most tools ask you to manage the practice. Summon manages it for you — so you can just show up.
+                Most tools ask you to manage the practice. Soro Soke manages it for you — so you can just show up.
               </p>
             </div>
             <div className="overflow-x-auto rounded-3xl border border-white/10">
@@ -223,7 +223,7 @@ export default function FeaturesPage() {
                 <thead>
                   <tr className="border-b border-white/10 bg-white/[0.04]">
                     <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-widest text-slate-400">Feature</th>
-                    {["Summon", "Anki", "Duolingo", "Paper cards"].map((col, i) => (
+                    {["Soro Soke", "Anki", "Duolingo", "Paper cards"].map((col, i) => (
                       <th key={col} className={`px-6 py-4 text-center text-xs font-semibold uppercase tracking-widest ${i === 0 ? "text-emerald-300" : "text-slate-500"}`}>
                         {col}
                       </th>

@@ -26,18 +26,19 @@ export default function Icon() {
           background: "radial-gradient(circle, rgba(52,211,153,0.2) 0%, transparent 70%)",
         }}
       />
-      {/* S mark */}
+      {/* SS mark */}
       <div
         style={{
-          fontSize: 320,
+          fontSize: 230,
           fontWeight: 800,
           fontStyle: "italic",
           color: "#34d399",
           lineHeight: 1,
+          letterSpacing: "-0.05em",
           fontFamily: "Georgia, 'Times New Roman', serif",
         }}
       >
-        S
+        SS
       </div>
     </div>,
     { ...size },

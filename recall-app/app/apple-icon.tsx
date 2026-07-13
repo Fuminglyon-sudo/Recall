@@ -27,15 +27,16 @@ export default function AppleIcon() {
       />
       <div
         style={{
-          fontSize: 112,
+          fontSize: 80,
           fontWeight: 800,
           fontStyle: "italic",
           color: "#34d399",
           lineHeight: 1,
+          letterSpacing: "-0.05em",
           fontFamily: "Georgia, 'Times New Roman', serif",
         }}
       >
-        S
+        SS
       </div>
     </div>,
     { ...size },

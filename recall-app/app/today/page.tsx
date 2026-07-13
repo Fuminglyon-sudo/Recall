@@ -75,7 +75,7 @@ export default async function TodayPage() {
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-300">
             {totalDue > 0
-              ? "Summon the answer, reveal it, and grade yourself honestly from 0 to 5. Strong cards drift farther away. Struggling cards return sooner."
+              ? "Soro Soke the answer, reveal it, and grade yourself honestly from 0 to 5. Strong cards drift farther away. Struggling cards return sooner."
               : "You finished the cards that asked for your attention. Nothing else is demanded of you right now."}
           </p>
           {shown.length > 0 ? (
@@ -115,7 +115,7 @@ export default async function TodayPage() {
           <div className="rounded-[2rem] border border-amber-300/20 bg-amber-400/10 p-10 text-center">
             <p className="text-xl font-semibold text-white">Database setup still needed.</p>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-amber-100">
-              Run [`prisma migrate deploy`](package.json:1) against your PostgreSQL database so Summon can load your review queue.
+              Run [`prisma migrate deploy`](package.json:1) against your PostgreSQL database so Soro Soke can load your review queue.
             </p>
           </div>
         ) : shown.length === 0 ? (

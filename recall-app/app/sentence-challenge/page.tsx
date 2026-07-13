@@ -43,7 +43,7 @@ export default async function SentenceChallengePage() {
             Use it in a sentence.
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-            Recognition is not mastery — using a word in context is. Pick any word you know, read the scenario, then write one sentence using it naturally. Summon will grade your usage and show you a model sentence.
+            Recognition is not mastery — using a word in context is. Pick any word you know, read the scenario, then write one sentence using it naturally. Soro Soke will grade your usage and show you a model sentence.
           </p>
           <p className="mt-2 text-sm text-slate-500">
             {cards.length} word{cards.length !== 1 ? "s" : ""} eligible — cards you have reviewed enough to try in context.

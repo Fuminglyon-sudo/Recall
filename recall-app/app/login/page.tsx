@@ -5,7 +5,7 @@ import { SummonLogo } from "@/components/summon-logo";
 
 export const metadata: Metadata = {
   title: "Sign In",
-  description: "Sign in to your Summon account to continue your vocabulary practice and speaking sessions.",
+  description: "Sign in to your Soro Soke account to continue your vocabulary practice and speaking sessions.",
   robots: { index: false, follow: false },
 };
 
@@ -24,7 +24,7 @@ export default async function LoginPage({
         {/* Back link */}
         <div className="mb-6 text-center">
           <a href="/landing" className="text-xs text-slate-600 transition hover:text-slate-400">
-            ← Back to Summon
+            ← Back to Soro Soke
           </a>
         </div>
         {/* Header */}

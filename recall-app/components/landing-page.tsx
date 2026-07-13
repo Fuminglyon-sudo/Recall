@@ -61,13 +61,13 @@ const SLIDES: Slide[] = [
   {
     id: "product",
     image: "/scenerios/speak-up-raise.webp",
-    eyebrow: "Summon",
+    eyebrow: "Soro Soke",
     headlineParts: [
       { text: "A practice" },
       { text: "\n" },
       { text: "that compounds.", italic: true },
     ],
-    body: "You type a word — Summon drafts the card. You pick a scenario — Summon plays the room and coaches your response. You open a conversation — Summon tells you what to do next. Three loops that reinforce each other, every day.",
+    body: "You type a word — Soro Soke drafts the card. You pick a scenario — Soro Soke plays the room and coaches your response. You open a conversation — Soro Soke tells you what to do next. Three loops that reinforce each other, every day.",
     features: null,
   },
   {
@@ -84,12 +84,12 @@ const SLIDES: Slide[] = [
       {
         label: "Daily Review",
         href: "/today",
-        desc: "Summon drafts definition, hook, and example in seconds. SM-2 schedules each card at the exact moment you're about to forget it — no earlier, no later.",
+        desc: "Soro Soke drafts definition, hook, and example in seconds. SM-2 schedules each card at the exact moment you're about to forget it — no earlier, no later.",
       },
       {
         label: "Speak Up",
         href: "/speak-up",
-        desc: "Pick a scenario — job interview, salary conversation, pitch. Set the pressure. Speak. Summon responds in character, then tells you what landed and how to do it better.",
+        desc: "Pick a scenario — job interview, salary conversation, pitch. Set the pressure. Speak. Soro Soke responds in character, then tells you what landed and how to do it better.",
       },
       {
         label: "Conversation Lab",
@@ -403,7 +403,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                         textTransform: "uppercase",
                       }}
                     >
-                      Summon
+                      Soro Soke
                     </p>
 
                     <h2
@@ -466,7 +466,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
 
                     <p style={{ fontSize: "0.75rem", color: "#475569", marginTop: "0.5rem" }}>
                       <Link href="/about" className="transition hover:text-slate-400">
-                        Learn more about Summon →
+                        Learn more about Soro Soke →
                       </Link>
                     </p>
                   </div>
@@ -484,7 +484,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                     ].map(({ label, href }) => (
                       <Link key={label} href={href} className="transition hover:text-slate-400">{label}</Link>
                     ))}
-                    <span>© {new Date().getFullYear()} Summon</span>
+                    <span>© {new Date().getFullYear()} Soro Soke</span>
                   </div>
                 </section>
               );

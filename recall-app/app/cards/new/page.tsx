@@ -28,7 +28,7 @@ export default async function NewCardPage({ searchParams }: { searchParams: Prom
           <p className="text-sm font-medium text-emerald-300">Add a card</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Capture a word, idea, or person while it is still alive in your mind.</h1>
           <p className="mt-3 text-sm leading-7 text-slate-300">
-            Type the front of the card, ask Summon to draft the rest, edit anything you want, then save.
+            Type the front of the card, ask Soro Soke to draft the rest, edit anything you want, then save.
           </p>
           <div className="mt-8">
             {!ready ? (

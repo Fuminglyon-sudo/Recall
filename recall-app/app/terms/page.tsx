@@ -5,8 +5,8 @@ import { SummonLogo } from "@/components/summon-logo";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Summon",
-  description: "The terms that govern your use of Summon.",
+  title: "Terms of Service — Soro Soke",
+  description: "The terms that govern your use of Soro Soke.",
   robots: { index: true, follow: true },
 };
 
@@ -40,16 +40,16 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Acceptance</h2>
             <p>
-              By creating an account or using Summon (&quot;the Service&quot;), you agree to these Terms of
+              By creating an account or using Soro Soke (&quot;the Service&quot;), you agree to these Terms of
               Service. If you do not agree, do not use the Service. These terms form a binding agreement
-              between you and Summon.
+              between you and Soro Soke.
             </p>
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-base font-semibold text-white">What Summon is</h2>
+            <h2 className="text-base font-semibold text-white">What Soro Soke is</h2>
             <p>
-              Summon is a vocabulary and communication-practice tool that uses spaced repetition
+              Soro Soke is a vocabulary and communication-practice tool that uses spaced repetition
               (SM-2 algorithm), AI-assisted card drafting, and speaking/conversation practice features
               including Speak Up and Conversation Lab. The Service is provided &quot;as is&quot; and is free
               to use during its current beta period.
@@ -59,7 +59,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Eligibility</h2>
             <p>
-              You must be at least 13 years old to use Summon. By using the Service, you confirm that
+              You must be at least 13 years old to use Soro Soke. By using the Service, you confirm that
               you meet this requirement. If you are under 18, you confirm that you have permission from
               a parent or guardian.
             </p>
@@ -82,7 +82,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Your content</h2>
             <p>
-              You own the content you create in Summon — your cards, decks, and session data. By using
+              You own the content you create in Soro Soke — your cards, decks, and session data. By using
               the Service, you grant us a limited licence to store and process your content solely to
               provide the Service to you. We do not claim ownership of your content and do not use it
               for any purpose beyond operating the Service.
@@ -104,7 +104,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">AI-generated content</h2>
             <p>
-              Summon uses AI to draft card definitions, memory hooks, and session feedback. AI-generated
+              Soro Soke uses AI to draft card definitions, memory hooks, and session feedback. AI-generated
               content is provided as a starting point and may contain errors. You are responsible for
               reviewing and editing content before relying on it. We make no guarantees about the
               accuracy or completeness of AI-generated output.
@@ -114,7 +114,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Service availability</h2>
             <p>
-              We aim to keep Summon available at all times but cannot guarantee uninterrupted access.
+              We aim to keep Soro Soke available at all times but cannot guarantee uninterrupted access.
               We may pause or modify the Service for maintenance, security reasons, or operational
               changes without prior notice. We are not liable for any loss resulting from downtime.
             </p>
@@ -123,7 +123,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Pricing and billing</h2>
             <p>
-              Summon is currently free to use. We may introduce a paid Pro tier in the future. If we do,
+              Soro Soke is currently free to use. We may introduce a paid Pro tier in the future. If we do,
               we will give reasonable advance notice and existing users will have the opportunity to
               continue using a free tier or subscribe to the paid plan. We will never charge you without
               explicit consent.
@@ -143,7 +143,7 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Limitation of liability</h2>
             <p>
-              To the maximum extent permitted by law, Summon shall not be liable for any indirect,
+              To the maximum extent permitted by law, Soro Soke shall not be liable for any indirect,
               incidental, special, consequential, or punitive damages arising from your use of the
               Service, even if we have been advised of the possibility of such damages. Our total
               liability to you for any claim shall not exceed the amount you paid to use the Service

@@ -43,7 +43,7 @@ const TABS = [
   {
     name: "Add card",
     href: "/cards/new",
-    desc: "Manually save a new word, phrase, or memory. Type the front and Summon drafts a definition, example, hook, and synonyms you can edit before saving.",
+    desc: "Manually save a new word, phrase, or memory. Type the front and Soro Soke drafts a definition, example, hook, and synonyms you can edit before saving.",
   },
 ];
 
@@ -58,7 +58,7 @@ export function HowToUse() {
         className="flex w-full items-center justify-between px-6 py-4 text-left transition hover:bg-white/[0.03]"
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-white">How to use Summon</span>
+          <span className="text-sm font-medium text-white">How to use Soro Soke</span>
           <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] text-slate-500">
             guide
           </span>
@@ -77,7 +77,7 @@ export function HowToUse() {
           <div>
             <p className="mb-3 text-xs uppercase tracking-[0.2em] text-slate-500">How it works</p>
             <p className="text-sm leading-7 text-slate-300">
-              Summon uses{" "}
+              Soro Soke uses{" "}
               <span className="font-medium text-white">spaced repetition</span> — cards you know
               well come back less often; cards you struggle with return sooner. Each day shows you
               all <span className="font-medium text-white">due reviews</span> plus up to{" "}

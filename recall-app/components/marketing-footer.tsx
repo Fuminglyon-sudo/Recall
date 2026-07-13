@@ -48,7 +48,7 @@ export function MarketingFooter() {
           </div>
         </div>
         <div className="border-t border-white/5 pt-6 text-center text-xs text-slate-700">
-          © {new Date().getFullYear()} Summon. All rights reserved.
+          © {new Date().getFullYear()} Soro Soke. All rights reserved.
         </div>
       </div>
     </footer>

@@ -80,7 +80,7 @@ export const POSTS: Post[] = [
       },
       {
         type: "p",
-        text: "Summon is built around this. Every card has its own timeline. The app surfaces what's due today — not what you feel like reviewing, not the entire deck. Just what your memory needs, right now. That's not magic. It's mathematics applied to how your brain actually works.",
+        text: "Soro Soke is built around this. Every card has its own timeline. The app surfaces what's due today — not what you feel like reviewing, not the entire deck. Just what your memory needs, right now. That's not magic. It's mathematics applied to how your brain actually works.",
       },
     ],
   },

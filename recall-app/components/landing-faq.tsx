@@ -5,52 +5,52 @@ import { ChevronDown } from "lucide-react";
 
 const FAQS = [
   {
-    q: "Is Summon really free?",
-    a: "Yes — Summon is free to use. Sign in with Google and your account is ready instantly. There are no paywalled features, no trial periods, and no card required.",
+    q: "Is Soro Soke really free?",
+    a: "Yes — Soro Soke is free to use. Sign in with Google and your account is ready instantly. There are no paywalled features, no trial periods, and no card required.",
   },
   {
     q: "What is spaced repetition?",
-    a: "Spaced repetition is a learning technique that schedules reviews at increasing intervals over time. Instead of reviewing everything every day, you only review a card when you're about to forget it. Summon uses the SM-2 algorithm — the same one that powers Anki and SuperMemo — to calculate these intervals automatically.",
+    a: "Spaced repetition is a learning technique that schedules reviews at increasing intervals over time. Instead of reviewing everything every day, you only review a card when you're about to forget it. Soro Soke uses the SM-2 algorithm — the same one that powers Anki and SuperMemo — to calculate these intervals automatically.",
   },
   {
-    q: "How does Summon card drafting work?",
-    a: "When you type a word or concept into a new card, Summon generates a definition, a memory hook, an example sentence, and synonyms in seconds. You can edit any of it before saving. The goal is to cut the time it takes to create a good card from minutes to seconds.",
+    q: "How does Soro Soke card drafting work?",
+    a: "When you type a word or concept into a new card, Soro Soke generates a definition, a memory hook, an example sentence, and synonyms in seconds. You can edit any of it before saving. The goal is to cut the time it takes to create a good card from minutes to seconds.",
   },
   {
     q: "What is free recall and why does it matter?",
-    a: "Free recall means retrieving information from memory without any cues — like writing down everything you remember from a deck before you flip any cards. Research consistently shows it produces stronger memory than passive re-reading. Summon makes it a first-class part of your review session.",
+    a: "Free recall means retrieving information from memory without any cues — like writing down everything you remember from a deck before you flip any cards. Research consistently shows it produces stronger memory than passive re-reading. Soro Soke makes it a first-class part of your review session.",
   },
   {
-    q: "Can I use Summon for languages other than English?",
-    a: "Yes. Summon works for any vocabulary in any language. Summon's card drafting supports multiple languages — just type the word in the language you're studying and it will respond accordingly.",
+    q: "Can I use Soro Soke for languages other than English?",
+    a: "Yes. Soro Soke works for any vocabulary in any language. Soro Soke's card drafting supports multiple languages — just type the word in the language you're studying and it will respond accordingly.",
   },
   {
-    q: "How do I get my cards into Summon?",
-    a: "You can add cards one at a time (with Summon's drafting), or import a CSV file in bulk. Each deck has an export button too, so you can back up your cards or move them between accounts.",
+    q: "How do I get my cards into Soro Soke?",
+    a: "You can add cards one at a time (with Soro Soke's drafting), or import a CSV file in bulk. Each deck has an export button too, so you can back up your cards or move them between accounts.",
   },
   {
     q: "What happens when I delete my account?",
     a: "Deleting your account permanently removes all your decks, cards, review history, and profile data. You can do this from Settings → Delete account. It requires typing your email address to confirm — there is no undo.",
   },
   {
-    q: "What devices can I use Summon on?",
-    a: "Summon is a web app that works in any modern browser — Chrome, Safari, Firefox, Edge. It's fully mobile-responsive, so it works well on your phone or tablet without needing to install anything. A native iOS and Android app is on the roadmap.",
+    q: "What devices can I use Soro Soke on?",
+    a: "Soro Soke is a web app that works in any modern browser — Chrome, Safari, Firefox, Edge. It's fully mobile-responsive, so it works well on your phone or tablet without needing to install anything. A native iOS and Android app is on the roadmap.",
   },
   {
-    q: "Does Summon work offline?",
-    a: "Partially. If you lose your connection mid-review, Summon detects it and holds the grading buttons until you reconnect — so you never accidentally lose a session. Features that require AI (card drafting, Speak Up, Conversation Lab) need an active connection. Full offline review caching for commutes is on the roadmap.",
+    q: "Does Soro Soke work offline?",
+    a: "Partially. If you lose your connection mid-review, Soro Soke detects it and holds the grading buttons until you reconnect — so you never accidentally lose a session. Features that require AI (card drafting, Speak Up, Conversation Lab) need an active connection. Full offline review caching for commutes is on the roadmap.",
   },
   {
-    q: "Does Summon track my streak or daily progress?",
+    q: "Does Soro Soke track my streak or daily progress?",
     a: "Yes. Your dashboard shows your current review streak, a 30-day activity heatmap, total cards mastered, and the next 8 days of upcoming reviews so you can see what's coming. Consistency over long periods matters more than any single session — the streak is there to reflect that, not to guilt you.",
   },
   {
     q: "How many cards will I need to review each day?",
-    a: "That depends on how many cards you have and how well you know them. Summon introduces 3 new cards per day by default. Most consistent users have a daily queue of 10–25 cards, which takes 5–10 minutes. The key is not letting the queue pile up — daily short sessions beat infrequent long ones by a significant margin.",
+    a: "That depends on how many cards you have and how well you know them. Soro Soke introduces 3 new cards per day by default. Most consistent users have a daily queue of 10–25 cards, which takes 5–10 minutes. The key is not letting the queue pile up — daily short sessions beat infrequent long ones by a significant margin.",
   },
   {
     q: "What happens if I miss a day?",
-    a: "Nothing catastrophic. Your due cards wait for you. If you miss several days, more cards will be due when you return — Summon prioritises overdue cards first so you work through the backlog efficiently. Your streak resets, but your card mastery and review history are untouched.",
+    a: "Nothing catastrophic. Your due cards wait for you. If you miss several days, more cards will be due when you return — Soro Soke prioritises overdue cards first so you work through the backlog efficiently. Your streak resets, but your card mastery and review history are untouched.",
   },
   {
     q: "What do the review grades (Again / Hard / Good / Easy / Perfect) actually do?",
@@ -69,8 +69,8 @@ const FAQS = [
     a: "Your sessions are private. Speak Up conversations and Conversation Lab exchanges are not stored beyond the session — they exist to give you feedback, not to build a record. Your card data is tied to your account and never shared or sold.",
   },
   {
-    q: "How is Summon different from Anki or Quizlet?",
-    a: "Anki uses the same SM-2 algorithm as Summon and is powerful — but it requires you to build everything yourself and has a steep learning curve. Quizlet is primarily a recognition tool with limited scheduling depth. Summon adds Summon-drafted cards (no blank-card friction), Speak Up for high-stakes speaking practice, and Conversation Lab for social fluency. It's built for professionals who want to communicate better — not students drilling for exams.",
+    q: "How is Soro Soke different from Anki or Quizlet?",
+    a: "Anki uses the same SM-2 algorithm as Soro Soke and is powerful — but it requires you to build everything yourself and has a steep learning curve. Quizlet is primarily a recognition tool with limited scheduling depth. Soro Soke adds Soro Soke-drafted cards (no blank-card friction), Speak Up for high-stakes speaking practice, and Conversation Lab for social fluency. It's built for professionals who want to communicate better — not students drilling for exams.",
   },
   {
     q: "What's the difference between Speak Up and Conversation Lab?",

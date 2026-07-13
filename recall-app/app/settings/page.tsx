@@ -8,7 +8,7 @@ import { updateDailyCardLimit } from "./actions";
 import { Settings } from "lucide-react";
 
 export const metadata = {
-  title: "Settings — Summon",
+  title: "Settings — Soro Soke",
 };
 
 export default async function SettingsPage() {
@@ -79,7 +79,7 @@ export default async function SettingsPage() {
             <div>
               <p className="text-sm font-medium text-white">New cards per day</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">
-                Summon introduces this many brand-new cards each day. Reviews of cards you already know are always shown in full. Default is 3.
+                Soro Soke introduces this many brand-new cards each day. Reviews of cards you already know are always shown in full. Default is 3.
               </p>
             </div>
             <form action={updateDailyCardLimit} className="flex items-end gap-4">

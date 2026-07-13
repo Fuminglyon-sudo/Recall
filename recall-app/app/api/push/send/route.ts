@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
       if (dueCount === 0) return;
 
       const payload = JSON.stringify({
-        title: "Summon",
+        title: "Soro Soke",
         body:
           dueCount === 1
             ? "1 card is waiting for your review."
