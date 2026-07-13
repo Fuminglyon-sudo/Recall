@@ -6,7 +6,7 @@ import { ChevronDown } from "lucide-react";
 const FAQS = [
   {
     q: "Is Soro Soke really free?",
-    a: "Yes — Soro Soke is free to use. Sign in with Google and your account is ready instantly. There are no paywalled features, no trial periods, and no card required.",
+    a: "The first 50 accounts are completely free — forever. No card, no trial, no expiry. If there are still founder spots available when you sign up, your account is yours for life. Once those 50 spots fill, new accounts get a 14-day free trial with full access before choosing Pro at $9.99/month or $99/year.",
   },
   {
     q: "What is spaced repetition?",
@@ -53,8 +53,8 @@ const FAQS = [
     a: "Nothing catastrophic. Your due cards wait for you. If you miss several days, more cards will be due when you return — Soro Soke prioritises overdue cards first so you work through the backlog efficiently. Your streak resets, but your card mastery and review history are untouched.",
   },
   {
-    q: "What do the review grades (Again / Hard / Good / Easy / Perfect) actually do?",
-    a: "Each grade adjusts how soon the card returns and how hard the algorithm considers it. Again (0) brings it back in minutes. Hard (1–2) shortens the next interval. Good (3) keeps the interval roughly on track. Easy (4) and Perfect (5) extend the interval significantly. Grading yourself honestly — not generously — is what makes the algorithm work. Inflated grades just mean you forget things before they come back.",
+    q: "What do the review grades mean?",
+    a: "There are six grades, each telling the algorithm how strongly you recalled the card. Blackout (0) — no memory at all, card returns within minutes. Wrong (1) — incorrect recall, returns shortly. Hard (2) — correct but required serious effort, interval shortens. Okay (3) — correct with hesitation, kept close to its current schedule. Good (4) — correct with only a brief hesitation, interval extends. Perfect (5) — instant, effortless recall, interval extends significantly. Grading yourself honestly — not generously — is what makes the algorithm work well over time.",
   },
   {
     q: "What do the mastery levels — New, Learning, Familiar, Mastered — mean?",
@@ -78,7 +78,7 @@ const FAQS = [
   },
   {
     q: "How does Speak Up scoring work?",
-    a: "After a Speak Up session you receive a score from 0–10, your strongest moment in the exchange, one specific thing to improve next time, the exact exchange where the conversation shifted, and a model response showing how the answer could have landed. The score reflects clarity, structure, how well you held your position, and your confidence signals — not just whether your answer was technically correct.",
+    a: "After a Speak Up session you receive a score from 0–10, a breakdown of what landed well, specific areas to sharpen, a filler-word count tracking verbal habits like 'um' and 'uh', a model response showing how your answer could have landed better, and an idealized version of the full conversation — how it could have gone if you had been at your best from the start. The score reflects clarity, structure, how well you held your position, and your verbal delivery.",
   },
 ];
 
