@@ -359,8 +359,19 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         }
         setDraft(final + interim);
       };
-      recognition.onerror = () =>
-        setError("Microphone access denied or speech recognition unavailable.");
+      recognition.onerror = (e: { error?: string }) => {
+        if (e.error === "not-allowed") {
+          setError("Microphone permission denied. Click the lock icon in your address bar, set Microphone to Allow, then refresh.");
+        } else if (e.error === "service-not-allowed") {
+          setError("Chrome's speech service is unavailable. Make sure the site is loading over HTTPS, then try again — or just type your reply instead.");
+        } else if (e.error === "network") {
+          setError("Speech recognition needs an internet connection to Google's servers. Check your connection or type your reply instead.");
+        } else if (e.error === "no-speech") {
+          setError("No speech detected. Try speaking louder or closer to the microphone.");
+        } else {
+          setError("Speech recognition failed. Try again or type your reply.");
+        }
+      };
       recognition.onend = () => setRecording(false);
       recognition.start();
       recognitionRef.current = recognition;
