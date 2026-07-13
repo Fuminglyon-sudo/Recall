@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import { SwRegister } from "@/components/sw-register";
+import { PwaInstallBanner } from "@/components/pwa-install-banner";
 import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
@@ -123,6 +124,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>
         <SwRegister />
+        <PwaInstallBanner />
       </body>
     </html>
   );
