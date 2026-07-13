@@ -26,6 +26,7 @@ import {
   BookOpen,
   Settings,
   Briefcase,
+  RotateCw,
 } from "lucide-react";
 
 const CORE_LINKS = [
@@ -158,6 +159,14 @@ function SidebarContent({
           <SoroSokeLogo fontSize="1.9rem" duration={1.0} />
         </Link>
         <div className="flex items-center gap-1">
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-xl p-2 text-slate-500 transition hover:text-slate-300"
+            aria-label="Refresh"
+            title="Refresh"
+          >
+            <RotateCw className="h-4 w-4" />
+          </button>
           <ThemeToggle className="rounded-xl p-2 text-slate-500 transition hover:text-slate-300" />
           {onClose ? (
             <button
@@ -232,6 +241,14 @@ export function Sidebar({
           <SoroSokeLogo fontSize="1.8rem" duration={1.0} />
         </Link>
         <div className="flex items-center gap-1">
+          <button
+            onClick={() => window.location.reload()}
+            className="rounded-xl p-2 text-slate-400 transition hover:text-white"
+            aria-label="Refresh"
+            title="Refresh"
+          >
+            <RotateCw className="h-4 w-4" />
+          </button>
           <ThemeToggle className="rounded-xl p-2 text-slate-400 transition hover:text-white" />
           <button
             onClick={() => setOpen(true)}
