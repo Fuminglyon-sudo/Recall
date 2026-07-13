@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SummonLogo } from "./summon-logo";
+import { ThemeToggle } from "./theme-toggle";
 import {
   LayoutDashboard,
   CalendarCheck2,
@@ -77,9 +78,12 @@ function NavLink({
       onClick={onClose}
       className={`group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm transition-colors ${
         active
-          ? "bg-white/10 font-medium text-white"
-          : "text-slate-400 hover:bg-white/8 hover:text-slate-200"
+          ? "font-medium text-white"
+          : "text-slate-400 hover:text-slate-200"
       }`}
+      style={active ? { background: "var(--surface-4)" } : undefined}
+      onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "var(--surface-3)"; }}
+      onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = ""; }}
     >
       <Icon
         className={`h-4 w-4 shrink-0 transition-colors ${
@@ -128,7 +132,7 @@ function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean
 
       {isAdmin && (
         <NavSection label="Admin">
-          <div className="mb-1 border-t border-white/8" />
+          <div className="mb-1 border-t" style={{ borderColor: "var(--stroke-s)" }} />
           {ADMIN_LINKS.map((link) => (
             <NavLink key={link.href} {...link} onClose={onClose} />
           ))}
@@ -153,22 +157,25 @@ function SidebarContent({
         <Link href="/landing" onClick={onClose}>
           <SummonLogo fontSize="1.9rem" duration={1.0} />
         </Link>
-        {onClose ? (
-          <button
-            onClick={onClose}
-            className="rounded-xl p-2 text-slate-500 transition hover:bg-white/8 hover:text-slate-300 lg:hidden"
-            aria-label="Close menu"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        ) : null}
+        <div className="flex items-center gap-1">
+          <ThemeToggle className="rounded-xl p-2 text-slate-500 transition hover:text-slate-300" />
+          {onClose ? (
+            <button
+              onClick={onClose}
+              className="rounded-xl p-2 text-slate-500 transition hover:text-slate-300 lg:hidden"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          ) : null}
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         <NavItems onClose={onClose} isAdmin={isAdmin} />
       </div>
 
-      <div className="shrink-0 border-t border-white/8 px-5 py-4 space-y-2">
+      <div className="shrink-0 px-5 py-4 space-y-2" style={{ borderTop: "1px solid var(--stroke-s)" }}>
         {userLabel ? (
           <div className="flex items-center gap-2 min-w-0">
             <div className="h-5 w-5 shrink-0 rounded-full bg-emerald-400/20 flex items-center justify-center">
@@ -209,22 +216,31 @@ export function Sidebar({
   return (
     <>
       {/* Desktop sidebar — fixed left */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col lg:border-r lg:border-white/8 lg:bg-slate-950/90 lg:backdrop-blur-xl">
+      <aside
+        className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col lg:backdrop-blur-xl"
+        style={{ borderRight: "1px solid var(--stroke-s)", background: "color-mix(in oklab, var(--background) 90%, transparent)" }}
+      >
         <SidebarContent isAdmin={isAdmin} userLabel={userLabel} />
       </aside>
 
       {/* Mobile top bar */}
-      <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-white/8 bg-slate-950/90 px-4 backdrop-blur-xl lg:hidden">
+      <div
+        className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between px-4 backdrop-blur-xl lg:hidden"
+        style={{ borderBottom: "1px solid var(--stroke-s)", background: "color-mix(in oklab, var(--background) 90%, transparent)" }}
+      >
         <Link href="/landing">
           <SummonLogo fontSize="1.8rem" duration={1.0} />
         </Link>
-        <button
-          onClick={() => setOpen(true)}
-          className="rounded-xl p-2 text-slate-400 transition hover:bg-white/8 hover:text-white"
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          <ThemeToggle className="rounded-xl p-2 text-slate-400 transition hover:text-white" />
+          <button
+            onClick={() => setOpen(true)}
+            className="rounded-xl p-2 text-slate-400 transition hover:text-white"
+            aria-label="Open menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Mobile drawer */}
@@ -234,7 +250,10 @@ export function Sidebar({
             className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
             onClick={() => setOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 z-50 w-72 border-r border-white/10 bg-slate-950 lg:hidden">
+          <aside
+            className="fixed inset-y-0 left-0 z-50 w-72 lg:hidden"
+            style={{ borderRight: "1px solid var(--stroke-m)", background: "var(--background)" }}
+          >
             <SidebarContent isAdmin={isAdmin} userLabel={userLabel} onClose={() => setOpen(false)} />
           </aside>
         </>

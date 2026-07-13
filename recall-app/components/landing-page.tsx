@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronDown, LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { SummonLogo } from "./summon-logo";
+import { ThemeToggle } from "./theme-toggle";
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
@@ -211,6 +212,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           </button>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle className="rounded-xl p-2 text-white/70 transition hover:text-white hover:bg-white/10" />
             {[
               { label: "About",    href: "/about" },
               { label: "Features", href: "/features" },
