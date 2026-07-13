@@ -167,7 +167,7 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,0.35); }
 
-/* SummonLogo blur-reveal animation — defined here so the component
+/* SoroSokeLogo blur-reveal animation — defined here so the component
    doesn't need to inject a <style> tag (which is invalid inside <button>). */
 @keyframes soroSokeReveal {
   from {

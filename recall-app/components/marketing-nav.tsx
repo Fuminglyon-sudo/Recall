@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SummonLogo } from "./summon-logo";
+import { SoroSokeLogo } from "./soro-soke-logo";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV_LINKS = [
@@ -26,7 +26,7 @@ export function MarketingNav() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 sm:px-10">
         {/* Logo */}
         <Link href="/landing">
-          <SummonLogo fontSize="1.9rem" duration={1.0} />
+          <SoroSokeLogo fontSize="1.9rem" duration={1.0} />
         </Link>
 
         {/* Right side */}

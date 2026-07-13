@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SummonLogo } from "./summon-logo";
+import { SoroSokeLogo } from "./soro-soke-logo";
 import { ThemeToggle } from "./theme-toggle";
 import {
   LayoutDashboard,
@@ -155,7 +155,7 @@ function SidebarContent({
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between p-5 pb-2">
         <Link href="/landing" onClick={onClose}>
-          <SummonLogo fontSize="1.9rem" duration={1.0} />
+          <SoroSokeLogo fontSize="1.9rem" duration={1.0} />
         </Link>
         <div className="flex items-center gap-1">
           <ThemeToggle className="rounded-xl p-2 text-slate-500 transition hover:text-slate-300" />
@@ -229,7 +229,7 @@ export function Sidebar({
         style={{ borderBottom: "1px solid var(--stroke-s)", background: "color-mix(in oklab, var(--background) 90%, transparent)" }}
       >
         <Link href="/landing">
-          <SummonLogo fontSize="1.8rem" duration={1.0} />
+          <SoroSokeLogo fontSize="1.8rem" duration={1.0} />
         </Link>
         <div className="flex items-center gap-1">
           <ThemeToggle className="rounded-xl p-2 text-slate-400 transition hover:text-white" />

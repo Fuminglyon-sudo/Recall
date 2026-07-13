@@ -64,7 +64,7 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
-  let data = { title: "Recall", body: "Time to review.", url: "/today" };
+  let data = { title: "Sọrọ Sọkẹ AI", body: "Time to review.", url: "/today" };
   try {
     data = { ...data, ...event.data.json() };
   } catch {

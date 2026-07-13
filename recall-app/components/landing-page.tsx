@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, LayoutDashboard, Settings, LogOut } from "lucide-react";
-import { SummonLogo } from "./summon-logo";
+import { SoroSokeLogo } from "./soro-soke-logo";
 import { ThemeToggle } from "./theme-toggle";
 
 interface LandingPageProps {
@@ -220,7 +220,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
             aria-label="Back to start"
             style={{ background: "none", border: "none", padding: 0, cursor: activeSlide > 0 ? "pointer" : "default" }}
           >
-            <SummonLogo fontSize="1.9rem" color="#fff" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
+            <SoroSokeLogo fontSize="1.9rem" color="#fff" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
           </button>
 
           <div className="flex items-center gap-2">
@@ -486,7 +486,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                     style={{ animation: "slideContentIn 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both" }}
                   >
                     <div className="flex justify-center">
-                      <SummonLogo
+                      <SoroSokeLogo
                         fontSize="1.35rem"
                         color="#4ade80"
                         textShadow="0 0 32px rgba(52,211,153,0.45), 0 0 12px rgba(52,211,153,0.2)"

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { SummonLogo } from "@/components/summon-logo";
+import { SoroSokeLogo } from "@/components/soro-soke-logo";
 import { ReadingProgressBar } from "@/components/reading-progress-bar";
 import { BlogContentGate } from "@/components/blog-content-gate";
 import { MarketingFooter } from "@/components/marketing-footer";
@@ -59,7 +59,7 @@ export default async function BlogPostPage({
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
           <Link href="/landing">
-            <SummonLogo fontSize="1.9rem" />
+            <SoroSokeLogo fontSize="1.9rem" />
           </Link>
           <Link
             href="/blog"

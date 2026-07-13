@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 import { GoogleSignInButton } from "./google-button";
-import { SummonLogo } from "@/components/summon-logo";
+import { SoroSokeLogo } from "@/components/soro-soke-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default async function LoginPage({
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="flex justify-center mb-4">
-            <SummonLogo fontSize="2.2rem" />
+            <SoroSokeLogo fontSize="2.2rem" />
           </div>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">Welcome</h1>
           <p className="mt-1 text-sm text-slate-400">Sign in to continue your practice.</p>

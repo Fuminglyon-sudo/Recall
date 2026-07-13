@@ -30,7 +30,7 @@ const CHARS = [...WORD1, null, ...WORD2]; // null = space between words
 const DEFAULT_SHADOW =
   "0 0 40px rgba(52,211,153,0.4), 0 0 16px rgba(52,211,153,0.2), 0 2px 4px rgba(0,0,0,0.95), 0 6px 20px rgba(0,0,0,0.5)";
 
-export function SummonLogo({
+export function SoroSokeLogo({
   fontSize = "1.9rem",
   color = "var(--foreground, #fff)",
   textShadow = DEFAULT_SHADOW,

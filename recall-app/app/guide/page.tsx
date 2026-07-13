@@ -41,7 +41,7 @@ const GRADES = [
   { value: "0", label: "Blackout", color: "text-red-400", dot: "bg-red-500", desc: "Complete blank — nothing came to mind at all." },
   { value: "1", label: "Wrong", color: "text-red-300", dot: "bg-red-400", desc: "Had an answer but it was incorrect." },
   { value: "2", label: "Hard", color: "text-orange-300", dot: "bg-orange-400", desc: "Got it right but only after serious effort." },
-  { value: "3", label: "Okay", color: "text-yellow-300", dot: "bg-yellow-400", desc: "Summoned correctly but it felt laboured." },
+  { value: "3", label: "Okay", color: "text-yellow-300", dot: "bg-yellow-400", desc: "Retrieved correctly but it felt laboured." },
   { value: "4", label: "Good", color: "text-emerald-300", dot: "bg-emerald-400", desc: "Correct with only a brief hesitation." },
   { value: "5", label: "Perfect", color: "text-teal-300", dot: "bg-teal-400", desc: "Instant, effortless recall — no doubt at all." },
 ];

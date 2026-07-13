@@ -7,7 +7,7 @@ const GRADES = [
   { value: "0", label: "Blackout", desc: "Complete blank — couldn't recall anything at all." },
   { value: "1", label: "Wrong", desc: "Had an answer, but it was incorrect." },
   { value: "2", label: "Hard", desc: "Correct but required serious effort to retrieve." },
-  { value: "3", label: "Okay", desc: "Summoned correctly, but it felt effortful." },
+  { value: "3", label: "Okay", desc: "Retrieved correctly, but it felt effortful." },
   { value: "4", label: "Good", desc: "Correct with only a brief hesitation." },
   { value: "5", label: "Perfect", desc: "Instant, effortless recall — no doubt at all." },
 ];
