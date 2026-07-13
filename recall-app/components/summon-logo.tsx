@@ -37,20 +37,9 @@ export function SummonLogo({
   duration = 1.4,
 }: Props) {
   return (
-    <>
-      <style>{`
-        @keyframes soroSokeReveal {
-          from {
-            filter: blur(var(--blur-s, 0px));
-            opacity: var(--opacity-s, 1);
-          }
-          to {
-            filter: blur(0px);
-            opacity: 1;
-          }
-        }
-      `}</style>
-      <span
+    // No <style> tag here — @keyframes soroSokeReveal lives in globals.css
+    // so this component is safe to render inside <button> elements.
+    <span
         aria-label="Sọrọ Sọkẹ AI"
         style={{
           fontFamily: "var(--font-display)",
@@ -109,6 +98,5 @@ export function SummonLogo({
           AI
         </span>
       </span>
-    </>
   );
 }

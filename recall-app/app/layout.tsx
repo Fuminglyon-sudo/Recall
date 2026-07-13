@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import { SwRegister } from "@/components/sw-register";
 import { AuthProvider } from "@/components/auth-provider";
@@ -43,6 +44,10 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Sọrọ Sọkẹ AI" }],
   creator: "Sọrọ Sọkẹ AI",
+  icons: {
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: "/apple-icon.png",
+  },
   openGraph: {
     siteName: "Sọrọ Sọkẹ AI",
     type: "website",
@@ -69,18 +74,22 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-// Runs before React hydrates — reads saved preference and applies dark/light
-// class to <html> immediately so there's no flash of wrong theme.
-const noFlashScript = `(function(){try{var t=localStorage.getItem('theme');var d=t==='light'?false:t==='dark'?true:window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark');}})();`;
-
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${displayFont.variable} dark h-full`}>
-      <head>
-        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: intentional no-flash theme script */}
-        <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
-      </head>
       <body className="min-h-full bg-slate-950 text-slate-100 antialiased">
+        {/*
+          No-flash theme script: reads saved preference before React hydrates
+          so there is no visible flash of the wrong theme on load.
+          beforeInteractive places it in <head> before any other scripts.
+        */}
+        <Script
+          id="theme-no-flash"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var d=t==='light'?false:t==='dark'?true:window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);}catch(e){document.documentElement.classList.add('dark');}})();`,
+          }}
+        />
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>

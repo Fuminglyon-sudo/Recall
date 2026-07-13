@@ -120,6 +120,25 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.2); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,0.35); }
 
+/* SummonLogo blur-reveal animation — defined here so the component
+   doesn't need to inject a <style> tag (which is invalid inside <button>). */
+@keyframes soroSokeReveal {
+  from {
+    filter: blur(var(--blur-s, 0px));
+    opacity: var(--opacity-s, 1);
+  }
+  to {
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+/* Landing page slide content entrance */
+@keyframes slideContentIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @utility input-base {
   display: block;
   width: 100%;
