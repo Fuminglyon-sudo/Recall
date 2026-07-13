@@ -428,6 +428,50 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           </div>
         </div>
 
+        {/* ── Mobile nav links — visible on slides 1-5, sm:hidden ─────── */}
+        {activeSlide < SLIDES.length - 1 && (
+          <div className="sm:hidden fixed bottom-14 left-0 right-0 z-50 flex justify-center pointer-events-none">
+            <div
+              className="pointer-events-auto flex items-center gap-0.5"
+              style={{
+                padding: "0.3rem 0.55rem",
+                borderRadius: "9999px",
+                background: "rgba(1,13,26,0.72)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              {[
+                { label: "About",    href: "/about" },
+                { label: "Features", href: "/features" },
+                { label: "Pricing",  href: "/pricing" },
+                { label: "Blog",     href: "/blog" },
+                { label: "FAQ",      href: "/faq" },
+              ].map(({ label, href }, idx, arr) => (
+                <span key={label} style={{ display: "contents" }}>
+                  <Link
+                    href={href}
+                    style={{
+                      fontSize: "0.68rem",
+                      letterSpacing: "0.03em",
+                      color: "rgba(255,255,255,0.55)",
+                      padding: "0.25rem 0.55rem",
+                      borderRadius: "9999px",
+                      transition: "color 0.15s",
+                    }}
+                  >
+                    {label}
+                  </Link>
+                  {idx < arr.length - 1 && (
+                    <span style={{ width: "1px", height: "10px", background: "rgba(255,255,255,0.12)", flexShrink: 0 }} />
+                  )}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ── Horizontal scroll container ───────────────────────────────── */}
         <div
           ref={containerRef}
