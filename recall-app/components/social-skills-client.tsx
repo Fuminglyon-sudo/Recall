@@ -38,6 +38,7 @@ type FeedbackResult = {
   powerMove: string;
   turningPoint?: string;
   modelConversation?: Array<{ role: "user" | "character"; content: string }>;
+  modelOptions?: string[][];
 };
 
 const CATEGORY_LABELS: Record<Category, string> = {
@@ -271,6 +272,10 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
   const [saved, setSaved] = useState(false);
   const [convOpen, setConvOpen] = useState(false);
   const [practiceGoal, setPracticeGoal] = useState<SocialPracticeGoal | null>(null);
+  const [guidedOpen, setGuidedOpen] = useState(false);
+  const [guidedStep, setGuidedStep] = useState(0);
+  const [guidedPicked, setGuidedPicked] = useState<number | null>(null);
+  const [guidedHistory, setGuidedHistory] = useState<Array<{ optionIdx: number; characterResponse: string }>>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -334,7 +339,17 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
     setShowCustomForm(false);
     setCustomContext("");
     setCustomPrompt("");
+    setGuidedOpen(false);
+    setGuidedStep(0);
+    setGuidedPicked(null);
+    setGuidedHistory([]);
     stopRecording();
+  }
+
+  function resetGuided() {
+    setGuidedStep(0);
+    setGuidedPicked(null);
+    setGuidedHistory([]);
   }
 
   async function startRecording() {
@@ -535,6 +550,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         powerMove: string;
         turningPoint?: string;
         modelConversation?: Array<{ role: "user" | "character"; content: string }>;
+        modelOptions?: string[][];
       };
 
       if (data.type !== "feedback" || typeof data.score !== "number") {
@@ -838,6 +854,39 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
             {feedback.modelConversation.map((msg, i) => (
               <ModelBubble key={i} msg={msg} characterLabel={activeCharacter.label} />
             ))}
+
+            {feedback.modelOptions && feedback.modelOptions.length > 0 && (
+              <div className="pt-2 border-t border-violet-300/10">
+                {!guidedOpen ? (
+                  <button
+                    onClick={() => { setGuidedOpen(true); resetGuided(); }}
+                    className="text-sm font-medium text-violet-300 transition hover:text-violet-200"
+                  >
+                    Practice the guided version →
+                  </button>
+                ) : (
+                  <GuidedReplay
+                    modelConversation={feedback.modelConversation}
+                    modelOptions={feedback.modelOptions}
+                    step={guidedStep}
+                    picked={guidedPicked}
+                    history={guidedHistory}
+                    onPick={(idx) => setGuidedPicked(idx)}
+                    onNext={() => {
+                      if (guidedPicked === null) return;
+                      const charMsg = feedback.modelConversation![guidedStep * 2 + 1];
+                      setGuidedHistory((prev) => [
+                        ...prev,
+                        { optionIdx: guidedPicked, characterResponse: charMsg?.content ?? "" },
+                      ]);
+                      setGuidedStep((s) => s + 1);
+                      setGuidedPicked(null);
+                    }}
+                    onReset={resetGuided}
+                  />
+                )}
+              </div>
+            )}
           </div>
         ) : null}
 
@@ -878,6 +927,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
               setDraft("");
               setExchangeCount(0);
               setSaved(false);
+              setGuidedOpen(false);
+              resetGuided();
             }}
             className="flex items-center gap-2 rounded-2xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
           >
@@ -1100,6 +1151,114 @@ function SocialBubble({ msg, characterLabel }: { msg: Message; characterLabel: s
       <p className={`text-sm leading-7 ${isUser ? "text-slate-300" : "font-medium text-white"}`}>
         {msg.content}
       </p>
+    </div>
+  );
+}
+
+function GuidedReplay({
+  modelConversation,
+  modelOptions,
+  step,
+  picked,
+  history,
+  onPick,
+  onNext,
+  onReset,
+}: {
+  modelConversation: Array<{ role: "user" | "character"; content: string }>;
+  modelOptions: string[][];
+  step: number;
+  picked: number | null;
+  history: Array<{ optionIdx: number; characterResponse: string }>;
+  onPick: (idx: number) => void;
+  onNext: () => void;
+  onReset: () => void;
+}) {
+  const totalSteps = modelOptions.length;
+  const isDone = step >= totalSteps;
+
+  return (
+    <div className="space-y-3 pt-1">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-widest text-violet-300">
+          Guided replay
+        </p>
+        <button
+          onClick={onReset}
+          className="text-xs text-slate-500 transition hover:text-slate-300"
+        >
+          Start over
+        </button>
+      </div>
+
+      {/* Completed steps */}
+      {history.map((h, i) => (
+        <div key={i} className="space-y-2">
+          <div className="rounded-2xl border border-violet-300/25 bg-violet-400/10 px-4 py-3">
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-violet-300">You</p>
+            <p className="text-sm leading-6 text-white">{modelOptions[i][h.optionIdx]}</p>
+          </div>
+          {h.characterResponse ? (
+            <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3">
+              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+                Them ({modelConversation[1]?.role === "character" ? "character" : "them"})
+              </p>
+              <p className="text-sm leading-6 text-slate-300">{h.characterResponse}</p>
+            </div>
+          ) : null}
+        </div>
+      ))}
+
+      {/* Current step */}
+      {!isDone && (
+        <div className="space-y-3 rounded-[2rem] border border-violet-300/20 bg-violet-400/5 p-5">
+          <p className="text-sm font-medium text-violet-200">
+            {step === 0 ? "How would you open?" : "Your turn — pick the line closest to how you'd say it"}
+            <span className="ml-2 text-xs font-normal text-slate-500">
+              {step + 1} of {totalSteps}
+            </span>
+          </p>
+          <div className="space-y-2">
+            {modelOptions[step]?.map((option, i) => (
+              <button
+                key={i}
+                onClick={() => onPick(i)}
+                className={`w-full rounded-2xl border px-4 py-3 text-left text-sm leading-6 transition ${
+                  picked === i
+                    ? "border-violet-400/50 bg-violet-400/15 text-white"
+                    : "border-white/8 bg-white/[0.03] text-slate-300 hover:border-violet-300/20 hover:text-white"
+                }`}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          {picked !== null && (
+            <button
+              onClick={onNext}
+              className="rounded-2xl bg-violet-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-400"
+            >
+              {step < totalSteps - 1 ? "Continue →" : "Finish"}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Done */}
+      {isDone && (
+        <div className="rounded-[2rem] border border-violet-300/20 bg-violet-400/5 px-5 py-5 text-center space-y-2">
+          <p className="text-sm font-medium text-violet-200">You completed the guided replay.</p>
+          <p className="text-xs text-slate-500">
+            Try starting over and picking different lines to see how the conversation shifts.
+          </p>
+          <button
+            onClick={onReset}
+            className="mt-1 text-xs font-medium text-violet-300 transition hover:text-violet-200"
+          >
+            Start over →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

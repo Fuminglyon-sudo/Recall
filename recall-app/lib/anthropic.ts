@@ -341,6 +341,7 @@ export type SocialConversationStep =
       powerMove: string;
       turningPoint?: string;
       modelConversation?: Array<{ role: "user" | "character"; content: string }>;
+      modelOptions?: string[][];
     };
 
 export async function conductSocialConversation(
@@ -380,11 +381,12 @@ Return strict JSON with ALL of these fields:
   "powerMove": "one concrete technique or phrase they can try next time — make it specific to what actually happened in this conversation, not generic advice",
   "turningPoint": "one sentence identifying the exact exchange or moment where the conversation either clicked or fell flat — be specific about what was said and why it shifted things",
   "modelConversation": only include this field if score is 8 or below — an array of message objects showing how this conversation could have ideally gone from start to finish. Write the user lines showing confident, natural, curious conversation. Write the character lines as they would realistically respond to those better inputs. Keep each message 1-3 sentences. Aim for 4-8 exchanges total showing a natural arc. Format: [{ "role": "user", "content": "..." }, { "role": "character", "content": "..." }, ...]. If score is 9 or 10, omit this field entirely.
+  "modelOptions": only include if modelConversation is included — for each user turn in modelConversation (one entry per user turn, in order), provide exactly 3 alternative phrasings the user could have said, each with a slightly different tone or approach (e.g., warmer, more direct, more curious). These let the user pick whichever sounds most like them for a guided replay. Format: array of arrays, one per user turn: [["option A", "option B", "option C"], ["option A", "option B", "option C"], ...]. Each option 1-2 sentences. Include the same number of inner arrays as there are user turns in modelConversation. Omit entirely if modelConversation is omitted.
 }`;
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 1600,
+      max_tokens: 2200,
       temperature: 0.4,
       system: "Return only valid JSON. No markdown. No preamble.",
       messages: [{ role: "user", content: prompt }],
@@ -399,8 +401,16 @@ Return strict JSON with ALL of these fields:
         powerMove: string;
         turningPoint?: string;
         modelConversation?: Array<{ role: "user" | "character"; content: string }>;
+        modelOptions?: unknown[][];
       };
       const score = Math.min(10, Math.max(1, Math.round(Number(parsed.score))));
+      const modelConversation =
+        score <= 8 && Array.isArray(parsed.modelConversation)
+          ? (parsed.modelConversation as Array<{ role: string; content: string }>).map((m) => ({
+              role: (m.role === "user" ? "user" : "character") as "user" | "character",
+              content: typeof m.content === "string" ? m.content : "",
+            }))
+          : undefined;
       return {
         type: "feedback",
         score,
@@ -410,12 +420,14 @@ Return strict JSON with ALL of these fields:
           parsed.powerMove ??
           "Try the observation + question formula: make a genuine comment about something in the shared moment, then ask one open question that can't be answered with just yes or no.",
         turningPoint: typeof parsed.turningPoint === "string" ? parsed.turningPoint : undefined,
-        modelConversation:
-          score <= 8 && Array.isArray(parsed.modelConversation)
-            ? (parsed.modelConversation as Array<{ role: string; content: string }>).map((m) => ({
-                role: (m.role === "user" ? "user" : "character") as "user" | "character",
-                content: typeof m.content === "string" ? m.content : "",
-              }))
+        modelConversation,
+        modelOptions:
+          modelConversation && Array.isArray(parsed.modelOptions)
+            ? parsed.modelOptions.map((opts) =>
+                Array.isArray(opts)
+                  ? opts.filter((o): o is string => typeof o === "string").slice(0, 3)
+                  : []
+              )
             : undefined,
       };
     } catch {
