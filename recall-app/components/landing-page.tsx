@@ -202,9 +202,13 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
       >
         {/* ── Floating nav ──────────────────────────────────────────────── */}
         <header className="fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between px-6 sm:px-10">
-          <Link href="/landing">
+          <button
+            onClick={() => scrollToSlide(0)}
+            aria-label="Back to start"
+            style={{ background: "none", border: "none", padding: 0, cursor: activeSlide > 0 ? "pointer" : "default" }}
+          >
             <SummonLogo fontSize="1.9rem" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
-          </Link>
+          </button>
 
           <div className="flex items-center gap-3">
             {[
