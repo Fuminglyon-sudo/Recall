@@ -36,7 +36,7 @@ const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
   ["Speak Up speaking practice", true,  false, false, false],
   ["Conversation Lab coaching",  true,  false, false, false],
   ["Build your own vocabulary",  true,  true,  false, true ],
-  ["Free forever",               true,  true,  true,  true ],
+  ["Free trial included",        true,  true,  true,  true ],
 ];
 
 export default function FeaturesPage() {
@@ -243,19 +243,27 @@ export default function FeaturesPage() {
         <section className="py-20">
           <div className="rounded-3xl border border-emerald-400/15 bg-gradient-to-br from-emerald-950/50 via-slate-900/60 to-slate-950 p-12 text-center space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/8 px-4 py-1.5 text-xs font-medium text-emerald-300">
-              Free while in beta · Pro tier coming
+              First 100 spots free forever · Then $9.99/mo
             </div>
             <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>
               The words you reach for — finally within reach
             </h2>
-            <p className="text-slate-400">Free to use during beta. All features included — no card, no trial period, no limits.</p>
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 transition hover:bg-emerald-300"
-            >
-              Get started free
-            </Link>
-            <p className="text-xs text-slate-600">Early users get grandfathered pricing when Pro launches.</p>
+            <p className="text-slate-400">Claim one of the remaining founder spots and get every feature free — forever. After 100, it&apos;s $9.99/mo.</p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400 px-7 py-3.5 text-base font-bold text-slate-950 transition hover:bg-emerald-300"
+              >
+                Claim your free spot
+              </Link>
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-7 py-3.5 text-base font-semibold text-white transition hover:bg-white/8"
+              >
+                See pricing
+              </Link>
+            </div>
+            <p className="text-xs text-slate-600">No credit card required · Spots are first-come, first-served</p>
           </div>
         </section>
 

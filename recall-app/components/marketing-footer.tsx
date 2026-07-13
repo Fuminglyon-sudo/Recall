@@ -10,6 +10,7 @@ export function MarketingFooter() {
             <ul className="space-y-2.5">
               {[
                 { label: "Features", href: "/features" },
+                { label: "Pricing", href: "/pricing" },
                 { label: "FAQ", href: "/faq" },
                 { label: "Blog", href: "/blog" },
                 { label: "Guide", href: "/guide" },
