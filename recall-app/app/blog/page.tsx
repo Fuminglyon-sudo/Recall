@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ArrowLeft } from "lucide-react";
-import { SummonLogo } from "@/components/summon-logo";
+import { ArrowRight } from "lucide-react";
+import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { POSTS, formatDate } from "./data";
 
@@ -29,23 +29,7 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white antialiased">
-      {/* Nav */}
-      <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
-          <Link href="/landing">
-            <SummonLogo fontSize="1.9rem" />
-          </Link>
-          <nav className="flex items-center gap-5 text-sm text-slate-400">
-            <Link href="/landing" className="flex items-center gap-1.5 transition hover:text-white">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Home
-            </Link>
-            <Link href="/about" className="transition hover:text-white">About</Link>
-            <Link href="/blog" className="text-white font-medium">Blog</Link>
-            <Link href="/contact" className="transition hover:text-white">Contact</Link>
-          </nav>
-        </div>
-      </header>
+      <MarketingNav />
 
       <main className="mx-auto max-w-3xl px-6 py-16 space-y-2">
         {/* Header */}
@@ -68,12 +52,12 @@ export default function BlogPage() {
               fontSize: "clamp(2rem, 5vw, 3rem)",
               fontWeight: 700,
               lineHeight: 1.1,
-              color: "#f1f5f9",
+              color: "var(--heading)",
             }}
           >
             Learning, memory,
             <br />
-            <span style={{ fontStyle: "italic", fontWeight: 400, color: "#86efac" }}>
+            <span style={{ fontStyle: "italic", fontWeight: 400, color: "var(--heading-em)" }}>
               and how to say the right thing.
             </span>
           </h1>
@@ -105,7 +89,7 @@ export default function BlogPage() {
                     fontSize: "clamp(1.15rem, 2.5vw, 1.5rem)",
                     fontWeight: 700,
                     lineHeight: 1.25,
-                    color: "#f1f5f9",
+                    color: "var(--heading)",
                   }}
                 >
                   {post.title}

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SummonLogo } from "@/components/summon-logo";
+import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { LandingFaq } from "@/components/landing-faq";
 import {
   BrainCircuit,
-  ArrowLeft,
   Repeat2,
   Sparkles,
   Clock,
@@ -47,19 +46,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white antialiased flex flex-col">
-
-      {/* Nav */}
-      <header className="sticky top-0 z-40 border-b border-white/8 bg-slate-950/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-          <Link href="/landing">
-            <SummonLogo fontSize="1.9rem" />
-          </Link>
-          <Link href="/landing" className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Link>
-        </div>
-      </header>
+      <MarketingNav />
 
       <main className="mx-auto max-w-5xl flex-1 px-6">
 

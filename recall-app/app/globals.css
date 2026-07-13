@@ -49,6 +49,17 @@ html:not(.dark) {
   --color-slate-50:  oklch(12.9% 0.02 264.36);
 }
 
+/* ── Semantic content-color tokens ─────────────────────────────────────────
+   Used by marketing page inline styles that can't use Tailwind classes.      */
+:root {
+  --heading:    #f1f5f9;   /* primary heading — near-white on dark */
+  --heading-em: #86efac;   /* italic/accent heading — green-200 */
+}
+html:not(.dark) {
+  --heading:    #0f172a;   /* near-black on light */
+  --heading-em: #047857;   /* emerald-700 — 13:1 on white, WCAG AAA */
+}
+
 /* ── Explicit light-mode class overrides ───────────────────────────────────
    Belt-and-suspenders: override the most common dark-palette Tailwind classes
    directly. These win even if Tailwind v4 inlines OKLCH values rather than
@@ -82,6 +93,12 @@ html:not(.dark) .text-slate-600  { color: #64748b !important; }
 html:not(.dark) .border-slate-800 { border-color: #cbd5e1 !important; }
 html:not(.dark) .border-slate-700 { border-color: #94a3b8 !important; }
 
+/* Emerald/green accent text — light greens are unreadable on white; use dark shades */
+html:not(.dark) .text-emerald-300 { color: #047857 !important; }
+html:not(.dark) .text-emerald-400 { color: #059669 !important; }
+html:not(.dark) .text-green-300   { color: #15803d !important; }
+html:not(.dark) .text-green-400   { color: #16a34a !important; }
+
 /* Soften the white/opacity fill utilities in light mode.
    These are the most common glass-effect patterns in components
    that don't yet use --surface-* tokens.                        */
@@ -97,6 +114,8 @@ html:not(.dark) .border-white\/8   { border-color: rgb(0 0 0 / 7%); }
 html:not(.dark) .border-white\/10  { border-color: rgb(0 0 0 / 9%); }
 html:not(.dark) .border-white\/15  { border-color: rgb(0 0 0 / 12%); }
 html:not(.dark) .border-white\/20  { border-color: rgb(0 0 0 / 15%); }
+/* Dividers that use white/8 */
+html:not(.dark) .divide-white\/8 > * + * { border-color: rgb(0 0 0 / 7%); }
 
 @theme inline {
   --color-background: var(--background);
