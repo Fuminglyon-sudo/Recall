@@ -52,8 +52,11 @@ export const metadata: Metadata = {
   publisher: "Sọrọ Sọkẹ AI",
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    apple: "/apple-icon.png",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/pwa-icon/192", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/pwa-icon/180", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
     siteName: "Sọrọ Sọkẹ AI",

@@ -1,9 +1,9 @@
-const CACHE = "recall-v2";
+const CACHE = "sorosoke-v3";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE).then((c) =>
-      c.addAll(["/manifest.webmanifest", "/favicon.png", "/icon.png"])
+      c.addAll(["/manifest.webmanifest", "/favicon.svg", "/pwa-icon/192", "/pwa-icon/512"])
     ).then(() => self.skipWaiting())
   );
 });
