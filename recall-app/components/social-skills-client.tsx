@@ -270,6 +270,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [convOpen, setConvOpen] = useState(false);
   const [practiceGoal, setPracticeGoal] = useState<SocialPracticeGoal | null>(null);
   const [guidedOpen, setGuidedOpen] = useState(false);
@@ -309,6 +310,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
     setFeedback(null);
     setError(null);
     setSaved(false);
+    setSaveError(false);
   }
 
   function startCustomScenario() {
@@ -333,6 +335,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
     setExchangeCount(0);
     setFeedback(null);
     setError(null);
+    setSaveError(false);
     setPracticeGoal(null);
     setShowCustomForm(false);
     setCustomContext("");
@@ -561,7 +564,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
           messages: finalMessages,
           modelConversation: data.modelConversation ?? undefined,
         }),
-      }).then((res) => { if (res.ok) setSaved(true); })
+      }).then((res) => { if (res.ok) setSaved(true); else setSaveError(true); })
+        .catch(() => setSaveError(true))
         .finally(() => setSaving(false));
     } catch {
       setError("Something went wrong. Check your connection and try again.");
@@ -897,6 +901,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
               View history →
             </Link>
           </div>
+        ) : saveError ? (
+          <p className="text-xs text-red-400">Session completed, but could not be saved. Check your connection.</p>
         ) : null}
 
         <div className="flex flex-wrap gap-3">
@@ -907,6 +913,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
               setDraft("");
               setExchangeCount(0);
               setSaved(false);
+              setSaveError(false);
               setGuidedOpen(false);
               resetGuided();
             }}

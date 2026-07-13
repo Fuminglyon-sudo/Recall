@@ -321,6 +321,7 @@ export function SpeakUpClient({
   const [error, setError] = useState<string | null>(null);
   const [savedSession, setSavedSession] = useState(false);
   const [savingSession, setSavingSession] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [convOpen, setConvOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -341,6 +342,7 @@ export function SpeakUpClient({
     setError(null);
     setRecording(false);
     setSavedSession(false);
+    setSaveError(false);
   }
 
   function retryOpening() {
@@ -493,8 +495,8 @@ export function SpeakUpClient({
               messages: nextMessages,
             }),
           })
-            .then((res) => { if (res.ok) setSavedSession(true); })
-            .catch(() => { /* fail silently */ })
+            .then((res) => { if (res.ok) setSavedSession(true); else setSaveError(true); })
+            .catch(() => setSaveError(true))
             .finally(() => setSavingSession(false));
         }
       }
@@ -846,10 +848,14 @@ export function SpeakUpClient({
         <div className={`flex items-center justify-center gap-2 rounded-[2rem] border px-4 py-3 text-sm font-medium ${
           savedSession
             ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
+            : saveError
+            ? "border-red-400/20 bg-red-400/8 text-red-300"
             : "border-white/10 bg-white/[0.03] text-slate-500"
         }`}>
           {savedSession ? (
             <><BookmarkCheck className="h-4 w-4" /> Session saved to history</>
+          ) : saveError ? (
+            <span>Session completed, but could not be saved. Check your connection.</span>
           ) : (
             <span>{savingSession ? "Saving session…" : "Session not saved"}</span>
           )}
