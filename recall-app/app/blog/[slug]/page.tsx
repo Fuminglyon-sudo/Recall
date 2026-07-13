@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
 import { ReadingProgressBar } from "@/components/reading-progress-bar";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { BlogContentGate } from "@/components/blog-content-gate";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { POSTS, getPost, formatDate } from "../data";
@@ -89,13 +90,16 @@ export default async function BlogPostPage({
           <Link href="/landing">
             <SoroSokeLogo fontSize="1.9rem" />
           </Link>
-          <Link
-            href="/blog"
-            className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-slate-100"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            All articles
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/blog"
+              className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-slate-100"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              All articles
+            </Link>
+            <ThemeToggle className="rounded-xl p-2 text-slate-400 transition hover:bg-white/8 hover:text-slate-100" />
+          </div>
         </div>
       </header>
 
