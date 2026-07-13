@@ -399,16 +399,16 @@ export function SpeakUpClient({
       primer.getTracks().forEach((t) => t.stop());
     } catch (err) {
       const name = (err as { name?: string }).name;
-      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
-        setError("Microphone permission denied. On Mac, go to System Settings → Privacy & Security → Microphone and make sure Chrome is allowed. Then refresh.");
-      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+      if (name === "NotFoundError" || name === "DevicesNotFoundError") {
         setError("No microphone found. Connect one and try again, or just type your answer.");
-      } else if (name === "NotReadableError" || name === "TrackStartError") {
-        setError("Microphone is in use by another app (Zoom, FaceTime, etc.). Close it and try again.");
-      } else {
-        setError("Could not open microphone. Try closing other apps using the mic, then refresh.");
+        return;
       }
-      return;
+      if (name === "NotReadableError" || name === "TrackStartError") {
+        setError("Microphone is in use by another app (Zoom, FaceTime, etc.). Close it and try again.");
+        return;
+      }
+      // NotAllowedError or unknown: don't abort — SpeechRecognition uses a
+      // different permission path and may still succeed.
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const recognition = new SR() as any;
@@ -429,7 +429,10 @@ export function SpeakUpClient({
     };
     recognition.onerror = (e: { error?: string }) => {
       if (e.error === "not-allowed" || e.error === "service-not-allowed") {
-        setError("Speech recognition was blocked. Try opening the site in a regular Chrome tab instead of the installed app, or just type your answer.");
+        setError(
+          "Microphone blocked. In Chrome: click the lock icon in the address bar → Microphone → Allow. " +
+          "In the installed app: use the ⋮ menu → Site settings → Microphone → Allow. Then refresh."
+        );
       } else if (e.error === "network") {
         setError("Speech recognition needs an internet connection to Google's servers. Check your connection or type your answer instead.");
       } else if (e.error === "no-speech") {
