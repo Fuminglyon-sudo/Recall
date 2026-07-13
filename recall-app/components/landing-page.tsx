@@ -485,9 +485,14 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                     className="relative max-w-2xl space-y-7"
                     style={{ animation: "slideContentIn 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both" }}
                   >
-                    <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1rem", letterSpacing: "0.12em", color: "#4ade80", textTransform: "uppercase" }}>
-                      Soro Soke
-                    </p>
+                    <div className="flex justify-center">
+                      <SummonLogo
+                        fontSize="1.35rem"
+                        color="#4ade80"
+                        textShadow="0 0 32px rgba(52,211,153,0.45), 0 0 12px rgba(52,211,153,0.2)"
+                        duration={1.0}
+                      />
+                    </div>
                     <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)", fontWeight: 700, lineHeight: 1.08, color: "#f1f5f9", whiteSpace: "pre-line" }}>
                       {slide.headlineParts.map((part, pi) =>
                         part.text === "\n" ? <br key={pi} /> : (
@@ -709,14 +714,26 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                             <Link
                               key={f.label}
                               href={isLoggedIn ? f.href : "/login"}
-                              className="group rounded-2xl border border-white/10 bg-slate-950/60 p-4 backdrop-blur-sm transition hover:border-emerald-400/35 hover:bg-slate-950/80"
-                              style={{ animation: `textFadeUp 0.5s ease ${(0.36 + fi * 0.1).toFixed(2)}s both` }}
+                              className="group rounded-2xl p-4 backdrop-blur-sm transition"
+                              style={{
+                                background: "rgba(1,13,26,0.65)",
+                                border: "1px solid rgba(255,255,255,0.1)",
+                                animation: `textFadeUp 0.5s ease ${(0.36 + fi * 0.1).toFixed(2)}s both`,
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLElement).style.background = "rgba(1,13,26,0.82)";
+                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(74,222,128,0.35)";
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLElement).style.background = "rgba(1,13,26,0.65)";
+                                (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)";
+                              }}
                             >
                               <p className="flex items-center gap-1.5" style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "0.98rem", color: "#f1f5f9" }}>
                                 {f.label}
                                 <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:opacity-100" />
                               </p>
-                              <p style={{ marginTop: "0.3rem", fontSize: "0.76rem", lineHeight: 1.5, color: "#64748b" }}>
+                              <p style={{ marginTop: "0.3rem", fontSize: "0.76rem", lineHeight: 1.5, color: "#94a3b8" }}>
                                 {f.desc}
                               </p>
                             </Link>

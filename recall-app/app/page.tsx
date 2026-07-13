@@ -21,6 +21,7 @@ import { PushPrompt } from "@/components/push-prompt";
 import { LandingPage } from "@/components/landing-page";
 import { AchievementsDisplay } from "@/components/achievements-display";
 import { RecoverStreakButton } from "@/components/recover-streak-button";
+import { SummonLogo } from "@/components/summon-logo";
 
 // ── SEO metadata (shown to crawlers on the landing route) ───────────────────
 export const metadata: Metadata = {
@@ -304,7 +305,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
     <AppShell>
       <section className="space-y-6">
         <div className="space-y-3">
-          <p className="text-sm font-medium text-emerald-300">Soro Soke</p>
+          <SummonLogo fontSize="1.05rem" color="#4ade80" textShadow="0 0 20px rgba(52,211,153,0.25)" duration={1.2} />
           <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             A calm place to keep words, ideas, and language close.
           </h1>
