@@ -27,7 +27,7 @@ const SLIDES: Slide[] = [
   {
     id: "pain",
     label: "Problem",
-    image: "/scenerios/speak-up-interview-intro.webp",
+    image: "/slide-1.webp",
     eyebrow: null,
     headlineParts: [
       { text: "You're in the room." },
@@ -42,7 +42,7 @@ const SLIDES: Slide[] = [
   {
     id: "escape",
     label: "Freeze",
-    image: "/scenerios/lab-elevator.webp",
+    image: "/slide-2.webp",
     eyebrow: null,
     headlineParts: [
       { text: "So you let" },
@@ -57,7 +57,7 @@ const SLIDES: Slide[] = [
   {
     id: "turn",
     label: "Shift",
-    image: "/scenerios/speak-up-big-decision.webp",
+    image: "/slide-3.webp",
     eyebrow: "What changes everything",
     headlineParts: [
       { text: "What if you'd already" },
@@ -73,7 +73,7 @@ const SLIDES: Slide[] = [
   {
     id: "product",
     label: "Practice",
-    image: "/scenerios/speak-up-raise.webp",
+    image: "/slide-4.webp",
     eyebrow: "Soro Soke",
     headlineParts: [
       { text: "Practice the moment" },
@@ -88,7 +88,7 @@ const SLIDES: Slide[] = [
   {
     id: "features",
     label: "Loop",
-    image: "/scenerios/lab-networking.webp",
+    image: "/slide-5.webp",
     eyebrow: "Three things. Done consistently.",
     headlineParts: [
       { text: "Review." },
@@ -120,7 +120,7 @@ const SLIDES: Slide[] = [
   {
     id: "cta",
     label: "Start",
-    image: null,
+    image: "/slide-6.webp",
     eyebrow: null,
     headlineParts: [
       { text: "Become the version of you" },
@@ -458,9 +458,27 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                   }}
                   className="relative flex flex-col items-center justify-center overflow-hidden px-8 text-center"
                 >
+                  {/* Background photo with Ken Burns */}
+                  {slide.image && (
+                    <div
+                      className={`slide-bg${activeSlide === i ? " active" : ""}`}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundImage: `url('${slide.image}')`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    />
+                  )}
+                  {/* Dark overlays for text legibility */}
+                  <div className="absolute inset-0 pointer-events-none" style={{ background: "rgba(1,13,26,0.68)" }} />
                   <div
                     className="pointer-events-none absolute inset-0"
-                    style={{ background: "radial-gradient(ellipse 65% 55% at 50% 52%, rgba(74,222,128,0.09) 0%, transparent 70%)" }}
+                    style={{ background: "radial-gradient(ellipse 65% 55% at 50% 52%, rgba(74,222,128,0.08) 0%, transparent 70%)" }}
                   />
                   <div
                     key={animKeys[i]}

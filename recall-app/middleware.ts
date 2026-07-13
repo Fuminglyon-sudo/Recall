@@ -41,9 +41,10 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/api/auth") ||
     pathname === "/sw.js" ||
     pathname === "/favicon.ico" ||
-    pathname === "/icon.png" ||
-    pathname === "/apple-icon.png" ||
-    pathname === "/manifest.webmanifest"
+    pathname === "/favicon.svg" ||
+    pathname === "/manifest.webmanifest" ||
+    // All static file types served from /public/ — images, fonts, etc.
+    /\.(png|jpe?g|webp|gif|svg|ico|woff2?|ttf|eot|mp4|mp3|pdf|txt|xml)$/i.test(pathname)
   ) {
     return NextResponse.next();
   }
