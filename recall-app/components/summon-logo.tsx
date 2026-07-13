@@ -25,10 +25,15 @@ const WORD2 = [
 
 const CHARS = [...WORD1, null, ...WORD2]; // null = space between words
 
+// Default: emerald glow aura (wide + inner) + deep drop shadow for drama.
+// Callers on photo backgrounds (landing hero) pass their own shadow to override.
+const DEFAULT_SHADOW =
+  "0 0 40px rgba(52,211,153,0.4), 0 0 16px rgba(52,211,153,0.2), 0 2px 4px rgba(0,0,0,0.95), 0 6px 20px rgba(0,0,0,0.5)";
+
 export function SummonLogo({
   fontSize = "1.9rem",
   color = "#fff",
-  textShadow,
+  textShadow = DEFAULT_SHADOW,
   duration = 1.4,
 }: Props) {
   return (
@@ -82,17 +87,23 @@ export function SummonLogo({
             </span>
           );
         })}
+        {/* "AI" as a clean tech badge — Geist Sans contrasts the italic serif */}
         <span
           aria-hidden="true"
           style={{
+            fontFamily: "var(--font-geist-sans)",
             fontStyle: "normal",
-            fontWeight: 400,
-            fontSize: "0.52em",
-            letterSpacing: "0.12em",
-            color: "#34d399",
-            marginLeft: "0.35em",
-            opacity: 0.85,
+            fontWeight: 300,
+            fontSize: "0.42em",
+            letterSpacing: "0.20em",
+            color: "rgba(148, 163, 184, 0.7)",
+            marginLeft: "0.45em",
             alignSelf: "center",
+            border: "1px solid rgba(52, 211, 153, 0.22)",
+            borderRadius: "3px",
+            padding: "0.08em 0.28em",
+            lineHeight: 1,
+            textShadow: "none",
           }}
         >
           AI
