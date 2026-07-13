@@ -279,8 +279,6 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const threadEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -416,23 +414,9 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
       setRecording(true);
       return;
     }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-      mediaRecorder.onstop = () => {
-        stream.getTracks().forEach((t) => t.stop());
-        setRecording(false);
-      };
-      mediaRecorder.start();
-      mediaRecorderRef.current = mediaRecorder;
-      setRecording(true);
-    } catch {
-      setError("Could not access microphone. Please allow microphone permission and try again.");
-    }
+    setError(
+      "Speech recognition is not available in this browser. Use Chrome or Edge to speak your reply, or just type it below."
+    );
   }
 
   function stopRecording() {
@@ -440,10 +424,6 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
       recognitionRef.current.onresult = null;
       recognitionRef.current.stop();
       recognitionRef.current = null;
-    }
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current = null;
     }
     setRecording(false);
   }

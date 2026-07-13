@@ -352,37 +352,6 @@ export function SpeakUpClient({
     setSavedSession(false);
   }
 
-  async function saveSession() {
-    if (!active || !persona || !result || savingSession || savedSession) return;
-    setSavingSession(true);
-    try {
-      const res = await fetch("/api/speak-sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          scenarioId: active.id,
-          scenarioTag: active.tag,
-          personaId: persona.id,
-          personaLabel: persona.label,
-          difficulty,
-          practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label : null,
-          exchangeCount,
-          score: result.score,
-          strongPoints: result.strongPoints,
-          improvements: result.improvements,
-          modelAnswer: result.modelAnswer,
-          modelConversation: result.modelConversation ?? null,
-          messages,
-        }),
-      });
-      if (res.ok) setSavedSession(true);
-    } catch {
-      // fail silently
-    } finally {
-      setSavingSession(false);
-    }
-  }
-
   // ── Voice recording ────────────────────────────────────────────────────────
   async function startRecording() {
     setError(null);

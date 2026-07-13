@@ -30,6 +30,7 @@ export function DraftCardForm({
   const [synonyms, setSynonyms] = useState("");
   const [sourceContext, setSourceContext] = useState("");
   const [loading, setLoading] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
 
   const selectedDeck = useMemo(() => decks.find((deck) => deck.id === deckId), [deckId, decks]);
   const kind = selectedDeck?.name === "People I care about" ? "MEMORY" : selectedDeck?.name === "Founder Vocabulary" ? "FOUNDER" : "VOCABULARY";
@@ -37,18 +38,26 @@ export function DraftCardForm({
   async function generateDraft() {
     if (!front.trim() || !deckId) return;
     setLoading(true);
+    setDraftError(null);
     try {
       const response = await fetch("/api/ai-draft", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ front, deckId }),
       });
+      if (!response.ok) {
+        const body = (await response.json().catch(() => ({}))) as { error?: string };
+        setDraftError(body.error ?? "Draft failed. Try again.");
+        return;
+      }
       const draft = await response.json();
       setBack(draft.definition ?? "");
       setPartOfSpeech(draft.partOfSpeech ?? "");
       setExample(draft.example ?? "");
       setHook(draft.hook ?? "");
       setSynonyms(Array.isArray(draft.synonyms) ? draft.synonyms.join(", ") : "");
+    } catch {
+      setDraftError("Something went wrong. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -73,6 +82,9 @@ export function DraftCardForm({
         </button>
         <p className="self-center text-sm text-slate-400">Claude drafts the definition, example, hook, and simple synonyms for you to edit.</p>
       </div>
+      {draftError && (
+        <p className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-2 text-sm text-red-300">{draftError}</p>
+      )}
       <Field label="Definition / back">
         <textarea name="back" value={back} onChange={(event) => setBack(event.target.value)} rows={4} className="input-base min-h-28" required />
       </Field>

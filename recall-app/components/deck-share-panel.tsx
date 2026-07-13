@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Copy, Check, Link2Off } from "lucide-react";
 import { generateShareLink, revokeShareLink } from "@/app/decks/actions";
 import { SubmitButton } from "@/components/forms";
@@ -12,12 +12,8 @@ export function DeckSharePanel({
   deckId: string;
   shareToken: string | null;
 }) {
-  const [origin, setOrigin] = useState("");
+  const [origin] = useState(() => typeof window !== "undefined" ? window.location.origin : "");
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
 
   const shareUrl = shareToken ? `${origin}/decks/shared/${shareToken}` : null;
 

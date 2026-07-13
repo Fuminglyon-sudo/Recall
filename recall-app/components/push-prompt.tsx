@@ -1,22 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Bell, BellOff, X } from "lucide-react";
 
 export function PushPrompt({ vapidPublicKey }: { vapidPublicKey: string }) {
-  const [status, setStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">("idle");
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
-      setStatus("unsupported");
-      return;
-    }
-    if (Notification.permission === "granted") setStatus("subscribed");
-    else if (Notification.permission === "denied") setStatus("denied");
-    // Check sessionStorage so we don't re-prompt after the user dismisses this session
-    if (sessionStorage.getItem("push-prompt-dismissed")) setDismissed(true);
-  }, []);
+  const [status, setStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">(() => {
+    if (typeof window === "undefined") return "idle";
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) return "unsupported";
+    if (Notification.permission === "granted") return "subscribed";
+    if (Notification.permission === "denied") return "denied";
+    return "idle";
+  });
+  const [dismissed, setDismissed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!sessionStorage.getItem("push-prompt-dismissed");
+  });
 
   async function subscribe() {
     if (!("serviceWorker" in navigator)) return;

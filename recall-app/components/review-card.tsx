@@ -38,10 +38,9 @@ export function ReviewCard({
   const [association, setAssociation] = useState("");
   const [pendingGrade, setPendingGrade] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [offline, setOffline] = useState(false);
+  const [offline, setOffline] = useState(() => typeof navigator !== "undefined" ? !navigator.onLine : false);
 
   useEffect(() => {
-    setOffline(!navigator.onLine);
     const on = () => setOffline(false);
     const off = () => setOffline(true);
     window.addEventListener("online", on);

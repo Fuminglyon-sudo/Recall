@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
-import { LandingFaq } from "@/components/landing-faq";
 import {
   BrainCircuit,
   Repeat2,

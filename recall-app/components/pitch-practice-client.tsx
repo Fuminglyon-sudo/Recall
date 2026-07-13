@@ -176,8 +176,6 @@ export function PitchPracticeClient() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const threadEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -241,41 +239,35 @@ export function PitchPracticeClient() {
         }
         setDraft(final + interim);
       };
-      recognition.onerror = () =>
-        setError("Microphone access denied or speech recognition unavailable.");
+      recognition.onerror = (e: { error?: string }) => {
+        if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+          setError(
+            "Microphone blocked. In Chrome: click the tune icon (sliders) in the address bar → Microphone → Allow. " +
+            "In the installed app: use the ⋮ menu → Site settings → Microphone → Allow. Then refresh."
+          );
+        } else if (e.error === "network") {
+          setError("Speech recognition needs an internet connection to Google's servers. Check your connection or type your answer instead.");
+        } else if (e.error === "no-speech") {
+          setError("No speech detected. Try speaking louder or closer to the microphone.");
+        } else {
+          setError("Speech recognition failed. Try again or type your answer.");
+        }
+      };
       recognition.onend = () => setRecording(false);
       recognition.start();
       recognitionRef.current = recognition;
       setRecording(true);
       return;
     }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      audioChunksRef.current = [];
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunksRef.current.push(e.data);
-      };
-      mediaRecorder.onstop = () => {
-        stream.getTracks().forEach((t) => t.stop());
-        setRecording(false);
-      };
-      mediaRecorder.start();
-      mediaRecorderRef.current = mediaRecorder;
-      setRecording(true);
-    } catch {
-      setError("Could not access microphone. Please allow microphone permission and try again.");
-    }
+    setError(
+      "Speech recognition is not available in this browser. Use Chrome or Edge to speak your answer, or just type it below."
+    );
   }
 
   function stopRecording() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
-    }
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current = null;
     }
     setRecording(false);
   }

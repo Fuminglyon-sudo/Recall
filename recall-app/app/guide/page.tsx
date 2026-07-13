@@ -421,7 +421,7 @@ export default async function GuidePage() {
         <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-6 py-5">
           <p className="text-sm leading-7 text-slate-400">
             The single most important habit is opening Today every day. Everything else — the
-            practice features, Soro Soke's tools, the recall exercises — adds speed and depth. But
+            practice features, Soro Soke&apos;s tools, the recall exercises — adds speed and depth. But
             consistent daily review is the foundation. Without it, nothing compounds.
           </p>
         </div>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { conductSpeakUpConversation } from "@/lib/anthropic";
+import { getCurrentUserId } from "@/lib/session";
 
 const schema = z.object({
   scenario: z.string().min(10),
@@ -18,6 +19,9 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   try {
     const body = (await req.json()) as unknown;
     const parsed = schema.safeParse(body);

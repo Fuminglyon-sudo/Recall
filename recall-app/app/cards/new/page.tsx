@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { SubmitButton } from "@/components/forms";
@@ -49,12 +50,12 @@ export default async function NewCardPage({ searchParams }: { searchParams: Prom
                 <p className="text-sm leading-6 text-slate-400">
                   Cards live inside decks. Go to your decks page to create one, or add a starter pack in seconds.
                 </p>
-                <a
+                <Link
                   href="/decks"
                   className="inline-flex items-center rounded-2xl bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
                 >
                   Go to decks →
-                </a>
+                </Link>
               </div>
             )}
           </div>

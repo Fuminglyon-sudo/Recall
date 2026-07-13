@@ -2,17 +2,22 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { phraseInVoice } from "@/lib/anthropic";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 const schema = z.object({
   text: z.string().min(1),
 });
 
 export async function POST(request: Request) {
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   try {
     const body = await request.json();
     const { text } = schema.parse(body);
 
-    const profile = await prisma.voiceProfile.findFirst();
+    const uid = scopedUserId(userId);
+    const profile = await prisma.voiceProfile.findFirst({ where: { userId: uid } });
     const tone = profile?.tone?.trim() ?? "";
 
     const result = await phraseInVoice(text, tone);

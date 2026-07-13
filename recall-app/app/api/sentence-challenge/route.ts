@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateSentenceScenario, gradeSentenceUsage } from "@/lib/anthropic";
+import { getCurrentUserId } from "@/lib/session";
 
 const schema = z.discriminatedUnion("action", [
   z.object({
@@ -18,6 +19,9 @@ const schema = z.discriminatedUnion("action", [
 ]);
 
 export async function POST(req: NextRequest) {
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   try {
     const body = (await req.json()) as unknown;
     const parsed = schema.safeParse(body);
