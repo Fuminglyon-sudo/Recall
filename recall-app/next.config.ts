@@ -9,7 +9,7 @@ const ContentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",                // Tailwind inline styles
   "img-src 'self' data: https://lh3.googleusercontent.com https://lh4.googleusercontent.com",
   "font-src 'self'",
-  "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com",
+  "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.google.com",
   "frame-src https://accounts.google.com",
   "frame-ancestors 'none'",   // prevents clickjacking (stronger than X-Frame-Options)
   "form-action 'self'",       // blocks form submissions to foreign origins
@@ -24,7 +24,7 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+    value: "camera=(), microphone=(self), geolocation=(), interest-cohort=()",
   },
   {
     key: "Strict-Transport-Security",

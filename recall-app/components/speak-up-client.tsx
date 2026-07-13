@@ -430,7 +430,7 @@ export function SpeakUpClient({
     recognition.onerror = (e: { error?: string }) => {
       if (e.error === "not-allowed" || e.error === "service-not-allowed") {
         setError(
-          "Microphone blocked. In Chrome: click the lock icon in the address bar → Microphone → Allow. " +
+          "Microphone blocked. In Chrome: click the tune icon (sliders) in the address bar → Microphone → Allow. " +
           "In the installed app: use the ⋮ menu → Site settings → Microphone → Allow. Then refresh."
         );
       } else if (e.error === "network") {
