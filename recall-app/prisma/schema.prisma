@@ -20,6 +20,9 @@ model User {
   image         String?
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
+  // Subscription plan: "free" | "founder" | "pro"
+  plan          String    @default("free")
+  planStartedAt DateTime?
 
   accounts          Account[]
   sessions          Session[]
@@ -33,6 +36,7 @@ model User {
   countryProgress   UserCountryProgress[]
 
   @@index([email])
+  @@index([plan])
 }
 
 model Account {
@@ -272,4 +276,14 @@ model UserCountryProgress {
 
   @@unique([userId, countryId])
   @@index([userId, dueAt])
+}
+
+// ─── Site Configuration ────────────────────────────────────────────────────
+// Key-value store for admin-editable site settings.
+// Known keys: "founder_spots_total", "announcement"
+
+model SiteConfig {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }
