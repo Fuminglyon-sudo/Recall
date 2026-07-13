@@ -397,8 +397,17 @@ export function SpeakUpClient({
     try {
       const primer = await navigator.mediaDevices.getUserMedia({ audio: true });
       primer.getTracks().forEach((t) => t.stop());
-    } catch {
-      setError("Could not access your microphone. Check that it is connected and allowed for this site, then try again.");
+    } catch (err) {
+      const name = (err as { name?: string }).name;
+      if (name === "NotAllowedError" || name === "PermissionDeniedError") {
+        setError("Microphone permission denied. On Mac, go to System Settings → Privacy & Security → Microphone and make sure Chrome is allowed. Then refresh.");
+      } else if (name === "NotFoundError" || name === "DevicesNotFoundError") {
+        setError("No microphone found. Connect one and try again, or just type your answer.");
+      } else if (name === "NotReadableError" || name === "TrackStartError") {
+        setError("Microphone is in use by another app (Zoom, FaceTime, etc.). Close it and try again.");
+      } else {
+        setError("Could not open microphone. Try closing other apps using the mic, then refresh.");
+      }
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
