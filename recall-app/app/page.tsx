@@ -25,15 +25,9 @@ import { SoroSokeLogo } from "@/components/soro-soke-logo";
 
 // ── SEO metadata (shown to crawlers on the landing route) ───────────────────
 export const metadata: Metadata = {
-  title: "Soro Soke — Spaced repetition for words, ideas, and language",
-  description:
-    "Soro Soke is a calm flashcard app powered by spaced repetition (SM-2) and Claude AI. Build vocabulary, capture ideas, and review what matters — one card at a time.",
-  openGraph: {
-    title: "Soro Soke — Spaced repetition for words, ideas, and language",
-    description:
-      "A calm place to keep words, ideas, and language close. Soro Soke uses SM-2 spaced repetition and Claude AI to help you remember what matters.",
-    type: "website",
-  },
+  title: "Dashboard — Sọrọ Sọkẹ AI",
+  description: "Your Sọrọ Sọkẹ AI dashboard: review due cards, track your streak, and manage your decks.",
+  robots: { index: false, follow: false },
 };
 
 // ── Dashboard data ───────────────────────────────────────────────────────────

@@ -23,13 +23,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosoke.ai";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
     template: "%s | Sọrọ Sọkẹ AI",
   },
   description:
-    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free forever — no credit card needed.",
+    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free for the first 100 users.",
   keywords: [
     "spaced repetition",
     "vocabulary builder",
@@ -39,11 +42,15 @@ export const metadata: Metadata = {
     "SM-2 algorithm",
     "social skills",
     "communication skills",
-    "speak up",
+    "speak up practice",
     "conversation lab",
+    "Soro Soke",
+    "language learning app",
   ],
-  authors: [{ name: "Sọrọ Sọkẹ AI" }],
+  authors: [{ name: "Sọrọ Sọkẹ AI", url: SITE_URL }],
   creator: "Sọrọ Sọkẹ AI",
+  publisher: "Sọrọ Sọkẹ AI",
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     apple: "/apple-icon.png",
@@ -51,12 +58,15 @@ export const metadata: Metadata = {
   openGraph: {
     siteName: "Sọrọ Sọkẹ AI",
     type: "website",
+    url: SITE_URL,
+    images: [{ url: "/dashboard.png", width: 1200, height: 630, alt: "Sọrọ Sọkẹ AI dashboard" }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
     description:
-      "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI feedback. Free forever.",
+      "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI. Free for the first 100 users.",
+    images: ["/dashboard.png"],
   },
   appleWebApp: {
     capable: true,
@@ -74,10 +84,26 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "Sọrọ Sọkẹ AI",
+  url: SITE_URL,
+  description:
+    "SM-2 spaced repetition, AI-drafted flashcards, Speak Up high-stakes practice, and Conversation Lab social coaching — all in one app.",
+  applicationCategory: "EducationApplication",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/LimitedAvailability" },
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${displayFont.variable} dark h-full`}>
       <body className="min-h-full bg-slate-950 text-slate-100 antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         {/*
           No-flash theme script: reads saved preference before React hydrates
           so there is no visible flash of the wrong theme on load.

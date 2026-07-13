@@ -7,13 +7,22 @@ import { PricingContent } from "./pricing-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pricing — Soro Soke",
+  title: "Pricing — Sọrọ Sọkẹ AI",
   description:
-    "Soro Soke pricing: free forever for the first 100 founders, then $9.99/month or $99/year for Pro. 14-day free trial, no card required.",
+    "Sọrọ Sọkẹ AI pricing: free for the first 100 founders, then $9.99/month or $99/year for Pro. 14-day free trial, no card required.",
+  keywords: ["Soro Soke pricing", "spaced repetition app price", "vocabulary app subscription", "founder pricing", "free trial"],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Pricing — Soro Soke",
-    description: "Free for the first 100 users. Then $9.99/mo or $99/yr. 14-day free trial.",
+    title: "Pricing — Sọrọ Sọkẹ AI",
+    description: "Free for the first 100 users. Then $9.99/mo or $99/yr. 14-day free trial, no card required.",
     type: "website",
+    url: "/pricing",
+  },
+  twitter: {
+    card: "summary",
+    title: "Pricing — Sọrọ Sọkẹ AI",
+    description: "Free for the first 100 founders. Then $9.99/mo or $99/yr.",
   },
 };
 

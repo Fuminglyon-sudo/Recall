@@ -16,30 +16,34 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Soro Soke — Learn Words. Practice Using Them. Keep Both.",
+  title: "About Sọrọ Sọkẹ AI — Learn Words. Practice Using Them. Keep Both.",
   description:
-    "Soro Soke is a free communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, and Conversation Lab sharpens social fluency. Learn the word. Practice using it. Own it.",
+    "Sọrọ Sọkẹ AI is a communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, and Conversation Lab sharpens social fluency. Learn the word. Practice using it. Own it.",
   keywords: [
     "how Soro Soke works",
     "spaced repetition algorithm",
     "SM-2",
     "Speak Up practice",
     "Conversation Lab",
-    "vocabulary app comparison",
+    "vocabulary app",
     "AI flashcards",
-    "free spaced repetition",
+    "spaced repetition app",
+    "communication confidence",
   ],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/about" },
   openGraph: {
-    title: "About Soro Soke — Spaced Repetition, Speak Up & Conversation Lab",
+    title: "About Sọrọ Sọkẹ AI — Spaced Repetition, Speak Up & Conversation Lab",
     description:
-      "How Soro Soke works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice. Free for the first 100 users.",
+      "How Sọrọ Sọkẹ AI works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice.",
     type: "website",
+    url: "/about",
   },
   twitter: {
-    card: "summary",
-    title: "About Soro Soke",
+    card: "summary_large_image",
+    title: "About Sọrọ Sọkẹ AI",
     description:
-      "How Soro Soke works: SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice.",
+      "SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice — all in one app.",
   },
 };
 

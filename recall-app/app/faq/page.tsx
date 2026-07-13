@@ -5,21 +5,30 @@ import { LandingFaq } from "@/components/landing-faq";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "FAQ — Soro Soke",
+  title: "FAQ — Sọrọ Sọkẹ AI",
   description:
-    "Answers to common questions about Soro Soke: how spaced repetition works, what's included, offline use, privacy, grading, streaks, and what's coming next.",
+    "Answers to common questions about Sọrọ Sọkẹ AI: how spaced repetition works, what's included, pricing, privacy, grading, streaks, and what's coming next.",
   keywords: [
     "spaced repetition FAQ",
     "how does SM-2 work",
-    "Soro Soke questions",
-    "flashcard app FAQ",
+    "Soro Soke FAQ",
+    "flashcard app questions",
     "vocabulary app help",
     "Speak Up practice questions",
+    "Conversation Lab FAQ",
   ],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/faq" },
   openGraph: {
-    title: "FAQ — Soro Soke",
-    description: "Everything you want to know about how Soro Soke works — spaced repetition, card drafting, Speak Up, Conversation Lab, and more.",
+    title: "FAQ — Sọrọ Sọkẹ AI",
+    description: "Everything you want to know about how Sọrọ Sọkẹ AI works — spaced repetition, card drafting, Speak Up, Conversation Lab, and more.",
     type: "website",
+    url: "/faq",
+  },
+  twitter: {
+    card: "summary",
+    title: "FAQ — Sọrọ Sọkẹ AI",
+    description: "Common questions about spaced repetition, Speak Up, Conversation Lab, and pricing.",
   },
 };
 

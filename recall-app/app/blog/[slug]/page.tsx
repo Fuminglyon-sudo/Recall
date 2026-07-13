@@ -7,6 +7,7 @@ import { ReadingProgressBar } from "@/components/reading-progress-bar";
 import { BlogContentGate } from "@/components/blog-content-gate";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { POSTS, getPost, formatDate } from "../data";
+import { POST_IMAGES } from "../images";
 
 export function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
@@ -20,20 +21,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) return {};
+  const image = POST_IMAGES[slug];
   return {
     title: post.title,
     description: post.description,
     keywords: [post.category, "spaced repetition", "vocabulary", "conversation skills", "Soro Soke"],
+    robots: { index: true, follow: true },
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
       publishedTime: post.date,
+      url: `/blog/${slug}`,
+      ...(image ? { images: [{ url: image, width: 1200, height: 630, alt: post.title }] } : {}),
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: post.title,
       description: post.description,
+      ...(image ? { images: [image] } : {}),
     },
   };
 }
@@ -50,9 +57,29 @@ export default async function BlogPostPage({
   const postIndex = POSTS.findIndex((p) => p.slug === slug);
   const prev = POSTS[postIndex - 1] ?? null;
   const next = POSTS[postIndex + 1] ?? null;
+  const image = POST_IMAGES[slug];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    author: { "@type": "Organization", name: "Sọrọ Sọkẹ AI" },
+    publisher: {
+      "@type": "Organization",
+      name: "Sọrọ Sọkẹ AI",
+      logo: { "@type": "ImageObject", url: "/favicon.svg" },
+    },
+    ...(image ? { image } : {}),
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 text-white antialiased">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ReadingProgressBar />
 
       {/* Nav */}

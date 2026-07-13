@@ -4,30 +4,37 @@ import { auth } from "@/lib/next-auth";
 import { LandingPage } from "@/components/landing-page";
 
 export const metadata: Metadata = {
-  title: "Soro Soke — Practice Vocabulary, Speaking & Conversation Skills",
+  title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking & Conversation Skills",
   description:
-    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speeches and social conversations with AI coaching. Soro Soke is free to use — no credit card needed.",
+    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speaking and social conversations with AI coaching. Free for the first 100 users — no credit card needed.",
   keywords: [
     "spaced repetition app",
     "vocabulary builder",
-    "conversation practice",
+    "conversation practice app",
     "speaking confidence",
     "flashcard app",
-    "SM-2",
+    "SM-2 algorithm",
     "social skills training",
     "speak up practice",
+    "Soro Soke",
+    "AI language learning",
   ],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Soro Soke — Practice Vocabulary, Speaking & Conversation Skills",
+    title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking & Conversation Skills",
     description:
-      "Build vocabulary with spaced repetition. Practice high-stakes speaking and social conversations with AI feedback. Free forever.",
+      "Build vocabulary with spaced repetition. Practice high-stakes speaking and social conversations with AI feedback. Free for the first 100 users.",
     type: "website",
+    url: "/",
+    images: [{ url: "/dashboard.png", width: 1200, height: 630, alt: "Sọrọ Sọkẹ AI" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Soro Soke — Practice Vocabulary, Speaking & Conversation Skills",
+    title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking & Conversation Skills",
     description:
       "Build vocabulary with spaced repetition. Practice high-stakes speaking and conversations with AI feedback.",
+    images: ["/dashboard.png"],
   },
 };
 

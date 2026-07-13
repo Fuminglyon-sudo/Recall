@@ -6,9 +6,9 @@ import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Features — Soro Soke",
+  title: "Features — Sọrọ Sọkẹ AI",
   description:
-    "Soro Soke features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, and Conversation Lab social coaching. Free to use.",
+    "Sọrọ Sọkẹ AI features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, and Conversation Lab social coaching.",
   keywords: [
     "spaced repetition features",
     "AI flashcard app",
@@ -18,11 +18,20 @@ export const metadata: Metadata = {
     "Speak Up practice",
     "Conversation Lab",
     "flashcard comparison Anki Duolingo",
+    "Soro Soke features",
   ],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/features" },
   openGraph: {
-    title: "Features — Soro Soke",
-    description: "How Soro Soke's spaced repetition, smart drafting, and speaking practice features work — and how they compare to Anki, Duolingo, and paper cards.",
+    title: "Features — Sọrọ Sọkẹ AI",
+    description: "How Sọrọ Sọkẹ AI's spaced repetition, smart drafting, and speaking practice features work — and how they compare to Anki, Duolingo, and paper cards.",
     type: "website",
+    url: "/features",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Features — Sọrọ Sọkẹ AI",
+    description: "SM-2 spaced repetition, AI-drafted flashcards, free recall, Speak Up, and Conversation Lab.",
   },
 };
 
