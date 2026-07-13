@@ -52,12 +52,22 @@ html:not(.dark) {
 /* ── Semantic content-color tokens ─────────────────────────────────────────
    Used by marketing page inline styles that can't use Tailwind classes.      */
 :root {
-  --heading:    #f1f5f9;   /* primary heading — near-white on dark */
-  --heading-em: #86efac;   /* italic/accent heading — green-200 */
+  --heading:         #f1f5f9;              /* primary heading — near-white on dark */
+  --heading-em:      #86efac;              /* italic/accent heading — green-200 */
+  --body-muted:      #94a3b8;              /* body / paragraph text — slate-400 on dark */
+  --body-subtle:     #64748b;              /* secondary meta text — slate-500 on dark */
+  --gate-bg:         rgba(15, 23, 42, 0.92); /* content-gate card backdrop — dark */
+  --gate-border:     rgba(255,255,255,0.12); /* content-gate card border — dark */
+  --progress-track:  rgba(255,255,255,0.06); /* reading-progress bar track */
 }
 html:not(.dark) {
-  --heading:    #0f172a;   /* near-black on light */
-  --heading-em: #047857;   /* emerald-700 — 13:1 on white, WCAG AAA */
+  --heading:         #0f172a;              /* near-black on light */
+  --heading-em:      #047857;              /* emerald-700 — 13:1 on white, WCAG AAA */
+  --body-muted:      #334155;              /* slate-700 equivalent — readable on white */
+  --body-subtle:     #64748b;              /* slate-500 — readable on white */
+  --gate-bg:         rgba(248, 250, 252, 0.97); /* content-gate card — near-white */
+  --gate-border:     rgba(0,0,0,0.1);      /* content-gate card border — dark */
+  --progress-track:  rgba(0,0,0,0.06);     /* reading-progress bar track */
 }
 
 /* ── Explicit light-mode class overrides ───────────────────────────────────
@@ -102,7 +112,9 @@ html:not(.dark) .text-green-400   { color: #16a34a !important; }
 /* Soften the white/opacity fill utilities in light mode.
    These are the most common glass-effect patterns in components
    that don't yet use --surface-* tokens.                        */
+html:not(.dark) .bg-white\/3   { background-color: rgb(0 0 0 / 2%); }
 html:not(.dark) .bg-white\/5   { background-color: rgb(0 0 0 / 4%); }
+html:not(.dark) .bg-white\/6   { background-color: rgb(0 0 0 / 5%); }
 html:not(.dark) .bg-white\/8   { background-color: rgb(0 0 0 / 7%); }
 html:not(.dark) .bg-white\/10  { background-color: rgb(0 0 0 / 8%); }
 html:not(.dark) .bg-white\/\[0\.02\]  { background-color: rgb(0 0 0 / 2%); }
@@ -110,12 +122,24 @@ html:not(.dark) .bg-white\/\[0\.03\]  { background-color: rgb(0 0 0 / 3%); }
 html:not(.dark) .bg-white\/\[0\.04\]  { background-color: rgb(0 0 0 / 4%); }
 html:not(.dark) .bg-white\/\[0\.05\]  { background-color: rgb(0 0 0 / 5%); }
 html:not(.dark) .bg-white\/\[0\.06\]  { background-color: rgb(0 0 0 / 6%); }
+html:not(.dark) .border-white\/5   { border-color: rgb(0 0 0 / 4%); }
 html:not(.dark) .border-white\/8   { border-color: rgb(0 0 0 / 7%); }
 html:not(.dark) .border-white\/10  { border-color: rgb(0 0 0 / 9%); }
 html:not(.dark) .border-white\/15  { border-color: rgb(0 0 0 / 12%); }
 html:not(.dark) .border-white\/20  { border-color: rgb(0 0 0 / 15%); }
 /* Dividers that use white/8 */
 html:not(.dark) .divide-white\/8 > * + * { border-color: rgb(0 0 0 / 7%); }
+
+/* hover / group-hover states that would show white text on light bg */
+html:not(.dark) .hover\:text-white:hover { color: #0f172a !important; }
+html:not(.dark) .group:hover .group-hover\:text-white { color: #0f172a !important; }
+html:not(.dark) .hover\:bg-white\/6:hover { background-color: rgb(0 0 0 / 5%); }
+html:not(.dark) .hover\:bg-white\/8:hover { background-color: rgb(0 0 0 / 7%); }
+
+/* Emerald bg tints — light greens on white need a darker base to stay visible */
+html:not(.dark) .bg-emerald-400\/5  { background-color: rgba(4,120,87,0.07); }
+html:not(.dark) .bg-emerald-400\/10 { background-color: rgba(4,120,87,0.10); }
+html:not(.dark) .border-emerald-400\/20 { border-color: rgba(4,120,87,0.35); }
 
 @theme inline {
   --color-background: var(--background);

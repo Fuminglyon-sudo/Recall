@@ -25,7 +25,7 @@ export function ReadingProgressBar() {
         right: 0,
         zIndex: 200,
         height: "3px",
-        background: "rgba(255,255,255,0.04)",
+        background: "var(--progress-track)",
         pointerEvents: "none",
       }}
     >

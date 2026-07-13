@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
 import { ReadingProgressBar } from "@/components/reading-progress-bar";
@@ -90,7 +91,7 @@ export default async function BlogPostPage({
           </Link>
           <Link
             href="/blog"
-            className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"
+            className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-slate-100"
           >
             <ArrowLeft className="h-4 w-4" />
             All articles
@@ -115,12 +116,26 @@ export default async function BlogPostPage({
             fontSize: "clamp(1.9rem, 5vw, 2.9rem)",
             fontWeight: 700,
             lineHeight: 1.1,
-            color: "#f1f5f9",
+            color: "var(--heading)",
             marginBottom: "2rem",
           }}
         >
           {post.title}
         </h1>
+
+        {/* Hero image */}
+        {image && (
+          <div className="mb-8 overflow-hidden rounded-2xl border border-white/10">
+            <Image
+              src={image}
+              alt={post.title}
+              width={800}
+              height={450}
+              className="w-full h-auto object-cover"
+              priority
+            />
+          </div>
+        )}
 
         {/* Divider */}
         <div className="mb-8 h-px bg-white/8" />
@@ -139,7 +154,7 @@ export default async function BlogPostPage({
               fontStyle: "italic",
               fontSize: "1.5rem",
               fontWeight: 700,
-              color: "#f1f5f9",
+              color: "var(--heading)",
               lineHeight: 1.2,
             }}
           >
@@ -162,11 +177,11 @@ export default async function BlogPostPage({
             {prev ? (
               <Link
                 href={`/blog/${prev.slug}`}
-                className="group rounded-xl border border-white/10 bg-white/3 p-4 transition hover:border-white/20 hover:bg-white/6"
+                className="group rounded-xl border border-white/10 bg-white/3 p-4 transition hover:border-white/20 hover:bg-white/8"
               >
                 <p className="mb-1 text-xs text-slate-500">← Previous</p>
                 <p
-                  className="text-sm font-medium text-slate-300 transition group-hover:text-white"
+                  className="text-sm font-medium text-slate-300 transition group-hover:text-slate-100"
                   style={{ lineHeight: 1.4 }}
                 >
                   {prev.title}
@@ -182,7 +197,7 @@ export default async function BlogPostPage({
               >
                 <p className="mb-1 text-xs text-slate-500">Next →</p>
                 <p
-                  className="text-sm font-medium text-slate-300 transition group-hover:text-white"
+                  className="text-sm font-medium text-slate-300 transition group-hover:text-slate-100"
                   style={{ lineHeight: 1.4 }}
                 >
                   {next.title}

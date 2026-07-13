@@ -15,7 +15,7 @@ function renderBlock(block: Block, index: number) {
           fontSize: "clamp(1.3rem, 2.5vw, 1.7rem)",
           fontWeight: 700,
           lineHeight: 1.2,
-          color: "#f1f5f9",
+          color: "var(--heading)",
           marginTop: "2.5rem",
           marginBottom: "0.75rem",
         }}
@@ -37,7 +37,7 @@ function renderBlock(block: Block, index: number) {
         }}
       >
         {block.items.map((item, i) => (
-          <li key={i} style={{ fontSize: "1.05rem", lineHeight: 1.75, color: "#94a3b8" }}>
+          <li key={i} style={{ fontSize: "1.05rem", lineHeight: 1.75, color: "var(--body-muted)" }}>
             {item}
           </li>
         ))}
@@ -47,7 +47,7 @@ function renderBlock(block: Block, index: number) {
   return (
     <p
       key={index}
-      style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "#94a3b8", margin: "1rem 0" }}
+      style={{ fontSize: "1.05rem", lineHeight: 1.8, color: "var(--body-muted)", margin: "1rem 0" }}
     >
       {block.text}
     </p>
@@ -85,8 +85,8 @@ export function BlogContentGate({ blocks }: { blocks: Block[] }) {
               position: "relative",
               marginTop: "1.5rem",
               borderRadius: "1.25rem",
-              border: "1px solid rgba(255,255,255,0.1)",
-              background: "rgba(15, 23, 42, 0.92)",
+              border: "1px solid var(--gate-border)",
+              background: "var(--gate-bg)",
               backdropFilter: "blur(16px)",
               WebkitBackdropFilter: "blur(16px)",
               padding: "2.5rem 2rem",
@@ -116,7 +116,7 @@ export function BlogContentGate({ blocks }: { blocks: Block[] }) {
                 fontStyle: "italic",
                 fontSize: "clamp(1.15rem, 2.5vw, 1.45rem)",
                 fontWeight: 700,
-                color: "#f1f5f9",
+                color: "var(--heading)",
                 lineHeight: 1.25,
                 position: "relative",
               }}
@@ -127,7 +127,7 @@ export function BlogContentGate({ blocks }: { blocks: Block[] }) {
             <p
               style={{
                 fontSize: "0.9rem",
-                color: "#94a3b8",
+                color: "var(--body-muted)",
                 lineHeight: 1.65,
                 maxWidth: "28rem",
                 position: "relative",
@@ -157,11 +157,11 @@ export function BlogContentGate({ blocks }: { blocks: Block[] }) {
               Sign up free <ArrowRight style={{ width: "1rem", height: "1rem" }} />
             </Link>
 
-            <p style={{ fontSize: "0.75rem", color: "#475569", position: "relative" }}>
+            <p style={{ fontSize: "0.75rem", color: "var(--body-subtle)", position: "relative" }}>
               Already have an account?{" "}
               <Link
                 href="/login"
-                style={{ color: "#86efac", textDecoration: "underline", textUnderlineOffset: "3px" }}
+                style={{ color: "var(--heading-em)", textDecoration: "underline", textUnderlineOffset: "3px" }}
               >
                 Sign in
               </Link>

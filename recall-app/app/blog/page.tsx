@@ -55,7 +55,7 @@ export default function BlogPage() {
               fontStyle: "italic",
               fontSize: "0.85rem",
               letterSpacing: "0.12em",
-              color: "#4ade80",
+              color: "var(--heading-em)",
               textTransform: "uppercase",
             }}
           >
@@ -86,7 +86,7 @@ export default function BlogPage() {
         <Link
           href={`/blog/${featured.slug}`}
           className="group mb-12 block overflow-hidden rounded-3xl border border-white/10 transition hover:border-white/20"
-          style={{ background: "rgba(255,255,255,0.03)" }}
+          style={{ background: "var(--surface-1)" }}
         >
           <div className="grid md:grid-cols-2">
             {/* Image */}
@@ -112,7 +112,7 @@ export default function BlogPage() {
                   borderRadius: "9999px",
                   background: "rgba(52,211,153,0.2)",
                   border: "1px solid rgba(52,211,153,0.4)",
-                  color: "#6ee7b7",
+                  color: "var(--heading-em)",
                   backdropFilter: "blur(6px)",
                 }}
               >
@@ -187,7 +187,7 @@ function PostCard({ post }: { post: (typeof POSTS)[number] }) {
     <Link
       href={`/blog/${post.slug}`}
       className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 transition duration-300 hover:border-white/20 hover:-translate-y-0.5"
-      style={{ background: "rgba(255,255,255,0.03)" }}
+      style={{ background: "var(--surface-1)" }}
     >
       {/* Image */}
       <div className="relative aspect-[16/9] overflow-hidden">
@@ -225,7 +225,7 @@ function PostCard({ post }: { post: (typeof POSTS)[number] }) {
         >
           {post.excerpt}
         </p>
-        <div className="flex items-center gap-2 text-xs text-slate-600 mt-auto pt-3 border-t border-white/5">
+        <div className="flex items-center gap-2 text-xs text-slate-500 mt-auto pt-3 border-t border-white/8">
           <span>{formatDate(post.date)}</span>
           <span>·</span>
           <span>{post.readTime}</span>
