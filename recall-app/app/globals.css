@@ -161,10 +161,31 @@ body {
   }
 }
 
-/* Landing page slide content entrance */
+/* Landing page slide content entrance (used on CTA slide) */
 @keyframes slideContentIn {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Per-element text movement animations for image slides */
+@keyframes textFromLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes textFromRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes textFadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Respect reduced-motion: keep opacity reveal, drop translation */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes textFromLeft  { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes textFromRight { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes textFadeUp    { from { opacity: 0; } to { opacity: 1; } }
 }
 
 @utility input-base {

@@ -601,81 +601,131 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                   style={{ background: "linear-gradient(to right, rgba(1,13,26,0.65) 0%, transparent 62%)" }}
                 />
 
-                {/* Slide content — remounts on active to replay entrance animation */}
-                <div
-                  key={animKeys[i]}
-                  className="relative"
-                  style={{
-                    maxWidth: "min(640px, 80vw)",
-                    animation: "slideContentIn 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both",
-                  }}
-                >
-                  {slide.eyebrow ? (
-                    <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "clamp(0.78rem, 1.1vw, 0.95rem)", letterSpacing: "0.08em", color: "#4ade80", marginBottom: "0.9rem", textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}>
-                      {slide.eyebrow}
-                    </p>
-                  ) : null}
+                {/* Slide content — each element enters independently on slide activation.
+                    Headline splits at \n so line 1 sweeps from left, line 2 from right.
+                    Body/caption/extras fade up in sequence after the headline lands. */}
+                {(() => {
+                  // Split headlineParts on "\n" → one array per display line
+                  const headlineLines: Array<typeof slide.headlineParts> = [];
+                  let cur: typeof slide.headlineParts = [];
+                  for (const p of slide.headlineParts) {
+                    if (p.text === "\n") { headlineLines.push(cur); cur = []; }
+                    else { cur.push(p); }
+                  }
+                  if (cur.length) headlineLines.push(cur);
 
-                  <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)", lineHeight: 1.06, color: "#f8fafc", textShadow: "0 2px 24px rgba(0,0,0,0.55)", marginBottom: "1.1rem" }}>
-                    {slide.headlineParts.map((part, pi) =>
-                      part.text === "\n" ? <br key={pi} /> : (
-                        <span key={pi} style={{ fontStyle: part.italic ? "italic" : "normal", fontWeight: part.italic ? 400 : 700, color: part.italic ? "#86efac" : "#f8fafc" }}>
-                          {part.text}
-                        </span>
-                      )
-                    )}
-                  </h2>
+                  const snap = "cubic-bezier(0.22, 0.61, 0.36, 1)";
+                  // If there's an eyebrow, headline starts a beat later
+                  const hlBase = slide.eyebrow ? 0.13 : 0.0;
 
-                  {slide.body ? (
-                    <p style={{ fontSize: "clamp(0.95rem, 1.45vw, 1.12rem)", lineHeight: 1.72, color: "#cbd5e1", maxWidth: "36rem", textShadow: "0 1px 10px rgba(0,0,0,0.65)", marginBottom: slide.caption || slide.loop ? "0.85rem" : 0 }}>
-                      {slide.body}
-                    </p>
-                  ) : null}
+                  return (
+                    <div key={animKeys[i]} className="relative" style={{ maxWidth: "min(640px, 80vw)" }}>
+                      {slide.eyebrow ? (
+                        <p style={{
+                          fontFamily: "var(--font-display)", fontStyle: "italic",
+                          fontSize: "clamp(0.78rem, 1.1vw, 0.95rem)", letterSpacing: "0.08em",
+                          color: "#4ade80", marginBottom: "0.9rem",
+                          textShadow: "0 1px 8px rgba(0,0,0,0.8)",
+                          animation: "textFadeUp 0.5s ease 0s both",
+                        }}>
+                          {slide.eyebrow}
+                        </p>
+                      ) : null}
 
-                  {/* Micro-caption — emotional payoff line */}
-                  {slide.caption ? (
-                    <p style={{ fontSize: "0.8rem", letterSpacing: "0.04em", color: "rgba(134,239,172,0.75)", fontStyle: "italic", textShadow: "0 1px 8px rgba(0,0,0,0.7)", marginBottom: slide.loop ? "1rem" : 0 }}>
-                      {slide.caption}
-                    </p>
-                  ) : null}
-
-                  {/* 3-step loop visual (slide 4 only) */}
-                  {slide.loop ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                      {slide.loop.map((step, si) => (
-                        <span key={step} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                          <span style={{ padding: "0.28em 0.7em", borderRadius: "9999px", border: "1px solid rgba(52,211,153,0.28)", background: "rgba(52,211,153,0.08)", fontSize: "0.75rem", color: "#86efac", letterSpacing: "0.04em" }}>
-                            {step}
+                      <h2 style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "clamp(2.6rem, 6.5vw, 5.2rem)",
+                        lineHeight: 1.06,
+                        color: "#f8fafc",
+                        textShadow: "0 2px 24px rgba(0,0,0,0.55)",
+                        marginBottom: "1.1rem",
+                      }}>
+                        {headlineLines.map((lineParts, li) => (
+                          <span
+                            key={li}
+                            style={{
+                              display: "block",
+                              animation: `${li === 0 ? "textFromLeft" : "textFromRight"} 0.65s ${snap} ${(hlBase + li * 0.16).toFixed(2)}s both`,
+                            }}
+                          >
+                            {lineParts.map((part, pi) => (
+                              <span key={pi} style={{
+                                fontStyle: part.italic ? "italic" : "normal",
+                                fontWeight: part.italic ? 400 : 700,
+                                color: part.italic ? "#86efac" : "#f8fafc",
+                              }}>
+                                {part.text}
+                              </span>
+                            ))}
                           </span>
-                          {si < slide.loop!.length - 1 && (
-                            <span style={{ color: "rgba(52,211,153,0.4)", fontSize: "0.8rem" }}>→</span>
-                          )}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
+                        ))}
+                      </h2>
 
-                  {/* Feature cards (slide 5 only) */}
-                  {slide.features ? (
-                    <div style={{ marginTop: "1.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "0.65rem", maxWidth: "640px" }}>
-                      {slide.features.map((f) => (
-                        <Link
-                          key={f.label}
-                          href={isLoggedIn ? f.href : "/login"}
-                          className="group rounded-2xl border border-white/10 bg-slate-950/60 p-4 backdrop-blur-sm transition hover:border-emerald-400/35 hover:bg-slate-950/80"
-                        >
-                          <p className="flex items-center gap-1.5" style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "0.98rem", color: "#f1f5f9" }}>
-                            {f.label}
-                            <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:opacity-100" />
-                          </p>
-                          <p style={{ marginTop: "0.3rem", fontSize: "0.76rem", lineHeight: 1.5, color: "#64748b" }}>
-                            {f.desc}
-                          </p>
-                        </Link>
-                      ))}
+                      {slide.body ? (
+                        <p style={{
+                          fontSize: "clamp(0.95rem, 1.45vw, 1.12rem)", lineHeight: 1.72,
+                          color: "#cbd5e1", maxWidth: "36rem",
+                          textShadow: "0 1px 10px rgba(0,0,0,0.65)",
+                          marginBottom: slide.caption || slide.loop ? "0.85rem" : 0,
+                          animation: "textFadeUp 0.6s ease 0.42s both",
+                        }}>
+                          {slide.body}
+                        </p>
+                      ) : null}
+
+                      {slide.caption ? (
+                        <p style={{
+                          fontSize: "0.8rem", letterSpacing: "0.04em",
+                          color: "rgba(134,239,172,0.75)", fontStyle: "italic",
+                          textShadow: "0 1px 8px rgba(0,0,0,0.7)",
+                          marginBottom: slide.loop ? "1rem" : 0,
+                          animation: "textFadeUp 0.5s ease 0.56s both",
+                        }}>
+                          {slide.caption}
+                        </p>
+                      ) : null}
+
+                      {slide.loop ? (
+                        <div style={{
+                          display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap",
+                          animation: "textFadeUp 0.5s ease 0.62s both",
+                        }}>
+                          {slide.loop.map((step, si) => (
+                            <span key={step} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <span style={{ padding: "0.28em 0.7em", borderRadius: "9999px", border: "1px solid rgba(52,211,153,0.28)", background: "rgba(52,211,153,0.08)", fontSize: "0.75rem", color: "#86efac", letterSpacing: "0.04em" }}>
+                                {step}
+                              </span>
+                              {si < slide.loop!.length - 1 && (
+                                <span style={{ color: "rgba(52,211,153,0.4)", fontSize: "0.8rem" }}>→</span>
+                              )}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+
+                      {slide.features ? (
+                        <div style={{ marginTop: "1.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "0.65rem", maxWidth: "640px" }}>
+                          {slide.features.map((f, fi) => (
+                            <Link
+                              key={f.label}
+                              href={isLoggedIn ? f.href : "/login"}
+                              className="group rounded-2xl border border-white/10 bg-slate-950/60 p-4 backdrop-blur-sm transition hover:border-emerald-400/35 hover:bg-slate-950/80"
+                              style={{ animation: `textFadeUp 0.5s ease ${(0.36 + fi * 0.1).toFixed(2)}s both` }}
+                            >
+                              <p className="flex items-center gap-1.5" style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: "0.98rem", color: "#f1f5f9" }}>
+                                {f.label}
+                                <ArrowRight className="h-3 w-3 text-emerald-400 opacity-0 transition group-hover:opacity-100" />
+                              </p>
+                              <p style={{ marginTop: "0.3rem", fontSize: "0.76rem", lineHeight: 1.5, color: "#64748b" }}>
+                                {f.desc}
+                              </p>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
                     </div>
-                  ) : null}
-                </div>
+                  );
+                })()}
               </section>
             );
           })}
