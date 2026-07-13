@@ -32,7 +32,7 @@ const DEFAULT_SHADOW =
 
 export function SummonLogo({
   fontSize = "1.9rem",
-  color = "#fff",
+  color = "var(--foreground, #fff)",
   textShadow = DEFAULT_SHADOW,
   duration = 1.4,
 }: Props) {

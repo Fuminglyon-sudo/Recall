@@ -220,7 +220,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
             aria-label="Back to start"
             style={{ background: "none", border: "none", padding: 0, cursor: activeSlide > 0 ? "pointer" : "default" }}
           >
-            <SummonLogo fontSize="1.9rem" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
+            <SummonLogo fontSize="1.9rem" color="#fff" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
           </button>
 
           <div className="flex items-center gap-2">
@@ -557,12 +557,16 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                 }}
               >
                 {/* Background image — CSS approach avoids next/image fill quirks
-                    in horizontal scroll-snap containers. Slow Ken Burns on active. */}
+                    in horizontal scroll-snap containers. Fills 100%; Ken Burns
+                    scale(1.04) is clipped by the parent overflow:hidden. */}
                 <div
                   className={`slide-bg${activeSlide === i ? " active" : ""}`}
                   style={{
                     position: "absolute",
-                    inset: "-4%",  // extra room so scale(1.04) doesn't show edges
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
                     backgroundImage: `url('${slide.image}')`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",

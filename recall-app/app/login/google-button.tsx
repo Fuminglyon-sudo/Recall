@@ -10,7 +10,7 @@ export function GoogleSignInButton({ from }: { from: string }) {
     <form action={signInWithGoogle}>
       <button
         type="submit"
-        className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white px-4 py-3.5 text-sm font-semibold text-slate-900 shadow-lg shadow-white/10 transition hover:bg-slate-100 active:scale-[0.98]"
+        className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold text-slate-900 shadow-lg shadow-black/10 transition hover:bg-slate-50 active:scale-[0.98]"
       >
         {/* Google G logo */}
         <svg width="20" height="20" viewBox="0 0 18 18" fill="none">

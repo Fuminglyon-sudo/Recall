@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { LoginForm } from "./login-form";
 import { GoogleSignInButton } from "./google-button";
 import { SummonLogo } from "@/components/summon-logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
   title: "Sign In",
@@ -19,7 +20,8 @@ export default async function LoginPage({
   const from = params.from ?? "/";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
+    <div className="relative flex min-h-screen items-center justify-center bg-slate-950 px-4">
+      <ThemeToggle className="absolute top-4 right-4 rounded-xl p-2 text-slate-500 transition hover:text-slate-300" />
       <div className="w-full max-w-sm">
         {/* Back link */}
         <div className="mb-6 text-center">

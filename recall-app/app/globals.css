@@ -49,10 +49,38 @@ html:not(.dark) {
   --color-slate-50:  oklch(12.9% 0.02 264.36);
 }
 
-/* text-white → near-black in light mode */
-html:not(.dark) .text-white {
-  color: oklch(21% 0.034 264.36);
-}
+/* ── Explicit light-mode class overrides ───────────────────────────────────
+   Belt-and-suspenders: override the most common dark-palette Tailwind classes
+   directly. These win even if Tailwind v4 inlines OKLCH values rather than
+   generating `color: var(--color-slate-*)` references.                       */
+
+/* Dark backgrounds → light in light mode */
+html:not(.dark) .bg-slate-950  { background-color: #f8fafc !important; }
+html:not(.dark) .bg-slate-900  { background-color: #f1f5f9 !important; }
+html:not(.dark) .bg-slate-800  { background-color: #e2e8f0 !important; }
+html:not(.dark) .bg-slate-700  { background-color: #cbd5e1 !important; }
+
+/* Opacity variants used for headers / frosted panels */
+html:not(.dark) .bg-slate-950\/90 { background-color: rgba(248,250,252,0.92) !important; }
+html:not(.dark) .bg-slate-950\/80 { background-color: rgba(248,250,252,0.82) !important; }
+html:not(.dark) .bg-slate-950\/60 { background-color: rgba(248,250,252,0.62) !important; }
+html:not(.dark) .bg-slate-900\/90 { background-color: rgba(241,245,249,0.92) !important; }
+html:not(.dark) .bg-slate-900\/80 { background-color: rgba(241,245,249,0.82) !important; }
+
+/* Light text → dark in light mode (proper inverted scale)
+   100→near-black, 200→very dark, 300→dark (hover), 400→med-dark,
+   500→medium, 600→medium (still readable on white, not lost to CSS-var inversion) */
+html:not(.dark) .text-white      { color: #0f172a !important; }
+html:not(.dark) .text-slate-100  { color: #0f172a !important; }
+html:not(.dark) .text-slate-200  { color: #1e293b !important; }
+html:not(.dark) .text-slate-300  { color: #334155 !important; }
+html:not(.dark) .text-slate-400  { color: #475569 !important; }
+html:not(.dark) .text-slate-500  { color: #64748b !important; }
+html:not(.dark) .text-slate-600  { color: #64748b !important; }
+
+/* Borders — slate dark → lighter in light mode */
+html:not(.dark) .border-slate-800 { border-color: #cbd5e1 !important; }
+html:not(.dark) .border-slate-700 { border-color: #94a3b8 !important; }
 
 /* Soften the white/opacity fill utilities in light mode.
    These are the most common glass-effect patterns in components
