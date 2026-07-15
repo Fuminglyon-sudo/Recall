@@ -27,6 +27,7 @@ import {
   Settings,
   Briefcase,
   RotateCw,
+  Gavel,
 } from "lucide-react";
 
 const CORE_LINKS = [
@@ -34,6 +35,7 @@ const CORE_LINKS = [
   { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
   { href: "/speak-up", label: "Speak Up", icon: Mic, exact: false },
   { href: "/conversation-lab", label: "Conversation Lab", icon: MessageCircle, exact: false },
+  { href: "/debate-lab", label: "Debate Lab", icon: Gavel, exact: false },
 ];
 
 const TOOLS_LINKS = [

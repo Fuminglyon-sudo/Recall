@@ -667,3 +667,147 @@ function fallbackFounderBatch(input: FounderBatchRequest): FounderBatchCard[] {
     },
   ];
 }
+
+// ─── Debate Lab ────────────────────────────────────────────────────────────
+
+export type DebateMessage = { role: "user" | "opponent"; content: string };
+
+export type DebateRequest = {
+  motion: string;
+  position: "for" | "against";
+  opponentType: string;
+  opponentPrompt: string;
+  messages: DebateMessage[];
+  exchangeCount: number;
+  forceEnd?: boolean;
+};
+
+export type DebateStep =
+  | { type: "response"; message: string }
+  | {
+      type: "feedback";
+      score: number;
+      strongPoints: string[];
+      improvements: string[];
+      keyFallacy: string | null;
+      missedArg: string;
+      modelRebuttal: string;
+    };
+
+function fallbackDebateStep(exchangeCount: number): DebateStep {
+  if (exchangeCount < 5) {
+    return {
+      type: "response",
+      message:
+        "That's an interesting point, but I'm not convinced. Can you back that up with something more concrete?",
+    };
+  }
+  return {
+    type: "feedback",
+    score: 5,
+    strongPoints: ["You engaged with the motion — committing to a position is the first step."],
+    improvements: ["Try to lead each argument with a clear claim before explaining it."],
+    keyFallacy: null,
+    missedArg: "The strongest counterpoint went unaddressed — always name your opponent's best argument before rebutting it.",
+    modelRebuttal: "A sharp rebuttal names the opponent's claim, concedes what's true in it, then pivots to the key flaw: 'You're right that X, but that ignores Y, which means...'",
+  };
+}
+
+export async function conductDebate(input: DebateRequest): Promise<DebateStep> {
+  if (!client) return fallbackDebateStep(input.exchangeCount);
+
+  const opponentPosition = input.position === "for" ? "against" : "for";
+  const history = input.messages
+    .map((m) =>
+      m.role === "user"
+        ? `Debater (${input.position}): ${m.content}`
+        : `You (${opponentPosition}): ${m.content}`
+    )
+    .join("\n\n");
+
+  const mustEnd = input.forceEnd === true || input.exchangeCount >= 5;
+
+  if (mustEnd) {
+    const prompt = `You were debating the following motion: "${input.motion}"
+You argued: ${opponentPosition.toUpperCase()} the motion
+The debater argued: ${input.position.toUpperCase()} the motion
+
+Full debate:
+${history}
+
+Now step out of the debate and give expert coaching on how the debater performed.
+
+Evaluate: clarity of claims, use of evidence and reasoning, quality of rebuttals, logical consistency, and ability to handle pressure.
+
+Return strict JSON with ALL of these fields:
+{
+  "type": "feedback",
+  "score": integer 1-10 (1 = weak/confused arguments, 10 = sharp, evidence-backed, hard to counter),
+  "strongPoints": ["1-2 items — each must quote or describe a specific moment where their argument was sharp or their reasoning was solid. Say what worked and why."],
+  "improvements": ["1-2 items — each must: (1) identify a specific moment where their argument was weak or their logic slipped, (2) say briefly what went wrong, (3) show a stronger version"],
+  "keyFallacy": "One logical fallacy they committed (e.g. ad hominem, strawman, false dichotomy, appeal to emotion) — describe it and quote the moment. If none, return null.",
+  "missedArg": "The strongest counterpoint they either failed to make or failed to address. Be specific — name the argument and why it mattered.",
+  "modelRebuttal": "Show how a skilled debater would have responded to the single hardest challenge the opponent posed. Write it as actual debate language, 2-4 sentences, sharp and specific."
+}`;
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 2500,
+      temperature: 0.4,
+      system: "Return only valid JSON. No markdown. No preamble.",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    try {
+      const parsed = JSON.parse(extractText(response.content)) as {
+        type: "feedback";
+        score: number;
+        strongPoints: string[];
+        improvements: string[];
+        keyFallacy: string | null;
+        missedArg: string;
+        modelRebuttal: string;
+      };
+      const score = Math.min(10, Math.max(1, Math.round(Number(parsed.score))));
+      return {
+        type: "feedback",
+        score,
+        strongPoints: Array.isArray(parsed.strongPoints) ? parsed.strongPoints : [],
+        improvements: Array.isArray(parsed.improvements) ? parsed.improvements : [],
+        keyFallacy: typeof parsed.keyFallacy === "string" ? parsed.keyFallacy : null,
+        missedArg:
+          typeof parsed.missedArg === "string"
+            ? parsed.missedArg
+            : "Address your opponent's strongest argument directly before rebutting it.",
+        modelRebuttal:
+          typeof parsed.modelRebuttal === "string"
+            ? parsed.modelRebuttal
+            : "Acknowledge what's true in their point, then pivot: 'You're right that X — but that actually supports my case, because...'",
+      };
+    } catch {
+      return fallbackDebateStep(input.exchangeCount);
+    }
+  }
+
+  // ── Ongoing exchange ───────────────────────────────────────────────────────
+  const prompt = `You are debating the motion: "${input.motion}"
+You are arguing ${opponentPosition.toUpperCase()} this motion.
+${input.opponentPrompt}
+
+Debate so far:
+${history}
+
+Respond now as the opponent. Keep your response to 2-4 sentences. Be direct and specific — react to exactly what they just said. Push back hard but stay on topic. Do not concede the whole argument, but you may acknowledge a point if it genuinely lands.`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 300,
+    temperature: 0.7,
+    system:
+      "You are a skilled debater. Respond in plain prose — no bullet points, no headers. Stay in character. Be sharp and specific.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const message = extractText(response.content).trim();
+  return { type: "response", message: message || "Interesting — but I need a stronger argument than that. What's your evidence?" };
+}

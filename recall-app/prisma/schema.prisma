@@ -33,6 +33,7 @@ model User {
   voiceProfile      VoiceProfile?
   socialSessions    SocialSession[]
   speakUpSessions   SpeakUpSession[]
+  debateSessions    DebateSession[]
   countryProgress   UserCountryProgress[]
 
   @@index([email])
@@ -210,6 +211,28 @@ model SpeakUpSession {
   userId             String?
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DebateSession {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  motion        String
+  position      String
+  opponentType  String
+  difficulty    String
+  exchangeCount Int
+  score         Int
+  strongPoints  Json
+  improvements  Json
+  keyFallacy    String?
+  missedArg     String
+  modelRebuttal String
+  messages      Json
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
