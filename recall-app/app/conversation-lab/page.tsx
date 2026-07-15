@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { SocialSkillsClient } from "@/components/social-skills-client";
 import { prisma } from "@/lib/prisma";
@@ -7,6 +8,7 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export default async function ConversationLabPage() {
   const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
   const uid = userId ? scopedUserId(userId) : null;
 
   const strugglingRaw = uid

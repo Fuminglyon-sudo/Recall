@@ -4,14 +4,16 @@ import { isDatabaseReady } from "@/lib/db-ready";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 export async function GET(req: NextRequest) {
+  const userId = await getCurrentUserId();
+  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   if (q.length < 2) return NextResponse.json([]);
 
   const ready = await isDatabaseReady();
   if (!ready) return NextResponse.json([]);
 
-  const userId = await getCurrentUserId();
-  const uid = scopedUserId(userId ?? "");
+  const uid = scopedUserId(userId);
 
   const cards = await prisma.card.findMany({
     where: {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const messageSchema = z.object({
   role: z.enum(["user", "opponent"]),
@@ -26,6 +27,7 @@ const saveSchema = z.object({
 export async function POST(req: NextRequest) {
   const userId = await getCurrentUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  if (!checkRateLimit(userId, 30)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
 
   try {
     const body = (await req.json()) as unknown;

@@ -1,11 +1,15 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { DebateLabClient } from "@/components/debate-lab-client";
+import { getCurrentUserId } from "@/lib/session";
 
 export const metadata = { title: "Debate Lab — Soro Soke" };
 
-export default function DebateLabPage() {
+export default async function DebateLabPage() {
+  const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
   return (
     <AppShell>
       <div className="mx-auto max-w-2xl space-y-6">

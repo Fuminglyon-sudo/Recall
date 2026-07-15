@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { SpeakUpClient } from "@/components/speak-up-client";
 import { prisma } from "@/lib/prisma";
@@ -8,6 +9,7 @@ import { saveCardFromSession } from "./actions";
 
 export default async function SpeakUpPage() {
   const userId = await getCurrentUserId();
+  if (!userId) redirect("/login");
 
   const [decks, strugglingRaw] = userId
     ? await Promise.all([

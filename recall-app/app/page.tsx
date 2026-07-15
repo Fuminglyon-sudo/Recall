@@ -51,7 +51,7 @@ async function getDashboardData(uid: string | null) {
       upcomingByDay: {} as Record<string, number>,
       wordOfDay: null,
       strugglingCount: 0,
-      practiceStats: { speakAvg: null as number | null, socialAvg: null as number | null, weakestGoal: null as string | null, speakCount: 0, socialCount: 0 },
+      practiceStats: { speakAvg: null as number | null, socialAvg: null as number | null, debateAvg: null as number | null, weakestGoal: null as string | null, speakCount: 0, socialCount: 0, debateCount: 0 },
       coachingInsight: null as { message: string; cta?: { label: string; href: string } } | null,
     };
   }
@@ -70,7 +70,7 @@ async function getDashboardData(uid: string | null) {
   const yesterday = new Date(todayStart);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates, speakSessions, socialSessions, userSettings, userAchievements] = await Promise.all([
+  const [streak, decks, voiceProfile, reviewLogsRaw, upcomingRaw, wordCandidates, speakSessions, socialSessions, debateSessions, userSettings, userAchievements] = await Promise.all([
     prisma.streak.findFirst({ where: { userId: uid } }),
     prisma.deck.findMany({
       where: { userId: uid },
@@ -107,6 +107,12 @@ async function getDashboardData(uid: string | null) {
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { score: true, practiceGoal: true, createdAt: true },
+    }),
+    prisma.debateSession.findMany({
+      where: { userId: uid ?? undefined },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: { score: true, createdAt: true },
     }),
     uid ? prisma.userSettings.findFirst({ where: { userId: uid } }) : Promise.resolve(null),
     uid ? prisma.userAchievement.findMany({ where: { userId: uid }, orderBy: { unlockedAt: "desc" } }) : Promise.resolve([]),
@@ -152,6 +158,9 @@ async function getDashboardData(uid: string | null) {
   const socialAvg = socialSessions.length > 0
     ? Math.round(socialSessions.reduce((s, x) => s + x.score, 0) / socialSessions.length)
     : null;
+  const debateAvg = debateSessions.length > 0
+    ? Math.round(debateSessions.reduce((s, x) => s + x.score, 0) / debateSessions.length)
+    : null;
   const weakestGoal = computeWeakestGoal([...speakSessions, ...socialSessions]);
   const coachingInsight = computeCoachingInsight(speakSessions, socialSessions, strugglingCount);
 
@@ -189,7 +198,7 @@ async function getDashboardData(uid: string | null) {
     wordOfDay,
     strugglingCount,
     achievements: userAchievements,
-    practiceStats: { speakAvg, socialAvg, weakestGoal, speakCount: speakSessions.length, socialCount: socialSessions.length },
+    practiceStats: { speakAvg, socialAvg, debateAvg, weakestGoal, speakCount: speakSessions.length, socialCount: socialSessions.length, debateCount: debateSessions.length },
     coachingInsight,
   };
 }
@@ -359,7 +368,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
           </div>
         </div>
 
-        {data.practiceStats.speakCount > 0 || data.practiceStats.socialCount > 0 ? (
+        {data.practiceStats.speakCount > 0 || data.practiceStats.socialCount > 0 || data.practiceStats.debateCount > 0 ? (
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
             <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Practice at a glance</p>
             <p className="mt-1 text-sm text-slate-400">Your last 10 sessions per mode.</p>
@@ -378,6 +387,14 @@ async function Dashboard({ uid }: { uid: string | null }) {
                   <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.socialAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
                   <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.socialCount} session{data.practiceStats.socialCount === 1 ? "" : "s"}</p>
                   <Link href="/conversation-lab/history" className="mt-2 block text-[10px] font-medium text-slate-500 transition hover:text-slate-300">View history →</Link>
+                </div>
+              ) : null}
+              {data.practiceStats.debateCount > 0 && data.practiceStats.debateAvg !== null ? (
+                <div className="flex-1 min-w-[8rem] rounded-2xl border border-amber-400/15 bg-amber-400/5 p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-500">Debate Lab</p>
+                  <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.debateAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
+                  <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.debateCount} session{data.practiceStats.debateCount === 1 ? "" : "s"}</p>
+                  <Link href="/debate-lab/history" className="mt-2 block text-[10px] font-medium text-amber-500 transition hover:text-amber-300">View history →</Link>
                 </div>
               ) : null}
             </div>

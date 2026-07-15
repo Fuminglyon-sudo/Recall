@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { conductPitchConversation } from "@/lib/anthropic";
 import { getCurrentUserId } from "@/lib/session";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   app: z.enum(["japa-reality", "sharpen", "both"]),
@@ -21,6 +22,7 @@ const schema = z.object({
 export async function POST(req: NextRequest) {
   const userId = await getCurrentUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  if (!checkRateLimit(userId, 30)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
 
   try {
     const body = (await req.json()) as unknown;
