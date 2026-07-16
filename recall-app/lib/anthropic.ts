@@ -682,6 +682,8 @@ export type DebateRequest = {
   forceEnd?: boolean;
 };
 
+export type ArgumentNote = { exchange: number; verdict: "strong" | "weak" | "ok"; note: string };
+
 export type DebateStep =
   | { type: "response"; message: string; audienceReaction: number }
   | {
@@ -692,6 +694,7 @@ export type DebateStep =
       keyFallacy: string | null;
       missedArg: string;
       modelRebuttal: string;
+      argumentBreakdown: ArgumentNote[];
     };
 
 function fallbackDebateStep(exchangeCount: number): DebateStep {
@@ -711,6 +714,7 @@ function fallbackDebateStep(exchangeCount: number): DebateStep {
     keyFallacy: null,
     missedArg: "The strongest counterpoint went unaddressed — always name your opponent's best argument before rebutting it.",
     modelRebuttal: "A sharp rebuttal names the opponent's claim, concedes what's true in it, then pivots to the key flaw: 'You're right that X, but that ignores Y, which means...'",
+    argumentBreakdown: [],
   };
 }
 
@@ -748,7 +752,11 @@ Return strict JSON with ALL of these fields:
   "improvements": ["1-2 items — each must: (1) identify a specific moment where their argument was weak or their logic slipped, (2) say briefly what went wrong, (3) show a stronger version"],
   "keyFallacy": "One logical fallacy they committed (e.g. ad hominem, strawman, false dichotomy, appeal to emotion) — describe it and quote the moment. If none, return null.",
   "missedArg": "The strongest counterpoint they either failed to make or failed to address. Be specific — name the argument and why it mattered.",
-  "modelRebuttal": "Show how a skilled debater would have responded to the single hardest challenge the opponent posed. Write it as actual debate language, 2-4 sentences, sharp and specific."
+  "modelRebuttal": "Show how a skilled debater would have responded to the single hardest challenge the opponent posed. Write it as actual debate language, 2-4 sentences, sharp and specific.",
+  "argumentBreakdown": [
+    for each debater turn in the conversation (index 1-based), one object:
+    { "exchange": integer (1-based), "verdict": "strong" | "ok" | "weak", "note": "one sentence on what made this argument strong, acceptable, or weak" }
+  ]
 }`;
 
     const response = await client.messages.create({
@@ -768,8 +776,18 @@ Return strict JSON with ALL of these fields:
         keyFallacy: string | null;
         missedArg: string;
         modelRebuttal: string;
+        argumentBreakdown?: Array<{ exchange: number; verdict: string; note: string }>;
       };
       const score = Math.min(10, Math.max(1, Math.round(Number(parsed.score))));
+      const argumentBreakdown: ArgumentNote[] = Array.isArray(parsed.argumentBreakdown)
+        ? parsed.argumentBreakdown
+            .filter((b) => typeof b.exchange === "number" && typeof b.note === "string")
+            .map((b) => ({
+              exchange: b.exchange,
+              verdict: (b.verdict === "strong" || b.verdict === "weak") ? b.verdict : "ok",
+              note: b.note,
+            }))
+        : [];
       return {
         type: "feedback",
         score,
@@ -784,6 +802,7 @@ Return strict JSON with ALL of these fields:
           typeof parsed.modelRebuttal === "string"
             ? parsed.modelRebuttal
             : "Acknowledge what's true in their point, then pivot: 'You're right that X — but that actually supports my case, because...'",
+        argumentBreakdown,
       };
     } catch {
       return fallbackDebateStep(input.exchangeCount);

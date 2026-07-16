@@ -29,6 +29,8 @@ type OpponentType = {
 
 type Message = { role: "user" | "opponent"; content: string };
 
+type ArgumentNote = { exchange: number; verdict: "strong" | "ok" | "weak"; note: string };
+
 type Feedback = {
   score: number;
   strongPoints: string[];
@@ -36,6 +38,7 @@ type Feedback = {
   keyFallacy: string | null;
   missedArg: string;
   modelRebuttal: string;
+  argumentBreakdown: ArgumentNote[];
 };
 
 type PrepResult = {
@@ -405,7 +408,7 @@ export function DebateLabClient() {
 
       const data = (await response.json()) as
         | { type: "response"; message: string; audienceReaction: number }
-        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string };
+        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[] };
 
       if (data.type === "response") {
         setMessages((prev) => [...prev, { role: "opponent", content: data.message }]);
@@ -453,7 +456,7 @@ export function DebateLabClient() {
         return;
       }
 
-      const data = (await response.json()) as { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string };
+      const data = (await response.json()) as { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[] };
 
       if (data.type !== "feedback" || typeof data.score !== "number") {
         setError("Feedback couldn't be generated. Please try again.");
@@ -786,10 +789,17 @@ export function DebateLabClient() {
       <div className="space-y-5">
         <div className={`rounded-[2rem] border p-5 ${scoreBorder(feedback.score)}`}>
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Debate score</p>
-          <div className="mt-2 flex items-baseline gap-3">
+          <div className="mt-2 flex items-baseline gap-3 flex-wrap">
             <span className={`text-5xl font-bold tabular-nums ${scoreColor(feedback.score)}`}>{feedback.score}</span>
             <span className="text-lg text-slate-500">/10</span>
             <span className={`text-sm font-semibold ${scoreColor(feedback.score)}`}>— {scoreLabel(feedback.score)}</span>
+            <span className={`ml-auto rounded-full border px-3 py-0.5 text-xs font-bold uppercase tracking-widest ${
+              feedback.score >= 7 ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300" :
+              feedback.score >= 5 ? "border-amber-400/30 bg-amber-400/10 text-amber-300" :
+              "border-red-400/30 bg-red-400/10 text-red-300"
+            }`}>
+              {feedback.score >= 7 ? "Win" : feedback.score >= 5 ? "Draw" : "Loss"}
+            </span>
           </div>
           <p className="mt-2 text-xs text-slate-500">
             {activeMotion.text} · You argued{" "}
@@ -830,6 +840,29 @@ export function DebateLabClient() {
           <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">How to handle their hardest challenge</p>
           <p className="mt-2 text-sm leading-6 text-slate-200 italic">&ldquo;{feedback.modelRebuttal}&rdquo;</p>
         </div>
+
+        {feedback.argumentBreakdown.length > 0 ? (
+          <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Argument by argument</p>
+            <div className="space-y-2">
+              {feedback.argumentBreakdown.map((b) => (
+                <div key={b.exchange} className="flex items-start gap-3">
+                  <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold ${
+                    b.verdict === "strong" ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300" :
+                    b.verdict === "weak"   ? "border-red-400/30 bg-red-400/10 text-red-300" :
+                    "border-white/15 bg-white/5 text-slate-400"
+                  }`}>{b.exchange}</span>
+                  <div className="min-w-0">
+                    <span className={`text-[10px] font-bold uppercase tracking-wide ${
+                      b.verdict === "strong" ? "text-emerald-400" : b.verdict === "weak" ? "text-red-400" : "text-slate-500"
+                    }`}>{b.verdict}</span>
+                    <p className="text-sm leading-5 text-slate-300">{b.note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div className="rounded-[2rem] border border-white/8 bg-white/[0.02]">
           <button
