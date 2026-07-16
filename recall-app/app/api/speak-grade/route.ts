@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { conductSpeakUpConversation } from "@/lib/anthropic";
+import { PERSONA_IDS, getPersonaPrompt } from "@/lib/speak-up-personas";
 import { getCurrentUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   scenario: z.string().min(10).max(2000),
-  personaPrompt: z.string().min(1).max(3000),
+  personaId: z.enum(PERSONA_IDS),
   difficulty: z.enum(["easy", "medium", "hard"]),
   messages: z.array(
     z.object({
@@ -30,7 +31,8 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
-    const result = await conductSpeakUpConversation(parsed.data);
+    const { personaId, ...rest } = parsed.data;
+    const result = await conductSpeakUpConversation({ ...rest, personaPrompt: getPersonaPrompt(personaId) });
     return NextResponse.json(result);
   } catch (err) {
     console.error(err);

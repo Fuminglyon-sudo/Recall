@@ -20,10 +20,9 @@ type Scenario = {
 };
 
 type CharacterType = {
-  id: string;
+  id: "introvert" | "extrovert" | "executive" | "guarded" | "traveler" | "random";
   label: string;
   description: string;
-  aiPrompt: string;
 };
 
 type Message = {
@@ -172,43 +171,31 @@ const CHARACTER_TYPES: CharacterType[] = [
     id: "introvert",
     label: "The Introvert",
     description: "Thoughtful, short answers — needs real warmth to open up",
-    aiPrompt:
-      "You are a reserved, introverted person. You give short, genuine answers and do not volunteer much. You are not unfriendly — just private. What draws you out: a question that feels genuinely curious, not performative. What keeps you closed: small talk that is clearly going nowhere or forced friendliness. You need real warmth before you open up.",
   },
   {
     id: "extrovert",
     label: "The Extrovert",
     description: "Warm, talkative — loves when people actually share",
-    aiPrompt:
-      "You are naturally warm and talkative. You respond with genuine enthusiasm, expand on topics easily, and make people feel at ease quickly. What you love: people who lean in and actually share something real. What mildly bores you: someone who stays surface-level when the conversation could clearly go somewhere. You enjoy conversation and it shows.",
   },
   {
     id: "executive",
     label: "The Busy Executive",
     description: "Direct — generic openers lose you immediately",
-    aiPrompt:
-      "You are a successful, busy professional. Polite but direct. You do not do small talk for long and you pay attention when someone says something genuinely interesting. What earns your engagement: something real, specific, said with confidence. What loses you immediately: vague openers, obligatory pleasantries, or anything that sounds like a script. Your responses are brief unless something earns more.",
   },
   {
     id: "guarded",
     label: "The Hard to Read",
     description: "Neutral, cautious — patience earns more than persistence",
-    aiPrompt:
-      "You are measured and a bit guarded. You respond politely but briefly and do not volunteer information easily. You are not rude — just not easy to draw out. What eventually opens you: patient, genuine curiosity — not persistence or obvious charm. What keeps you closed: anything that feels like a performance or a tactic. The other person has to genuinely earn your openness.",
   },
   {
     id: "traveler",
     label: "The Worldly Traveler",
     description: "Curious, full of stories — predictable questions bore them",
-    aiPrompt:
-      "You have traveled widely and lived in several countries. You are warm, curious, and a natural conversationalist. You often share a brief anecdote but you are equally interested in the other person's world. What delights you: unexpected angles, genuine curiosity, people who have something they actually care about. What bores you: predictable tourism questions or safe, surface-level openers.",
   },
   {
     id: "random",
     label: "Surprise me",
     description: "Random personality — the realistic challenge",
-    aiPrompt:
-      "Choose a personality type that feels completely realistic and natural for this scenario. Be authentic and slightly unpredictable — the person practicing should not be able to easily predict how you will respond. Make a clear decision about who you are and commit to it fully.",
   },
 ];
 
@@ -288,19 +275,6 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
 
   const filteredScenarios =
     categoryFilter === "all" ? SCENARIOS : SCENARIOS.filter((s) => s.category === categoryFilter);
-
-  const DIFFICULTY_MODIFIER: Record<Difficulty, string> = {
-    easy: " DIFFICULTY: Easy. You are warm, patient, and actively encouraging. Smile and nod along. Ask follow-up questions readily. Give generous responses that help the conversation flow. Make it easy for the other person to feel comfortable and keep going.",
-    medium: " DIFFICULTY: Medium. Behave as a realistic stranger would — neither unusually helpful nor particularly hard to engage. Respond naturally to what is said, show moderate interest, and give the conversation a realistic social dynamic with natural variation.",
-    hard: " DIFFICULTY: Hard. You are guarded, reserved, and hard to impress. Give short, minimal responses unless something genuinely catches your attention. Do not volunteer information, do not ask follow-up questions unless compelled to. Make the other person work to earn your engagement. Only open up meaningfully if they say something truly thoughtful or interesting.",
-  };
-
-  function characterPromptWithDifficulty() {
-    const tension = activeScenario?.tension
-      ? `\n\nYour hidden context going into this: ${activeScenario.tension}`
-      : "";
-    return activeCharacter.aiPrompt + tension + DIFFICULTY_MODIFIER[difficulty];
-  }
 
   function startScenario(scenario: Scenario) {
     setActiveScenario(scenario);
@@ -449,8 +423,9 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenarioContext: activeScenario.context,
-          characterType: activeCharacter.label,
-          characterPrompt: characterPromptWithDifficulty(),
+          characterId: activeCharacter.id,
+          difficulty,
+          tension: activeScenario.tension,
           messages: newMessages,
           exchangeCount: newExchangeCount,
           forceEnd: false,
@@ -506,8 +481,9 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenarioContext: activeScenario.context,
-          characterType: activeCharacter.label,
-          characterPrompt: characterPromptWithDifficulty(),
+          characterId: activeCharacter.id,
+          difficulty,
+          tension: activeScenario.tension,
           messages: finalMessages,
           exchangeCount: finalCount,
           forceEnd: true,

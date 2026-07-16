@@ -22,10 +22,9 @@ type Scenario = {
 };
 
 type Persona = {
-  id: string;
+  id: "friend" | "manager" | "stranger" | "skeptic" | "senior" | "loved-one";
   label: string;
   description: string;
-  aiPrompt: string;
 };
 
 type Message = {
@@ -188,37 +187,31 @@ const PERSONAS: Persona[] = [
     id: "friend",
     label: "A close friend",
     description: "Warm, supportive — notices when you're holding back",
-    aiPrompt: "You are a warm, close friend who genuinely wants this person to succeed. You've seen them nervous and you've seen them shine — you notice immediately when they're holding back or performing instead of being real. You listen with full attention, ask the follow-up questions no one else dares to, and get gently honest when something doesn't ring true.",
   },
   {
     id: "manager",
     label: "Your manager",
     description: "Professional, measured — rooting for you but needs substance",
-    aiPrompt: "You are a composed, experienced manager who is actually rooting for this person — but you can't show it until they earn it. You've heard a thousand vague, rehearsed answers. Specific, honest, and confident earns your full attention. Anything that sounds safe or polished without substance makes you probe gently deeper. You appreciate directness above everything.",
   },
   {
     id: "stranger",
     label: "A curious stranger",
     description: "No context — one chance to earn their attention",
-    aiPrompt: "You are a friendly, genuinely curious stranger with no background in what this person does or the choices they've made. You have no reason to care yet — they have one chance to say something that makes you lean in. You ask the questions an interested outsider would naturally ask, and you notice instantly when something doesn't quite make sense from the outside.",
   },
   {
     id: "skeptic",
     label: "A skeptic",
     description: "Not hostile — but generic claims bounce right off",
-    aiPrompt: "You are thoughtful and a little skeptical — not unfriendly, but not easily impressed. Generic claims bounce right off you. A specific, honest, concrete detail earns more with you than ten polished sentences. You want to believe them — but they have to give you something real to hold onto.",
   },
   {
     id: "senior",
     label: "A senior figure",
     description: "Experienced — can tell instantly if you're performing",
-    aiPrompt: "You are a senior, accomplished person who has had many conversations exactly like this one. You can tell in the first few seconds whether someone is performing or genuinely present. Something real and specific earns far more with you than anything safe or polished. You remember the people who surprised you.",
   },
   {
     id: "loved-one",
     label: "A worried loved one",
     description: "Loves you — which is exactly why they won't just nod",
-    aiPrompt: "You are a family member or close friend who loves this person deeply — which is exactly why you won't just nod along. You know them better than they think you do. You will notice if they sound more confident here than they actually feel. Your questions come from care, not judgment — and you want them to walk into that room ready.",
   },
 ];
 
@@ -473,7 +466,7 @@ export function SpeakUpClient({
         signal: controller.signal,
         body: JSON.stringify({
           scenario: `${active.setting}\n\nQuestion asked: "${activeQuestion}"`,
-          personaPrompt: persona.aiPrompt,
+          personaId: persona.id,
           difficulty,
           messages: nextMessages,
           exchangeCount: nextExchange,

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { conductSocialConversation } from "@/lib/anthropic";
+import { CHARACTER_IDS, CHARACTER_LABELS, buildCharacterPrompt } from "@/lib/conversation-characters";
 import { getCurrentUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   scenarioContext: z.string().min(10).max(2000),
-  characterType: z.string().min(1).max(100),
-  characterPrompt: z.string().min(1).max(3000),
+  characterId: z.enum(CHARACTER_IDS),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+  tension: z.string().max(1000).optional(),
   messages: z
     .array(
       z.object({
@@ -33,7 +35,12 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
-    const result = await conductSocialConversation(parsed.data);
+    const { characterId, difficulty, tension, ...rest } = parsed.data;
+    const result = await conductSocialConversation({
+      ...rest,
+      characterType: CHARACTER_LABELS[characterId],
+      characterPrompt: buildCharacterPrompt(characterId, difficulty, tension),
+    });
     return NextResponse.json(result);
   } catch (err) {
     console.error(err);
