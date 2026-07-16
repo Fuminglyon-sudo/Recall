@@ -1,60 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
-
-// Minimal CSV parser — handles quoted fields with embedded commas and newlines
-function parseCSV(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let inQuotes = false;
-  let i = 0;
-
-  while (i < text.length) {
-    const ch = text[i];
-    if (inQuotes) {
-      if (ch === '"' && text[i + 1] === '"') {
-        field += '"';
-        i += 2;
-      } else if (ch === '"') {
-        inQuotes = false;
-        i++;
-      } else {
-        field += ch;
-        i++;
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true;
-        i++;
-      } else if (ch === ",") {
-        row.push(field);
-        field = "";
-        i++;
-      } else if (ch === "\r" && text[i + 1] === "\n") {
-        row.push(field);
-        field = "";
-        rows.push(row);
-        row = [];
-        i += 2;
-      } else if (ch === "\n") {
-        row.push(field);
-        field = "";
-        rows.push(row);
-        row = [];
-        i++;
-      } else {
-        field += ch;
-        i++;
-      }
-    }
-  }
-  if (field || row.length > 0) {
-    row.push(field);
-    rows.push(row);
-  }
-  return rows;
-}
+import { parseCSV, clip, MAX_IMPORT_ROWS, MAX_IMPORT_BYTES } from "@/lib/csv-import";
 
 export async function POST(
   req: NextRequest,
@@ -80,7 +27,7 @@ export async function POST(
   if (!text.trim()) {
     return NextResponse.json({ error: "Empty file." }, { status: 400 });
   }
-  if (text.length > 512 * 1024) {
+  if (text.length > MAX_IMPORT_BYTES) {
     return NextResponse.json({ error: "File too large (512KB max)." }, { status: 413 });
   }
 
@@ -109,15 +56,9 @@ export async function POST(
   const synonymsIdx = col("synonyms");
   const kindIdx = col("kind");
 
-  const MAX_ROWS = 1000;
-  const clip = (s: string | undefined, n: number) => {
-    const v = (s ?? "").trim();
-    return v ? v.slice(0, n) : null;
-  };
-
   const now = new Date();
   const cards = dataRows
-    .slice(0, MAX_ROWS)
+    .slice(0, MAX_IMPORT_ROWS)
     .filter((r) => r[frontIdx]?.trim() && r[backIdx]?.trim())
     .map((r) => ({
       deckId: deck.id,

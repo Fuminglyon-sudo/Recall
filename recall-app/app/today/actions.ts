@@ -2,19 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
-import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
 import { isSameCalendarDay } from "@/lib/date";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { computeDistribution } from "@/lib/mastery";
 import { achievementsFromReview } from "@/lib/achievements";
-
-const gradeSchema = z.object({
-  cardId: z.string().min(1),
-  grade: z.coerce.number().int().min(0).max(5),
-  association: z.string().max(1000).optional(),
-});
+import { gradeSchema } from "@/lib/grade-schema";
 
 export async function gradeCard(formData: FormData) {
   const parsed = gradeSchema.safeParse({
