@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Mic, ArrowLeft, ChevronDown, ChevronRight, RotateCcw, Flag, History } from "lucide-react";
+import { FeedbackRating } from "./feedback-rating";
 
 type Category = "all" | "professional" | "social" | "everyday";
 type Difficulty = "easy" | "medium" | "hard";
@@ -853,6 +854,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         ) : saveError ? (
           <p className="text-xs text-red-400">Session completed, but could not be saved. Check your connection.</p>
         ) : null}
+
+        <FeedbackRating kind="social" sessionId={feedback.sessionId} />
 
         <div className="flex flex-wrap gap-3">
           <button

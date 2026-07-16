@@ -184,6 +184,9 @@ model SocialSession {
   messages          Json
   modelConversation Json?
   practiceGoal      String?
+  // "up" | "down" | null (unrated) — user's verdict on whether the AI's
+  // feedback felt fair, not a rating of their own performance.
+  feedbackRating    String?
   // null = admin session; set for all new users
   userId            String?
 
@@ -209,6 +212,7 @@ model SpeakUpSession {
   modelAnswer        String
   modelConversation  Json?
   messages           Json
+  feedbackRating     String?
   // null = admin session; set for all new users
   userId             String?
 
@@ -233,6 +237,7 @@ model DebateSession {
   missedArg     String
   modelRebuttal String
   messages      Json
+  feedbackRating String?
   userId        String?
   user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

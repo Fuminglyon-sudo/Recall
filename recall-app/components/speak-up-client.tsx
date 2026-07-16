@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, BookmarkCheck, ChevronDown, ChevronRight, RotateCcw, Mic, History } from "lucide-react";
+import { FeedbackRating } from "./feedback-rating";
 
 type Deck = { id: string; name: string };
 
@@ -867,6 +868,8 @@ export function SpeakUpClient({
             </Link>
           ) : null}
         </div>
+
+        <FeedbackRating kind="speak-up" sessionId={result.sessionId} />
       </div>
     );
   }

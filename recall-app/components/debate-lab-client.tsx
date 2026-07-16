@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Mic, ArrowLeft, ChevronDown, History, RotateCcw } from "lucide-react";
+import { FeedbackRating } from "./feedback-rating";
 
 type Category = "all" | "business" | "ethics" | "technology" | "personal" | "real-life";
 type Difficulty = "easy" | "medium" | "hard";
@@ -1134,6 +1135,8 @@ export function DebateLabClient({
         ) : saveError ? (
           <p className="text-xs text-red-400">Session completed, but could not be saved. Check your connection.</p>
         ) : null}
+
+        <FeedbackRating kind="debate" sessionId={feedback.sessionId} />
 
         <div className="flex flex-wrap gap-3">
           <button onClick={restartSameMotion} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
