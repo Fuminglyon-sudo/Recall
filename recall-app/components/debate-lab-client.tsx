@@ -217,7 +217,15 @@ function OpponentBubble({ content, opponentLabel }: { content: string; opponentL
   );
 }
 
-export function DebateLabClient() {
+type Deck = { id: string; name: string };
+
+export function DebateLabClient({
+  decks = [],
+  saveCardAction,
+}: {
+  decks?: Deck[];
+  saveCardAction?: (fd: FormData) => Promise<{ success?: boolean; error?: string }>;
+}) {
   const [categoryFilter, setCategoryFilter] = useState<Category>("all");
   const [activeMotion, setActiveMotion] = useState<Motion | null>(null);
   const [customMotion, setCustomMotion] = useState("");
@@ -243,6 +251,12 @@ export function DebateLabClient() {
   const [prepLoading, setPrepLoading] = useState(false);
   const [showPrep, setShowPrep] = useState(false);
   const [swayHistory, setSwayHistory] = useState<number[]>([]);
+  const [cardSaveSlot, setCardSaveSlot] = useState<"rebuttal" | "missed" | "fallacy" | null>(null);
+  const [cardFront, setCardFront] = useState("");
+  const [cardDeckId, setCardDeckId] = useState(decks[0]?.id ?? "");
+  const [cardSaving, setCardSaving] = useState(false);
+  const [cardSaved, setCardSaved] = useState<Set<string>>(new Set());
+  const [cardSaveError, setCardSaveError] = useState<string | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -283,6 +297,25 @@ export function DebateLabClient() {
     setPosition(p === "surprise" ? (Math.random() < 0.5 ? "for" : "against") : p);
   }
 
+  async function handleSaveCard(back: string, slot: string) {
+    if (!saveCardAction || !cardFront.trim() || !cardDeckId) return;
+    setCardSaving(true);
+    setCardSaveError(null);
+    const fd = new FormData();
+    fd.set("front", cardFront.trim());
+    fd.set("back", back);
+    fd.set("deckId", cardDeckId);
+    const res = await saveCardAction(fd);
+    setCardSaving(false);
+    if (res.success) {
+      setCardSaved((prev) => new Set(prev).add(slot));
+      setCardSaveSlot(null);
+      setCardFront("");
+    } else {
+      setCardSaveError(res.error ?? "Failed to save");
+    }
+  }
+
   function reset() {
     setActiveMotion(null);
     setMessages([]);
@@ -300,6 +333,10 @@ export function DebateLabClient() {
     setPrep(null);
     setShowPrep(false);
     setSwayHistory([]);
+    setCardSaveSlot(null);
+    setCardFront("");
+    setCardSaved(new Set());
+    setCardSaveError(null);
     stopRecording();
   }
 
@@ -875,6 +912,80 @@ export function DebateLabClient() {
                 </div>
               ))}
             </div>
+          </div>
+        ) : null}
+
+        {/* Save to card */}
+        {decks.length > 0 && saveCardAction ? (
+          <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Save to your deck</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { slot: "rebuttal" as const, label: "Model rebuttal", back: feedback.modelRebuttal },
+                { slot: "missed" as const, label: "Missed argument", back: feedback.missedArg },
+                ...(feedback.keyFallacy ? [{ slot: "fallacy" as const, label: "Fallacy correction", back: feedback.keyFallacy }] : []),
+              ].map(({ slot, label }) =>
+                cardSaved.has(slot) ? (
+                  <span key={slot} className="rounded-full border border-emerald-400/20 bg-emerald-400/8 px-3 py-1.5 text-xs font-medium text-emerald-300">
+                    {label} saved ✓
+                  </span>
+                ) : (
+                  <button
+                    key={slot}
+                    onClick={() => { setCardSaveSlot(slot); setCardFront(""); setCardSaveError(null); }}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                      cardSaveSlot === slot ? "border-amber-400/30 bg-amber-400/10 text-amber-200" : "border-white/10 bg-white/5 text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    + {label}
+                  </button>
+                )
+              )}
+            </div>
+            {cardSaveSlot ? (() => {
+              const item = [
+                { slot: "rebuttal" as const, back: feedback.modelRebuttal },
+                { slot: "missed" as const, back: feedback.missedArg },
+                ...(feedback.keyFallacy ? [{ slot: "fallacy" as const, back: feedback.keyFallacy }] : []),
+              ].find((x) => x.slot === cardSaveSlot);
+              if (!item) return null;
+              return (
+                <div className="space-y-3 rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-medium text-slate-400">Card front (what to ask yourself)</span>
+                    <input
+                      value={cardFront}
+                      onChange={(e) => setCardFront(e.target.value)}
+                      placeholder="e.g. How do I rebut a challenge to my evidence?"
+                      className="input-base w-full text-sm"
+                    />
+                  </label>
+                  <div>
+                    <p className="text-xs font-medium text-slate-400">Card back (pre-filled)</p>
+                    <p className="mt-1 rounded-xl border border-white/8 bg-white/5 px-3 py-2 text-xs leading-5 text-slate-300">{item.back}</p>
+                  </div>
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-medium text-slate-400">Save to deck</span>
+                    <select value={cardDeckId} onChange={(e) => setCardDeckId(e.target.value)} className="input-base w-full text-sm">
+                      {decks.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                    </select>
+                  </label>
+                  {cardSaveError ? <p className="text-xs text-red-400">{cardSaveError}</p> : null}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => void handleSaveCard(item.back, item.slot)}
+                      disabled={!cardFront.trim() || cardSaving}
+                      className="flex-1 rounded-2xl bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:opacity-50"
+                    >
+                      {cardSaving ? "Saving…" : "Save card"}
+                    </button>
+                    <button onClick={() => setCardSaveSlot(null)} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-slate-400 transition hover:text-white">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              );
+            })() : null}
           </div>
         ) : null}
 

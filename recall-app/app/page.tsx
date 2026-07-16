@@ -348,22 +348,27 @@ async function Dashboard({ uid }: { uid: string | null }) {
         {/* Practice loop */}
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Your practice loop</p>
-          <p className="mt-1 text-sm text-slate-400">Three activities that build on each other.</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <p className="mt-1 text-sm text-slate-400">Four modes that build on each other.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Link href="/today" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">1 · Remember it</p>
               <p className="mt-1 text-sm font-medium text-white">Daily review</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">Cards. Spaced repetition. Grade honestly.</p>
             </Link>
             <Link href="/speak-up" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">2 · Say it clearly</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">2 · Express clearly</p>
               <p className="mt-1 text-sm font-medium text-white">Speak Up</p>
-              <p className="mt-1 text-xs leading-5 text-slate-400">Articulate ideas under pressure. Get honest feedback.</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Say what you mean under pressure. Get honest feedback.</p>
             </Link>
             <Link href="/conversation-lab" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">3 · Connect</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">3 · Connect naturally</p>
               <p className="mt-1 text-sm font-medium text-white">Conversation Lab</p>
-              <p className="mt-1 text-xs leading-5 text-slate-400">Open, sustain, and end conversations well.</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Connect with people naturally. Open, sustain, close well.</p>
+            </Link>
+            <Link href="/debate-lab" className="group rounded-2xl border border-amber-400/10 bg-amber-400/5 p-4 transition hover:border-amber-400/20 hover:bg-amber-400/8">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-500/70 group-hover:text-amber-400">4 · Defend your thinking</p>
+              <p className="mt-1 text-sm font-medium text-white">Debate Lab</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Hold your ground when someone smart disagrees.</p>
             </Link>
           </div>
         </div>
