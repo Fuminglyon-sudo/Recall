@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import webpush from "web-push";
 import { prisma } from "@/lib/prisma";
+import { safeEqual } from "@/lib/auth";
 
 // Vercel Cron calls this endpoint with Authorization: Bearer <CRON_SECRET>
 function isAuthorised(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) return false; // refuse if not configured
   const auth = req.headers.get("authorization") ?? "";
-  return auth === `Bearer ${secret}`;
+  return safeEqual(auth, `Bearer ${secret}`);
 }
 
 function initVapid() {
@@ -36,14 +37,21 @@ export async function GET(req: NextRequest) {
   // Find all push subscriptions that have due cards today
   const subscriptions = await prisma.pushSubscription.findMany();
 
+  // Group by user first so a user with multiple devices only costs one
+  // due-card count query instead of one per subscription.
+  const byUser = new Map<string | null, typeof subscriptions>();
+  for (const sub of subscriptions) {
+    const list = byUser.get(sub.userId) ?? [];
+    list.push(sub);
+    byUser.set(sub.userId, list);
+  }
+
   let sent = 0;
   let failed = 0;
   const stale: string[] = [];
 
   await Promise.all(
-    subscriptions.map(async (sub: { endpoint: string; p256dh: string; auth: string; userId: string | null }) => {
-      const uid = sub.userId; // null = admin
-
+    Array.from(byUser.entries()).map(async ([uid, subs]) => {
       const dueCount = await prisma.card.count({
         where: {
           dueAt: { lt: tomorrow },
@@ -62,20 +70,24 @@ export async function GET(req: NextRequest) {
         url: "/today",
       });
 
-      try {
-        await webpush.sendNotification(
-          { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
-          payload
-        );
-        sent++;
-      } catch (err: unknown) {
-        const status = (err as { statusCode?: number }).statusCode;
-        if (status === 410 || status === 404) {
-          // Subscription expired or revoked — clean up
-          stale.push(sub.endpoint);
-        }
-        failed++;
-      }
+      await Promise.all(
+        subs.map(async (sub) => {
+          try {
+            await webpush.sendNotification(
+              { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+              payload
+            );
+            sent++;
+          } catch (err: unknown) {
+            const status = (err as { statusCode?: number }).statusCode;
+            if (status === 410 || status === 404) {
+              // Subscription expired or revoked — clean up
+              stale.push(sub.endpoint);
+            }
+            failed++;
+          }
+        })
+      );
     })
   );
 

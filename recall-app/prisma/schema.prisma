@@ -116,6 +116,7 @@ model Card {
 
   @@index([deckId])
   @@index([dueAt])
+  @@index([deckId, dueAt])
 }
 
 model ReviewLog {

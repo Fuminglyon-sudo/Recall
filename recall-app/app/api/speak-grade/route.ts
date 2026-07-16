@@ -5,18 +5,18 @@ import { getCurrentUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
-  scenario: z.string().min(10),
-  personaPrompt: z.string().min(1),
+  scenario: z.string().min(10).max(2000),
+  personaPrompt: z.string().min(1).max(3000),
   difficulty: z.enum(["easy", "medium", "hard"]),
   messages: z.array(
     z.object({
       role: z.enum(["speaker", "listener"]),
-      content: z.string().min(1),
+      content: z.string().min(1).max(4000),
     })
-  ).min(1),
+  ).min(1).max(20),
   exchangeCount: z.number().int().min(0),
   forceEnd: z.boolean().optional(),
-  practiceGoal: z.string().optional(),
+  practiceGoal: z.string().max(500).optional(),
 });
 
 export async function POST(req: NextRequest) {

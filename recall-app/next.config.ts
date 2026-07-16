@@ -3,9 +3,15 @@ import type { NextConfig } from "next";
 // Next.js requires 'unsafe-inline' for its inline hydration scripts (no nonce yet).
 // We still get meaningful protection from frame-ancestors, form-action, base-uri,
 // and the tight connect-src / img-src allowlists.
+// 'unsafe-eval' is only needed by Next.js dev (Turbopack/webpack HMR eval) —
+// keeping it out of the production CSP closes off a real XSS-escalation path.
+const scriptSrc = process.env.NODE_ENV === "production"
+  ? "script-src 'self' 'unsafe-inline'"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // unsafe-eval needed by Next.js dev
+  scriptSrc,
   "style-src 'self' 'unsafe-inline'",                // Tailwind inline styles
   "img-src 'self' data: https://lh3.googleusercontent.com https://lh4.googleusercontent.com",
   "font-src 'self'",

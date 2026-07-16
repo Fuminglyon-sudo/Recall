@@ -5,20 +5,21 @@ import { getCurrentUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
-  scenarioContext: z.string().min(10),
-  characterType: z.string().min(1),
-  characterPrompt: z.string().min(1),
+  scenarioContext: z.string().min(10).max(2000),
+  characterType: z.string().min(1).max(100),
+  characterPrompt: z.string().min(1).max(3000),
   messages: z
     .array(
       z.object({
         role: z.enum(["user", "character"]),
-        content: z.string().min(1),
+        content: z.string().min(1).max(4000),
       })
     )
-    .min(1),
+    .min(1)
+    .max(20),
   exchangeCount: z.number().int().min(0),
   forceEnd: z.boolean().optional(),
-  practiceGoal: z.string().optional(),
+  practiceGoal: z.string().max(500).optional(),
 });
 
 export async function POST(req: NextRequest) {

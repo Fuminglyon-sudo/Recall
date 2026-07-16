@@ -11,7 +11,7 @@ export function createSessionToken(): Promise<string> {
 // Hash both sides to a fixed-length digest first — timingSafeEqual throws on
 // mismatched lengths, and comparing raw input lengths/bytes directly would
 // leak information about the correct username/password through timing.
-function safeEqual(a: string, b: string): boolean {
+export function safeEqual(a: string, b: string): boolean {
   const ha = createHash("sha256").update(a).digest();
   const hb = createHash("sha256").update(b).digest();
   return timingSafeEqual(ha, hb);
