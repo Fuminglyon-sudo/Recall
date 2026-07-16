@@ -8,7 +8,7 @@ import { MarketingFooter } from "@/components/marketing-footer";
 export const metadata: Metadata = {
   title: "Features — Sọrọ Sọkẹ AI",
   description:
-    "Sọrọ Sọkẹ AI features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, and Conversation Lab social coaching.",
+    "Sọrọ Sọkẹ AI features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, Conversation Lab social coaching, and Debate Lab reasoning practice.",
   keywords: [
     "spaced repetition features",
     "AI flashcard app",
@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     "vocabulary app features",
     "Speak Up practice",
     "Conversation Lab",
+    "Debate Lab",
+    "debate practice app",
+    "argument coaching",
     "flashcard comparison Anki Duolingo",
     "Soro Soke features",
   ],
@@ -44,6 +47,7 @@ const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
   ["Push reminders",             true,  false, true,  false],
   ["Speak Up speaking practice", true,  false, false, false],
   ["Conversation Lab coaching",  true,  false, false, false],
+  ["Debate Lab reasoning practice", true, false, false, false],
   ["Build your own vocabulary",  true,  true,  false, true ],
   ["Free trial included",        true,  true,  true,  true ],
 ];
@@ -174,6 +178,77 @@ export default function FeaturesPage() {
                 height={620}
                 className="w-full h-auto"
               />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Practice modes ── */}
+        <section className="py-20 border-b border-white/8">
+          <div className="space-y-10">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Practice modes</p>
+              <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>Apply what you know under pressure</h2>
+              <p className="text-slate-400">Three interactive modes that put your language and thinking to the test in real situations.</p>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-3">
+              {[
+                {
+                  label: "Speak Up",
+                  href: "/speak-up",
+                  accent: "text-violet-300",
+                  accentBg: "bg-violet-400/10",
+                  bullets: [
+                    "High-stakes scenario library",
+                    "Voice or typed responses",
+                    "Score, filler-word count, model answer",
+                    "Ideal full-conversation replay",
+                  ],
+                  desc: "Rehearse before a specific high-pressure moment: a pitch, an interview, a negotiation. You perform; the AI coaches.",
+                },
+                {
+                  label: "Conversation Lab",
+                  href: "/conversation-lab",
+                  accent: "text-sky-300",
+                  accentBg: "bg-sky-400/10",
+                  bullets: [
+                    "Open social scenarios",
+                    "Real-time next-move coaching",
+                    "No script or guided prompts",
+                    "Social fluency scoring",
+                  ],
+                  desc: "Drop into a natural setting — a networking event, a long flight, a dinner party — with no script and get coached on every move.",
+                },
+                {
+                  label: "Debate Lab",
+                  href: "/debate-lab",
+                  accent: "text-amber-300",
+                  accentBg: "bg-amber-400/10",
+                  bullets: [
+                    "Formal motions or real-life situations",
+                    "4 opponent archetypes with scouting reports",
+                    "Prep room before you begin",
+                    "Skill sub-scores across 5 dimensions",
+                  ],
+                  desc: "Go five structured exchanges against an AI that argues back. Win on logic, evidence, and composure — not just volume.",
+                },
+              ].map(({ label, href, accent, accentBg, bullets, desc }) => (
+                <div key={label} className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <div className={`inline-flex items-center rounded-xl px-3 py-1 text-xs font-semibold ${accentBg} ${accent}`}>
+                    {label}
+                  </div>
+                  <p className="text-sm leading-6 text-slate-400">{desc}</p>
+                  <ul className="space-y-2">
+                    {bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-2.5 text-sm text-slate-300">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{b}
+                      </li>
+                    ))}
+                  </ul>
+                  <a href={href} className={`inline-flex items-center gap-1 text-xs font-medium ${accent} hover:underline`}>
+                    Try it →
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         </section>

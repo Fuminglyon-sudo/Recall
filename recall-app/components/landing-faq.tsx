@@ -80,6 +80,26 @@ const FAQS = [
     q: "How does Speak Up scoring work?",
     a: "After a Speak Up session you receive a score from 0–10, a breakdown of what landed well, specific areas to sharpen, a filler-word count tracking verbal habits like 'um' and 'uh', a model response showing how your answer could have landed better, and an idealized version of the full conversation — how it could have gone if you had been at your best from the start. The score reflects clarity, structure, how well you held your position, and your verbal delivery.",
   },
+  {
+    q: "What is Debate Lab?",
+    a: "Debate Lab puts you in a structured debate against an AI opponent. Pick a formal motion (like 'AI should be regulated by governments') or describe a real-life situation — a salary push, a product decision, a disagreement with a colleague. Choose your position, study the prep room, then go five exchanges with an AI that argues back and adapts to your points. Afterward you receive a score, argument-by-argument feedback, skill sub-scores across five dimensions, and a full coaching debrief.",
+  },
+  {
+    q: "How is Debate Lab different from Speak Up?",
+    a: "Speak Up is one-sided and coaching-focused — you rehearse delivering a response (a pitch, an interview answer, a negotiation opener) and the AI evaluates it. Debate Lab is adversarial and interactive — the AI argues back, challenges your logic, and tries to win. It's the difference between rehearsing a speech and actually being challenged in a meeting.",
+  },
+  {
+    q: "How does Debate Lab scoring work?",
+    a: "After five exchanges you receive an overall score from 0–100, a Win/Draw/Loss verdict, and skill sub-scores across five dimensions: Clarity, Evidence, Rebuttal, Logic, and Composure. You also get an argument-by-argument breakdown (each exchange rated Strong, Okay, or Weak), your opponent's strongest point, and the best counterargument you missed.",
+  },
+  {
+    q: "What is the Debate Lab prep room?",
+    a: "Before the debate begins, the prep room gives you three key arguments to lead with, two likely attacks your opponent will make (each with a suggested rebuttal), and one thing to watch out for based on your motion and the opponent type you chose. Read it, prepare, and enter when you're ready.",
+  },
+  {
+    q: "What does the audience sway meter show?",
+    a: "The sway meter tracks how the imagined audience's opinion shifts in real time across each exchange. A strong point swings the meter toward you; a weak or conceded point swings it back. By the end you can see the cumulative arc of the debate and which exchanges moved the needle most — not just your final score.",
+  },
 ];
 
 export function LandingFaq() {
