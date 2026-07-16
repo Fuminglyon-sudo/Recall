@@ -325,13 +325,24 @@ export function SpeakUpClient({
   const [convOpen, setConvOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
+  // Bumped whenever the scenario resets so a stale in-flight grade request
+  // from a previous scenario can never mutate the current one.
+  const sessionEpochRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   const activeQuestion = active && persona
     ? (active.personaQuestions?.[persona.id] ?? active.question)
     : active?.question ?? "";
 
   // ── Reset ──────────────────────────────────────────────────────────────────
+  function invalidateInFlight() {
+    sessionEpochRef.current += 1;
+    abortRef.current?.abort();
+    abortRef.current = null;
+  }
+
   function reset() {
+    invalidateInFlight();
     setActive(null);
     setPersona(null);
     setPracticeGoal(null);
@@ -346,6 +357,7 @@ export function SpeakUpClient({
   }
 
   function retryOpening() {
+    invalidateInFlight();
     setMessages([]);
     setDraft("");
     setExchangeCount(0);
@@ -420,13 +432,27 @@ export function SpeakUpClient({
   }
 
   function stopRecording() {
-    recognitionRef.current?.stop();
+    const rec = recognitionRef.current;
+    if (rec) {
+      // Detach handlers before stop() — a final result arriving after send
+      // would otherwise resurrect the just-sent transcript into the draft.
+      rec.onresult = null;
+      rec.onerror = null;
+      rec.onend = null;
+      rec.stop();
+      recognitionRef.current = null;
+    }
     setRecording(false);
   }
 
   // ── Send message ───────────────────────────────────────────────────────────
   async function sendMessage(force = false) {
-    if (!active || !persona || (!draft.trim() && !force)) return;
+    if (!active || !persona || (!draft.trim() && !force) || loading) return;
+
+    invalidateInFlight();
+    const epoch = sessionEpochRef.current;
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const userMessage: Message = { role: "speaker", content: draft.trim() };
     const nextMessages = draft.trim() ? [...messages, userMessage] : messages;
@@ -444,6 +470,7 @@ export function SpeakUpClient({
       const res = await fetch("/api/speak-grade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           scenario: `${active.setting}\n\nQuestion asked: "${activeQuestion}"`,
           personaPrompt: persona.aiPrompt,
@@ -455,8 +482,10 @@ export function SpeakUpClient({
         }),
       });
 
+      if (epoch !== sessionEpochRef.current) return;
       if (!res.ok) throw new Error("Request failed");
       const data = (await res.json()) as { type: string; followupQuestion?: string; score?: number; strongPoints?: string[]; improvements?: string[]; modelAnswer?: string; modelConversation?: Array<{ role: "speaker" | "listener"; content: string }> };
+      if (epoch !== sessionEpochRef.current) return;
 
       if (data.type === "followup" && data.followupQuestion) {
         setMessages((prev) => [...prev, { role: "listener", content: data.followupQuestion! }]);
@@ -500,10 +529,11 @@ export function SpeakUpClient({
             .finally(() => setSavingSession(false));
         }
       }
-    } catch {
+    } catch (err) {
+      if ((err as Error).name === "AbortError" || epoch !== sessionEpochRef.current) return;
       setError("Something went wrong. Please try again.");
     } finally {
-      setLoading(false);
+      if (epoch === sessionEpochRef.current) setLoading(false);
     }
   }
 
