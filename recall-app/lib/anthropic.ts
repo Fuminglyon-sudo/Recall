@@ -883,6 +883,53 @@ Return strict JSON: { "message": "your in-character rebuttal", "audienceReaction
   }
 }
 
+export const REACTION_SENTINEL_RE = /⟦REACTION:(-?\d+)⟧/;
+
+/**
+ * Streaming variant of the ongoing debate exchange. Returns the raw SDK
+ * MessageStream, or null when no API key is configured — callers fall back
+ * to conductDebate's canned response in that case. The prompt asks for
+ * plain text plus a trailing ⟦REACTION:n⟧ sentinel instead of JSON so
+ * tokens can be forwarded to the client as they arrive.
+ */
+export function streamDebateReply(input: {
+  motion: string;
+  position: "for" | "against";
+  opponentPrompt: string;
+  messages: DebateMessage[];
+}) {
+  if (!client) return null;
+
+  const opponentPosition = input.position === "for" ? "against" : "for";
+  const history = input.messages
+    .map((m) =>
+      m.role === "user"
+        ? `Debater (${input.position}): ${m.content}`
+        : `You (${opponentPosition}): ${m.content}`
+    )
+    .join("\n\n");
+
+  const prompt = `You are debating the motion: "${input.motion}"
+You are arguing ${opponentPosition.toUpperCase()} this motion.
+${input.opponentPrompt}
+
+Debate so far:
+${history}
+
+Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and specific — react to exactly what they just said. Push back hard but stay on topic. Do not concede the whole argument, but you may acknowledge a point if it genuinely lands.
+
+After your rebuttal, on its own final line, write exactly ⟦REACTION:n⟧ where n is an integer from -3 to 3 rating how the audience received the debater's most recent argument (-3 = clearly swaying against them, 0 = neutral, 3 = clearly persuaded).`;
+
+  return client.messages.stream({
+    model: "claude-sonnet-4-6",
+    max_tokens: 350,
+    temperature: 0.7,
+    system:
+      "You are roleplaying a debate opponent. Reply with plain conversational text only — no JSON, no markdown, no preamble. End with the ⟦REACTION:n⟧ sentinel line.",
+    messages: [{ role: "user", content: prompt }],
+  });
+}
+
 // ─── Debate Prep Room ──────────────────────────────────────────────────────
 
 export type DebatePrepRequest = {

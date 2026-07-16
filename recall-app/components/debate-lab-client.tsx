@@ -18,10 +18,9 @@ type Motion = {
 };
 
 type OpponentType = {
-  id: string;
+  id: "skeptic" | "idealist" | "pragmatist" | "devils-advocate";
   label: string;
   description: string;
-  prompt: string;
   openingMove: string;
   weakness: string;
   telltale: string;
@@ -119,7 +118,6 @@ const OPPONENT_TYPES: OpponentType[] = [
     openingMove: "Immediately demands evidence for your first claim — 'That's an assertion, where's the proof?' is their opener.",
     weakness: "Strong when you're vague, weak when you cite concrete data or examples. Lead with specifics.",
     telltale: "They repeat 'But what's your evidence?' — pivot to your strongest example every single time.",
-    prompt: "You are a rigorous skeptic. You challenge every claim that lacks evidence. You ask 'What's your proof for that?' and 'What does the data say?' You are not hostile, but you are relentless. You never accept a vague assertion when you can demand specifics. You concede a point only when it is genuinely supported. Your tone is cool, precise, and unforgiving of weak reasoning.",
   },
   {
     id: "idealist",
@@ -128,7 +126,6 @@ const OPPONENT_TYPES: OpponentType[] = [
     openingMove: "Reframes the motion as a moral question — 'Before outcomes, we need to ask what this says about our values.'",
     weakness: "Strong on principle, weak on practicality. Ask 'That's a beautiful vision — how does it actually work?'",
     telltale: "They steer every exchange toward fairness or justice. Anchor your responses in real-world consequences.",
-    prompt: "You are a principled idealist. You argue from values — justice, fairness, human dignity — not just from outcomes. When your opponent argues purely from consequences, you push back: 'But what kind of world does that create?' You are warm but firm. You refuse to let pragmatic arguments crowd out moral ones. You believe some things are worth defending regardless of their immediate utility.",
   },
   {
     id: "pragmatist",
@@ -137,7 +134,6 @@ const OPPONENT_TYPES: OpponentType[] = [
     openingMove: "Asks 'What does this look like in practice?' before engaging — they want implementation, not theory.",
     weakness: "Dismisses values-based arguments, making them vulnerable when data is ambiguous. Lead with principle then.",
     telltale: "They say 'In theory, sure, but...' constantly — they've conceded your principle. Press them on implementation.",
-    prompt: "You are a hard-nosed pragmatist. You only care about what actually works. Abstract principles and moral arguments bore you unless they translate into real outcomes. You push back with 'But what does that mean in practice?' and 'Show me where that has actually worked.' You are direct, results-focused, and unimpressed by idealism. You will concede a point if someone shows you strong evidence.",
   },
   {
     id: "devils-advocate",
@@ -146,15 +142,8 @@ const OPPONENT_TYPES: OpponentType[] = [
     openingMove: "Names your best argument before you make it, then dismantles it — 'You'll probably say X, here's why that fails.'",
     weakness: "By pre-empting your arguments they often create strawmen. Call it out: 'That's not quite what I argued — my actual claim is...'",
     telltale: "Most aggressive when you're onto something strong. Escalating pushback often means you're winning the point.",
-    prompt: "You are a devil's advocate — you argue the opposing position with complete commitment, regardless of your personal views. You are there to find every weakness in your opponent's case. You anticipate their arguments and counter them preemptively. You bring up angles they probably haven't considered. You are precise, strategic, and intellectually aggressive. Your goal is to stress-test their thinking until it either breaks or becomes unbreakable.",
   },
 ];
-
-const DIFFICULTY_MODIFIER: Record<Difficulty, string> = {
-  easy:   " DIFFICULTY: Easy — you occasionally acknowledge strong points and give some openings. Formidable but not at full intensity.",
-  medium: " DIFFICULTY: Medium — debate realistically. Push back on weak arguments, acknowledge genuinely strong ones.",
-  hard:   " DIFFICULTY: Hard — bring your strongest arguments, expose every logical gap, give almost no concessions.",
-};
 
 const DEBATE_PHASES = [
   { name: "Opening Statement",   instruction: "State your position and your single strongest reason for it.",                                  placeholder: "State your position and your single strongest reason for it." },
@@ -272,6 +261,10 @@ export function DebateLabClient({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const threadEndRef = useRef<HTMLDivElement>(null);
+  // Bumped whenever the debate resets/restarts so in-flight fetches from a
+  // previous motion can never mutate the current one after the fact.
+  const sessionEpochRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     threadEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -279,8 +272,10 @@ export function DebateLabClient({
 
   const filteredMotions = categoryFilter === "all" ? MOTIONS : MOTIONS.filter((m) => m.category === categoryFilter);
 
-  function opponentPromptWithDifficulty() {
-    return activeOpponent.prompt + DIFFICULTY_MODIFIER[difficulty];
+  function invalidateInFlight() {
+    sessionEpochRef.current += 1;
+    abortRef.current?.abort();
+    abortRef.current = null;
   }
 
   async function loadPrep() {
@@ -328,6 +323,7 @@ export function DebateLabClient({
   }
 
   function reset() {
+    invalidateInFlight();
     setActiveMotion(null);
     setMessages([]);
     setMessagePhases([]);
@@ -354,6 +350,7 @@ export function DebateLabClient({
   }
 
   function restartSameMotion() {
+    invalidateInFlight();
     setMessages([]);
     setMessagePhases([]);
     setDraft("");
@@ -435,8 +432,13 @@ export function DebateLabClient({
   }
 
   async function sendArgument() {
-    if (!activeMotion || !position || !draft.trim()) return;
+    if (!activeMotion || !position || !draft.trim() || loading) return;
     stopRecording();
+
+    invalidateInFlight();
+    const epoch = sessionEpochRef.current;
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const phaseName = getPhase(exchangeCount).name;
     const newMessages: Message[] = [...messages, { role: "user", content: draft.trim() }];
@@ -453,47 +455,106 @@ export function DebateLabClient({
       const response = await fetch("/api/debate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           motion: activeMotion.text,
           position,
-          opponentType: activeOpponent.label,
-          opponentPrompt: opponentPromptWithDifficulty(),
+          opponentId: activeOpponent.id,
+          difficulty,
           messages: newMessages,
-          exchangeCount: newExchangeCount,
           forceEnd: false,
         }),
       });
 
+      if (epoch !== sessionEpochRef.current) return;
+
       if (!response.ok) {
         const err = (await response.json().catch(() => ({}))) as { error?: string };
+        if (epoch !== sessionEpochRef.current) return;
         setError(response.status === 401 ? "Your session has expired. Please refresh and log in again." : (err.error ?? "Request failed. Try again."));
         return;
       }
 
-      const data = (await response.json()) as
-        | { type: "response"; message: string; audienceReaction: number }
-        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
+      const contentType = response.headers.get("content-type") ?? "";
 
-      if (data.type === "response") {
-        setMessages((prev) => [...prev, { role: "opponent", content: data.message }]);
-        setMessagePhases((prev) => [...prev, ""]);
-        if (typeof data.audienceReaction === "number") {
-          setSwayHistory((prev) => [...prev, data.audienceReaction]);
+      // JSON path: the turn-limit feedback, or the no-API-key fallback reply.
+      if (contentType.includes("application/json")) {
+        const data = (await response.json()) as
+          | { type: "response"; message: string; audienceReaction: number }
+          | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
+        if (epoch !== sessionEpochRef.current) return;
+
+        if (data.type === "response") {
+          setMessages((prev) => [...prev, { role: "opponent", content: data.message }]);
+          setMessagePhases((prev) => [...prev, ""]);
+          if (typeof data.audienceReaction === "number") {
+            setSwayHistory((prev) => [...prev, data.audienceReaction]);
+          }
+        } else {
+          setFeedback(data);
+          autoSave(data, newMessages, newExchangeCount);
         }
-      } else {
-        setFeedback(data);
-        autoSave(data, newMessages, newExchangeCount);
+        return;
       }
-    } catch {
+
+      // SSE path: stream the rebuttal token-by-token into a live opponent bubble.
+      if (!response.body) throw new Error("No response stream.");
+      setMessages((prev) => [...prev, { role: "opponent", content: "" }]);
+      setMessagePhases((prev) => [...prev, ""]);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let sseBuffer = "";
+      let opponentText = "";
+
+      const applyText = (text: string) => {
+        opponentText += text;
+        if (epoch !== sessionEpochRef.current) return;
+        setMessages((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = { role: "opponent", content: opponentText };
+          return next;
+        });
+      };
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        sseBuffer += decoder.decode(value, { stream: true });
+        const frames = sseBuffer.split("\n\n");
+        sseBuffer = frames.pop() ?? "";
+        for (const frame of frames) {
+          const eventName = frame.match(/^event: (.+)$/m)?.[1];
+          const dataLine = frame.match(/^data: (.+)$/m)?.[1];
+          if (!eventName || !dataLine) continue;
+          const payload = JSON.parse(dataLine) as { text?: string; audienceReaction?: number; error?: string };
+          if (eventName === "text" && payload.text) applyText(payload.text);
+          else if (eventName === "done") {
+            if (epoch === sessionEpochRef.current) {
+              setSwayHistory((prev) => [...prev, payload.audienceReaction ?? 0]);
+            }
+          } else if (eventName === "error") {
+            throw new Error(payload.error ?? "Stream failed.");
+          }
+        }
+      }
+    } catch (err) {
+      if ((err as Error).name === "AbortError" || epoch !== sessionEpochRef.current) return;
       setError("Something went wrong. Check your connection and try again.");
     } finally {
-      setLoading(false);
+      if (epoch === sessionEpochRef.current) setLoading(false);
     }
   }
 
   async function endDebate() {
-    if (!activeMotion || !position) return;
+    if (!activeMotion || !position || loading) return;
     stopRecording();
+
+    invalidateInFlight();
+    const epoch = sessionEpochRef.current;
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     const finalMessages = messages;
     const finalCount = exchangeCount;
     setLoading(true);
@@ -503,24 +564,28 @@ export function DebateLabClient({
       const response = await fetch("/api/debate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           motion: activeMotion.text,
           position,
-          opponentType: activeOpponent.label,
-          opponentPrompt: opponentPromptWithDifficulty(),
+          opponentId: activeOpponent.id,
+          difficulty,
           messages: finalMessages,
-          exchangeCount: finalCount,
           forceEnd: true,
         }),
       });
 
+      if (epoch !== sessionEpochRef.current) return;
+
       if (!response.ok) {
         const err = (await response.json().catch(() => ({}))) as { error?: string };
+        if (epoch !== sessionEpochRef.current) return;
         setError(response.status === 401 ? "Your session has expired. Please refresh and log in again." : (err.error ?? "Request failed. Try again."));
         return;
       }
 
       const data = (await response.json()) as { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
+      if (epoch !== sessionEpochRef.current) return;
 
       if (data.type !== "feedback" || typeof data.score !== "number") {
         setError("Feedback couldn't be generated. Please try again.");
@@ -529,10 +594,11 @@ export function DebateLabClient({
 
       setFeedback(data);
       autoSave(data, finalMessages, finalCount);
-    } catch {
+    } catch (err) {
+      if ((err as Error).name === "AbortError" || epoch !== sessionEpochRef.current) return;
       setError("Something went wrong. Check your connection and try again.");
     } finally {
-      setLoading(false);
+      if (epoch === sessionEpochRef.current) setLoading(false);
     }
   }
 
@@ -1199,7 +1265,7 @@ export function DebateLabClient({
             )
           )
         )}
-        {loading ? (
+        {loading && messages[messages.length - 1]?.role !== "opponent" ? (
           <div className="flex justify-start">
             <div className="rounded-2xl rounded-tl-sm border border-white/10 bg-white/5 px-4 py-3">
               <div className="flex gap-1.5">
