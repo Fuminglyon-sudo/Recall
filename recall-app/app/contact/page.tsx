@@ -7,7 +7,7 @@ import { ArrowLeft, Mail, MessageCircle } from "lucide-react";
 export const metadata: Metadata = {
   title: "Contact Soro Soke",
   description:
-    "Have a question about Soro Soke, spaced repetition, or how the app works? Reach out to the team — we'd love to hear from you.",
+    "Have a question about Soro Soke, spaced repetition, building confidence, or how the app works? Reach out to the team — we'd love to hear from you.",
 };
 
 export default function ContactPage() {

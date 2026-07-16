@@ -9,12 +9,13 @@ import { POST_IMAGES, CATEGORY_STYLES } from "./images";
 export const metadata: Metadata = {
   title: "Blog — Sọrọ Sọkẹ AI",
   description:
-    "Articles on spaced repetition, vocabulary building, speaking confidence, and the science of memory — from the Sọrọ Sọkẹ AI team.",
+    "Articles on spaced repetition, vocabulary building, speaking confidence, overcoming social anxiety, and the science of memory — from the Sọrọ Sọkẹ AI team.",
   keywords: [
     "spaced repetition blog",
     "vocabulary tips",
     "conversation skills",
     "speaking confidence",
+    "social anxiety tips",
     "learning science",
     "SM-2",
     "communication blog",

@@ -19,6 +19,8 @@ export const metadata: Metadata = {
     "Debate Lab FAQ",
     "debate practice questions",
     "AI debate coach",
+    "social anxiety app",
+    "confidence building app",
   ],
   robots: { index: true, follow: true },
   alternates: { canonical: "/faq" },

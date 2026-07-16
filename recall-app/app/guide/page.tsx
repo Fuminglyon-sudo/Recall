@@ -4,13 +4,15 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Guide — How to Use Soro Soke",
   description:
-    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, and building social fluency with Conversation Lab.",
+    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, easing social anxiety with Conversation Lab, and building reasoning confidence with Debate Lab.",
   keywords: [
     "Soro Soke guide",
     "how to use spaced repetition",
     "flashcard guide",
     "Speak Up guide",
     "Conversation Lab guide",
+    "Debate Lab guide",
+    "social anxiety practice",
     "SM-2 tutorial",
   ],
 };

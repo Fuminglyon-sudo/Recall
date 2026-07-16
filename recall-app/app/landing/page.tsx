@@ -6,7 +6,7 @@ import { LandingPage } from "@/components/landing-page";
 export const metadata: Metadata = {
   title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking, Conversation & Debate Skills",
   description:
-    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speaking, social conversations, and real-world debate with AI coaching. Free for the first 50 users — no credit card needed.",
+    "Build lasting vocabulary with SM-2 spaced repetition. Practice high-stakes speaking, ease social anxiety in conversation, and build reasoning confidence in real-world debate with AI coaching. Free for the first 50 users — no credit card needed.",
   keywords: [
     "spaced repetition app",
     "vocabulary builder",
@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     "debate practice app",
     "argument practice",
     "reasoning skills",
+    "social anxiety app",
+    "confidence building app",
+    "overcome social anxiety",
     "Soro Soke",
     "AI language learning",
   ],
@@ -28,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking, Conversation & Debate Skills",
     description:
-      "Build vocabulary with spaced repetition. Practice high-stakes speaking, social conversations, and real-world debate with AI feedback. Free for the first 50 users.",
+      "Build vocabulary with spaced repetition. Practice high-stakes speaking, ease social anxiety in conversation, and build confidence in real-world debate with AI feedback. Free for the first 50 users.",
     type: "website",
     url: "/",
     images: [{ url: "/dashboard.png", width: 1200, height: 630, alt: "Sọrọ Sọkẹ AI" }],

@@ -20,6 +20,8 @@ export const metadata: Metadata = {
     "Debate Lab",
     "debate practice app",
     "argument coaching",
+    "social anxiety app",
+    "confidence building app",
     "flashcard comparison Anki Duolingo",
     "Soro Soke features",
   ],

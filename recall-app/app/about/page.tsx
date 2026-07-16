@@ -17,24 +17,27 @@ import {
 export const metadata: Metadata = {
   title: "About Sọrọ Sọkẹ AI — Learn Words. Practice Using Them. Keep Both.",
   description:
-    "Sọrọ Sọkẹ AI is a communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, and Conversation Lab sharpens social fluency. Learn the word. Practice using it. Own it.",
+    "Sọrọ Sọkẹ AI is a communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, Conversation Lab eases social anxiety, and Debate Lab builds reasoning confidence. Learn the word. Practice using it. Own it.",
   keywords: [
     "how Soro Soke works",
     "spaced repetition algorithm",
     "SM-2",
     "Speak Up practice",
     "Conversation Lab",
+    "Debate Lab",
     "vocabulary app",
     "AI flashcards",
     "spaced repetition app",
     "communication confidence",
+    "social anxiety app",
+    "confidence building app",
   ],
   robots: { index: true, follow: true },
   alternates: { canonical: "/about" },
   openGraph: {
-    title: "About Sọrọ Sọkẹ AI — Spaced Repetition, Speak Up & Conversation Lab",
+    title: "About Sọrọ Sọkẹ AI — Spaced Repetition, Speak Up, Conversation & Debate Lab",
     description:
-      "How Sọrọ Sọkẹ AI works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, and Conversation Lab social practice.",
+      "How Sọrọ Sọkẹ AI works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, Conversation Lab social-anxiety practice, and Debate Lab reasoning practice.",
     type: "website",
     url: "/about",
   },
@@ -42,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Sọrọ Sọkẹ AI",
     description:
-      "SM-2 spaced repetition, AI-drafted flashcards, and Speak Up & Conversation Lab practice — all in one app.",
+      "SM-2 spaced repetition, AI-drafted flashcards, and Speak Up, Conversation Lab & Debate Lab practice for confidence and social anxiety — all in one app.",
   },
 };
 

@@ -29,11 +29,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosoke.ai";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
+    default: "Sọrọ Sọkẹ AI — Vocabulary, Speaking, Conversation & Confidence Practice",
     template: "%s | Sọrọ Sọkẹ AI",
   },
   description:
-    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, and develop social fluency with Conversation Lab. Free for the first 50 users.",
+    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, ease social anxiety with Conversation Lab, and build reasoning confidence with Debate Lab. Practice the moment before the anxiety does. Free for the first 50 users.",
   keywords: [
     "spaced repetition",
     "vocabulary builder",
@@ -45,6 +45,11 @@ export const metadata: Metadata = {
     "communication skills",
     "speak up practice",
     "conversation lab",
+    "debate lab",
+    "social anxiety app",
+    "confidence building app",
+    "overcome social anxiety",
+    "social confidence training",
     "Soro Soke",
     "language learning app",
   ],
@@ -67,9 +72,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking & Conversation Practice",
+    title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking, Conversation & Confidence Practice",
     description:
-      "Build vocabulary with spaced repetition. Practice speaking and social conversations with AI. Free for the first 50 users.",
+      "Build vocabulary with spaced repetition. Ease social anxiety and build confidence with AI-coached speaking, conversation, and debate practice. Free for the first 50 users.",
     images: ["/dashboard.png"],
   },
   appleWebApp: {
@@ -94,7 +99,7 @@ const websiteJsonLd = {
   name: "Sọrọ Sọkẹ AI",
   url: SITE_URL,
   description:
-    "SM-2 spaced repetition, AI-drafted flashcards, Speak Up high-stakes practice, and Conversation Lab social coaching — all in one app.",
+    "SM-2 spaced repetition, AI-drafted flashcards, Speak Up high-stakes practice, Conversation Lab social-anxiety coaching, and Debate Lab reasoning practice — all in one app.",
   applicationCategory: "EducationApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/LimitedAvailability" },

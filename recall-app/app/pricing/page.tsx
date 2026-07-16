@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Pricing — Sọrọ Sọkẹ AI",
   description:
     "Sọrọ Sọkẹ AI pricing: free for the first 50 founders, then $9.99/month or $99/year for Pro. 14-day free trial, no card required.",
-  keywords: ["Soro Soke pricing", "spaced repetition app price", "vocabulary app subscription", "founder pricing", "free trial"],
+  keywords: ["Soro Soke pricing", "spaced repetition app price", "vocabulary app subscription", "confidence building app price", "founder pricing", "free trial"],
   robots: { index: true, follow: true },
   alternates: { canonical: "/pricing" },
   openGraph: {
