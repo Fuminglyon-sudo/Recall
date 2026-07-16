@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { conductSocialConversation } from "@/lib/anthropic";
 import { CHARACTER_IDS, CHARACTER_LABELS, buildCharacterPrompt } from "@/lib/conversation-characters";
-import { getCurrentUserId } from "@/lib/session";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
   scenarioContext: z.string().min(10).max(2000),
+  scenarioTag: z.string().min(1),
+  scenarioEmoji: z.string().min(1),
   characterId: z.enum(CHARACTER_IDS),
   difficulty: z.enum(["easy", "medium", "hard"]),
   tension: z.string().max(1000).optional(),
@@ -35,13 +38,48 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
-    const { characterId, difficulty, tension, ...rest } = parsed.data;
+    const { characterId, difficulty, tension, scenarioTag, scenarioEmoji, ...rest } = parsed.data;
     const result = await conductSocialConversation({
       ...rest,
       characterType: CHARACTER_LABELS[characterId],
       characterPrompt: buildCharacterPrompt(characterId, difficulty, tension),
     });
-    return NextResponse.json(result);
+
+    if (result.type !== "feedback") {
+      return NextResponse.json(result);
+    }
+
+    // Persist the session server-side, from the score the LLM judge just
+    // computed — not from a separate client-trusted save call. The old flow
+    // let the client re-POST its own score to /api/social-sessions after
+    // receiving this same feedback.
+    let sessionId: string | null = null;
+    try {
+      const uid = scopedUserId(userId);
+      const session = await prisma.socialSession.create({
+        data: {
+          userId: uid,
+          scenarioTag,
+          scenarioEmoji,
+          scenarioContext: rest.scenarioContext,
+          characterLabel: CHARACTER_LABELS[characterId],
+          difficulty,
+          exchangeCount: rest.exchangeCount,
+          score: result.score,
+          strongPoints: result.strongPoints,
+          improvements: result.improvements,
+          powerMove: result.powerMove,
+          messages: rest.messages,
+          practiceGoal: rest.practiceGoal ?? null,
+          ...(result.modelConversation ? { modelConversation: result.modelConversation } : {}),
+        },
+      });
+      sessionId = session.id;
+    } catch (err) {
+      console.error("[social-conversation] failed to save session", err);
+    }
+
+    return NextResponse.json({ ...result, sessionId });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Request failed. Try again." }, { status: 500 });

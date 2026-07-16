@@ -38,6 +38,7 @@ type FeedbackResult = {
   turningPoint?: string;
   modelConversation?: Array<{ role: "user" | "character"; content: string }>;
   modelOptions?: string[][];
+  sessionId: string | null;
 };
 
 const CATEGORY_LABELS: Record<Category, string> = {
@@ -255,7 +256,6 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [convOpen, setConvOpen] = useState(false);
@@ -423,6 +423,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenarioContext: activeScenario.context,
+          scenarioTag: activeScenario.tag,
+          scenarioEmoji: activeScenario.emoji,
           characterId: activeCharacter.id,
           difficulty,
           tension: activeScenario.tension,
@@ -445,13 +447,15 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
 
       const data = (await response.json()) as
         | { type: "response"; message: string }
-        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; powerMove: string; turningPoint?: string; modelConversation?: Array<{ role: "user" | "character"; content: string }> };
+        | (FeedbackResult & { type: "feedback" });
 
       if (data.type === "response") {
         setMessages((prev) => [...prev, { role: "character", content: data.message }]);
       } else {
         setFeedback(data);
         setConvOpen(false);
+        setSaved(!!data.sessionId);
+        setSaveError(!data.sessionId);
       }
     } catch {
       setError("Something went wrong. Check your connection and try again.");
@@ -481,6 +485,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenarioContext: activeScenario.context,
+          scenarioTag: activeScenario.tag,
+          scenarioEmoji: activeScenario.emoji,
           characterId: activeCharacter.id,
           difficulty,
           tension: activeScenario.tension,
@@ -501,16 +507,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
         return;
       }
 
-      const data = (await response.json()) as {
-        type: "feedback";
-        score: number;
-        strongPoints: string[];
-        improvements: string[];
-        powerMove: string;
-        turningPoint?: string;
-        modelConversation?: Array<{ role: "user" | "character"; content: string }>;
-        modelOptions?: string[][];
-      };
+      const data = (await response.json()) as FeedbackResult & { type: "feedback" };
 
       if (data.type !== "feedback" || typeof data.score !== "number") {
         setError("Feedback couldn't be generated. Please try again.");
@@ -519,30 +516,8 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
 
       setFeedback(data);
       setConvOpen(false);
-
-      // auto-save using local vars to avoid stale closure
-      setSaving(true);
-      fetch("/api/social-sessions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          scenarioTag: activeScenario.tag,
-          scenarioEmoji: activeScenario.emoji,
-          scenarioContext: activeScenario.context,
-          characterLabel: activeCharacter.label,
-          difficulty,
-          practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.label : undefined,
-          exchangeCount: finalCount,
-          score: data.score,
-          strongPoints: data.strongPoints,
-          improvements: data.improvements,
-          powerMove: data.powerMove,
-          messages: finalMessages,
-          modelConversation: data.modelConversation ?? undefined,
-        }),
-      }).then((res) => { if (res.ok) setSaved(true); else setSaveError(true); })
-        .catch(() => setSaveError(true))
-        .finally(() => setSaving(false));
+      setSaved(!!data.sessionId);
+      setSaveError(!data.sessionId);
     } catch {
       setError("Something went wrong. Check your connection and try again.");
     } finally {
@@ -868,9 +843,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
           ) : null}
         </div>
 
-        {saving ? (
-          <p className="text-xs text-slate-500">Saving session…</p>
-        ) : saved ? (
+        {saved ? (
           <div className="flex items-center gap-3 text-xs">
             <span className="text-emerald-400">Session saved to history</span>
             <Link href="/conversation-lab/history" className="text-emerald-300 transition hover:text-emerald-200">
