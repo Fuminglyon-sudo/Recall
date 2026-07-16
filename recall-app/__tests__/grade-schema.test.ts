@@ -81,4 +81,23 @@ describe("gradeSchema", () => {
     });
     expect(result.success).toBe(true);
   });
+
+  // Regression coverage for the streak timezone fix: older clients (or a
+  // request that simply omits it) must still parse, defaulting to UTC.
+  test("tzOffsetMinutes defaults to 0 when omitted", () => {
+    const result = gradeSchema.safeParse({ cardId: "card1", grade: "3" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.tzOffsetMinutes).toBe(0);
+  });
+
+  test("tzOffsetMinutes accepts a real-world negative offset (e.g. Lagos, UTC+1)", () => {
+    const result = gradeSchema.safeParse({ cardId: "card1", grade: "3", tzOffsetMinutes: "-60" });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.tzOffsetMinutes).toBe(-60);
+  });
+
+  test("tzOffsetMinutes rejects an out-of-range value", () => {
+    const result = gradeSchema.safeParse({ cardId: "card1", grade: "3", tzOffsetMinutes: "9999" });
+    expect(result.success).toBe(false);
+  });
 });
