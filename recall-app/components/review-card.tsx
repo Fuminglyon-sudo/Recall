@@ -58,6 +58,7 @@ export function ReviewCard({
     const formData = new FormData();
     formData.set("cardId", card.id);
     formData.set("grade", String(value));
+    formData.set("tzOffsetMinutes", String(new Date().getTimezoneOffset()));
     if (isFirstReview && association.trim()) {
       formData.set("association", association.trim());
     }

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
-import { isSameCalendarDay } from "@/lib/date";
+import { isSameCalendarDay, startOfLocalDay } from "@/lib/date";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { computeDistribution } from "@/lib/mastery";
 import { achievementsFromReview } from "@/lib/achievements";
@@ -15,9 +15,10 @@ export async function gradeCard(formData: FormData) {
     cardId: formData.get("cardId"),
     grade: formData.get("grade"),
     association: formData.get("association") ?? undefined,
+    tzOffsetMinutes: formData.get("tzOffsetMinutes") ?? undefined,
   });
   if (!parsed.success) return;
-  const { cardId, grade } = parsed.data;
+  const { cardId, grade, tzOffsetMinutes } = parsed.data;
 
   const userId = await getCurrentUserId();
   if (!userId) return;
@@ -53,8 +54,7 @@ export async function gradeCard(formData: FormData) {
     });
 
     const streak = await tx.streak.findFirst({ where: { userId: uid } });
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = startOfLocalDay(tzOffsetMinutes);
 
     if (!streak) {
       await tx.streak.create({
