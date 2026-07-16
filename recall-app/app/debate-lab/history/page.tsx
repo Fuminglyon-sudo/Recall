@@ -27,7 +27,7 @@ export default async function DebateLabHistoryPage() {
   const uid = scopedUserId(userId);
 
   const sessions = await prisma.debateSession.findMany({
-    where: { userId: uid ?? undefined },
+    where: { userId: uid },
     orderBy: { createdAt: "desc" },
     take: 50,
     select: {

@@ -21,7 +21,7 @@ export default async function ConversationLabHistoryPage() {
   const uid = scopedUserId(userId);
 
   const sessions = await prisma.socialSession.findMany({
-    where: { userId: uid ?? undefined },
+    where: { userId: uid },
     orderBy: { createdAt: "desc" },
     take: 50,
     select: {

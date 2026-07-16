@@ -21,7 +21,7 @@ export default async function SpeakUpHistoryPage() {
   const uid = scopedUserId(userId);
 
   const sessions = await prisma.speakUpSession.findMany({
-    where: { userId: uid ?? undefined },
+    where: { userId: uid },
     orderBy: { createdAt: "desc" },
     take: 50,
     select: {

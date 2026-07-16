@@ -97,19 +97,19 @@ async function getDashboardData(uid: string | null) {
       orderBy: { createdAt: "asc" },
     }),
     prisma.speakUpSession.findMany({
-      where: { userId: uid ?? undefined },
+      where: { userId: uid },
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { score: true, practiceGoal: true, createdAt: true },
     }),
     prisma.socialSession.findMany({
-      where: { userId: uid ?? undefined },
+      where: { userId: uid },
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { score: true, practiceGoal: true, createdAt: true },
     }),
     prisma.debateSession.findMany({
-      where: { userId: uid ?? undefined },
+      where: { userId: uid },
       orderBy: { createdAt: "desc" },
       take: 10,
       select: { score: true, createdAt: true },

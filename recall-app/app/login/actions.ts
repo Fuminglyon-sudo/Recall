@@ -2,7 +2,7 @@
 
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { checkCredentials, createSessionToken, COOKIE_NAME } from "@/lib/auth";
+import { checkCredentials, createSessionToken, COOKIE_NAME, SESSION_MAX_AGE_SECONDS } from "@/lib/auth";
 
 // In-memory rate limiter — works per process instance.
 // On serverless (Vercel), each cold start gets a fresh map, which is fine:
@@ -49,14 +49,14 @@ export async function loginAction(formData: FormData) {
   // Successful login — clear the counter for this IP
   attempts.delete(ip);
 
-  const token = createSessionToken();
+  const token = await createSessionToken();
   const jar = await cookies();
   jar.set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
+    maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
   redirect(from || "/");

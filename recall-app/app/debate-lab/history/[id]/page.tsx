@@ -40,7 +40,7 @@ export default async function DebateSessionDetailPage({
   const uid = scopedUserId(userId);
 
   const session = await prisma.debateSession.findFirst({
-    where: { id, userId: uid ?? undefined },
+    where: { id, userId: uid },
     select: {
       id: true,
       createdAt: true,

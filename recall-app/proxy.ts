@@ -1,27 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { verifyAdminToken } from "@/lib/auth-token";
 
 const ADMIN_COOKIE = "recall_session";
 
-async function verifyAdminToken(token: string): Promise<boolean> {
-  if (!token) return false;
-  const secret = process.env.AUTH_SECRET ?? "fallback-dev-secret";
-  const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode("authenticated"));
-  const expected = Array.from(new Uint8Array(sig))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  return token === expected;
-}
-
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Always allow: root landing, login, Next.js internals, static assets, auth API, SW, icons
@@ -50,7 +33,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── Path 1: Admin (env-var HMAC cookie) ─────────────────────────────────
+  // ── Path 1: Admin (env-var signed cookie) ────────────────────────────────
   const adminToken = req.cookies.get(ADMIN_COOKIE)?.value ?? "";
   if (await verifyAdminToken(adminToken)) {
     return NextResponse.next();
