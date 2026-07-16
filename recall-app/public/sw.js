@@ -1,4 +1,4 @@
-const CACHE = "sorosoke-v3";
+const CACHE = "sorosoke-v4";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -16,6 +16,11 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Only these navigations are safe to persist offline — everything past
+// login renders user-specific data server-side into the HTML, so caching
+// it would let it survive logout on a shared device.
+const PUBLIC_PAGES = /^\/($|landing|about|features|pricing|faq|privacy|terms|contact|blog|login|guide)/;
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -28,7 +33,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((res) => {
-          if (res.ok) {
+          if (res.ok && PUBLIC_PAGES.test(url.pathname)) {
             caches.open(CACHE).then((c) => c.put(request, res.clone()));
           }
           return res;
@@ -81,6 +86,15 @@ self.addEventListener("push", (event) => {
       renotify: false,
     })
   );
+});
+
+// Triggered from the client on logout so a shared device doesn't keep
+// serving cached authenticated pages (/today, /decks/*, debate history, etc.)
+// from the offline cache after the session ends.
+self.addEventListener("message", (event) => {
+  if (event.data === "purge-caches") {
+    event.waitUntil(caches.delete(CACHE));
+  }
 });
 
 self.addEventListener("notificationclick", (event) => {

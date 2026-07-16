@@ -80,6 +80,9 @@ export async function POST(
   if (!text.trim()) {
     return NextResponse.json({ error: "Empty file." }, { status: 400 });
   }
+  if (text.length > 512 * 1024) {
+    return NextResponse.json({ error: "File too large (512KB max)." }, { status: 413 });
+  }
 
   const rows = parseCSV(text.trim());
   if (rows.length < 2) {
@@ -106,18 +109,25 @@ export async function POST(
   const synonymsIdx = col("synonyms");
   const kindIdx = col("kind");
 
+  const MAX_ROWS = 1000;
+  const clip = (s: string | undefined, n: number) => {
+    const v = (s ?? "").trim();
+    return v ? v.slice(0, n) : null;
+  };
+
   const now = new Date();
   const cards = dataRows
+    .slice(0, MAX_ROWS)
     .filter((r) => r[frontIdx]?.trim() && r[backIdx]?.trim())
     .map((r) => ({
       deckId: deck.id,
-      front: r[frontIdx].trim(),
-      back: r[backIdx].trim(),
-      partOfSpeech: partOfSpeechIdx !== -1 ? (r[partOfSpeechIdx]?.trim() || null) : null,
-      example: exampleIdx !== -1 ? (r[exampleIdx]?.trim() || null) : null,
-      hook: hookIdx !== -1 ? (r[hookIdx]?.trim() || null) : null,
-      synonyms: synonymsIdx !== -1 ? (r[synonymsIdx]?.trim() || null) : null,
-      kind: kindIdx !== -1 ? (r[kindIdx]?.trim() || "VOCABULARY") : "VOCABULARY",
+      front: clip(r[frontIdx], 500)!,
+      back: clip(r[backIdx], 2000)!,
+      partOfSpeech: partOfSpeechIdx !== -1 ? clip(r[partOfSpeechIdx], 100) : null,
+      example: exampleIdx !== -1 ? clip(r[exampleIdx], 1000) : null,
+      hook: hookIdx !== -1 ? clip(r[hookIdx], 1000) : null,
+      synonyms: synonymsIdx !== -1 ? clip(r[synonymsIdx], 500) : null,
+      kind: kindIdx !== -1 ? (clip(r[kindIdx], 50) ?? "VOCABULARY") : "VOCABULARY",
       dueAt: now,
     }));
 

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, LayoutDashboard, Settings, LogOut } from "lucide-react";
+import { purgeOfflineCaches } from "@/lib/service-worker";
 
 export function LandingUserMenu({ userName }: { userName?: string | null }) {
   const [open, setOpen] = useState(false);
@@ -63,6 +64,7 @@ export function LandingUserMenu({ userName }: { userName?: string | null }) {
           <div className="border-t border-white/8 py-1">
             <a
               href="/api/logout"
+              onClick={purgeOfflineCaches}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-400 transition hover:bg-white/8 hover:text-red-400"
             >
               <LogOut className="h-4 w-4" />

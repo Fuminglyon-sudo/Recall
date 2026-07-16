@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SoroSokeLogo } from "./soro-soke-logo";
 import { ThemeToggle } from "./theme-toggle";
+import { purgeOfflineCaches } from "@/lib/service-worker";
 import {
   LayoutDashboard,
   CalendarCheck2,
@@ -205,6 +206,7 @@ function SidebarContent({
         <p className="text-xs text-slate-600">One thing at a time.</p>
         <a
           href="/api/logout"
+          onClick={purgeOfflineCaches}
           className="flex items-center gap-2 text-xs text-slate-500 transition hover:text-slate-300"
         >
           <LogOut className="h-3.5 w-3.5" />

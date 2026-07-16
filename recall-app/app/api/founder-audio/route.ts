@@ -15,6 +15,12 @@ export async function POST(request: Request) {
     if (!(file instanceof File)) {
       return NextResponse.json({ error: "No audio file provided" }, { status: 400 });
     }
+    if (!file.type.startsWith("audio/")) {
+      return NextResponse.json({ error: "File must be an audio recording." }, { status: 400 });
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: "Audio file too large (10MB max)." }, { status: 413 });
+    }
 
     const transcript = await transcribeFounderAudio(file);
     return NextResponse.json({ transcript });

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { SoroSokeLogo } from "./soro-soke-logo";
 import { ThemeToggle } from "./theme-toggle";
+import { purgeOfflineCaches } from "@/lib/service-worker";
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
@@ -291,7 +292,7 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                       Settings
                     </Link>
                     <div style={{ height: "1px", background: "rgba(255,255,255,0.07)", margin: "2px 0" }} />
-                    <a href="/api/logout" className="flex items-center gap-3 px-4 py-3 text-sm text-slate-400 transition hover:bg-white/6 hover:text-rose-400">
+                    <a href="/api/logout" onClick={purgeOfflineCaches} className="flex items-center gap-3 px-4 py-3 text-sm text-slate-400 transition hover:bg-white/6 hover:text-rose-400">
                       <LogOut className="h-4 w-4" />
                       Sign out
                     </a>
