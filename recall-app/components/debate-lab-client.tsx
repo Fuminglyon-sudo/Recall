@@ -47,6 +47,7 @@ type Feedback = {
   modelRebuttal: string;
   argumentBreakdown: ArgumentNote[];
   skillScores: SkillScores | null;
+  sessionId: string | null;
 };
 
 type PrepResult = {
@@ -244,7 +245,6 @@ export function DebateLabClient({
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [convOpen, setConvOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [prep, setPrep] = useState<PrepResult | null>(null);
@@ -481,7 +481,7 @@ export function DebateLabClient({
       if (contentType.includes("application/json")) {
         const data = (await response.json()) as
           | { type: "response"; message: string; audienceReaction: number }
-          | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
+          | (Feedback & { type: "feedback" });
         if (epoch !== sessionEpochRef.current) return;
 
         if (data.type === "response") {
@@ -492,7 +492,8 @@ export function DebateLabClient({
           }
         } else {
           setFeedback(data);
-          autoSave(data, newMessages, newExchangeCount);
+          setSaved(!!data.sessionId);
+          setSaveError(!data.sessionId);
         }
         return;
       }
@@ -556,7 +557,6 @@ export function DebateLabClient({
     abortRef.current = controller;
 
     const finalMessages = messages;
-    const finalCount = exchangeCount;
     setLoading(true);
     setError(null);
 
@@ -584,7 +584,7 @@ export function DebateLabClient({
         return;
       }
 
-      const data = (await response.json()) as { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
+      const data = (await response.json()) as Feedback & { type: "feedback" };
       if (epoch !== sessionEpochRef.current) return;
 
       if (data.type !== "feedback" || typeof data.score !== "number") {
@@ -593,39 +593,14 @@ export function DebateLabClient({
       }
 
       setFeedback(data);
-      autoSave(data, finalMessages, finalCount);
+      setSaved(!!data.sessionId);
+      setSaveError(!data.sessionId);
     } catch (err) {
       if ((err as Error).name === "AbortError" || epoch !== sessionEpochRef.current) return;
       setError("Something went wrong. Check your connection and try again.");
     } finally {
       if (epoch === sessionEpochRef.current) setLoading(false);
     }
-  }
-
-  function autoSave(data: Feedback, msgs: Message[], count: number) {
-    if (!activeMotion || !position) return;
-    setSaving(true);
-    fetch("/api/debate-sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        motion: activeMotion.text,
-        position,
-        opponentType: activeOpponent.label,
-        difficulty,
-        exchangeCount: count,
-        score: data.score,
-        strongPoints: data.strongPoints,
-        improvements: data.improvements,
-        keyFallacy: data.keyFallacy ?? null,
-        missedArg: data.missedArg,
-        modelRebuttal: data.modelRebuttal,
-        messages: msgs,
-      }),
-    })
-      .then((res) => { if (res.ok) setSaved(true); else setSaveError(true); })
-      .catch(() => setSaveError(true))
-      .finally(() => setSaving(false));
   }
 
   // ── Setup ─────────────────────────────────────────────────────────────────
@@ -1151,9 +1126,7 @@ export function DebateLabClient({
           ) : null}
         </div>
 
-        {saving ? (
-          <p className="text-xs text-slate-500">Saving session…</p>
-        ) : saved ? (
+        {saved ? (
           <div className="flex items-center gap-3 text-xs">
             <span className="text-emerald-400">Session saved</span>
             <Link href="/debate-lab/history" className="text-emerald-300 transition hover:text-emerald-200">View history →</Link>

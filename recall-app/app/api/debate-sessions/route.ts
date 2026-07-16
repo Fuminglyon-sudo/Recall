@@ -1,64 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
-import { checkRateLimit } from "@/lib/rate-limit";
 
-const messageSchema = z.object({
-  role: z.enum(["user", "opponent"]),
-  content: z.string(),
-});
-
-const saveSchema = z.object({
-  motion: z.string().min(5),
-  position: z.enum(["for", "against"]),
-  opponentType: z.string().min(1),
-  difficulty: z.enum(["easy", "medium", "hard"]),
-  exchangeCount: z.number().int().min(0),
-  score: z.number().int().min(1).max(10),
-  strongPoints: z.array(z.string()),
-  improvements: z.array(z.string()),
-  keyFallacy: z.string().nullable().optional(),
-  missedArg: z.string(),
-  modelRebuttal: z.string(),
-  messages: z.array(messageSchema),
-});
-
-export async function POST(req: NextRequest) {
-  const userId = await getCurrentUserId();
-  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  if (!checkRateLimit("debate-sessions", userId, 30)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
-
-  try {
-    const body = (await req.json()) as unknown;
-    const parsed = saveSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
-    }
-    const uid = scopedUserId(userId);
-    const session = await prisma.debateSession.create({
-      data: {
-        userId: uid,
-        motion: parsed.data.motion,
-        position: parsed.data.position,
-        opponentType: parsed.data.opponentType,
-        difficulty: parsed.data.difficulty,
-        exchangeCount: parsed.data.exchangeCount,
-        score: parsed.data.score,
-        strongPoints: parsed.data.strongPoints,
-        improvements: parsed.data.improvements,
-        keyFallacy: parsed.data.keyFallacy ?? null,
-        missedArg: parsed.data.missedArg,
-        modelRebuttal: parsed.data.modelRebuttal,
-        messages: parsed.data.messages,
-      },
-    });
-    return NextResponse.json({ id: session.id });
-  } catch (err) {
-    console.error("[debate-sessions]", err);
-    return NextResponse.json({ error: "Failed to save session." }, { status: 500 });
-  }
-}
+// Sessions are created server-side in /api/debate at the moment the LLM
+// judge computes the score (see the mustEnd branch there) — there is no
+// longer a client-facing POST here, since accepting a client-supplied score
+// would let a crafted request save a fabricated result.
 
 export async function GET() {
   const userId = await getCurrentUserId();

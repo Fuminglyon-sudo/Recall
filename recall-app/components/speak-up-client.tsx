@@ -38,6 +38,7 @@ type GradeResult = {
   improvements: string[];
   modelAnswer: string;
   modelConversation?: Array<{ role: "speaker" | "listener"; content: string }>;
+  sessionId: string | null;
 };
 
 const CATEGORY_LABELS: Record<Category, string> = {
@@ -313,7 +314,6 @@ export function SpeakUpClient({
   const [result, setResult] = useState<GradeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [savedSession, setSavedSession] = useState(false);
-  const [savingSession, setSavingSession] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [convOpen, setConvOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -466,18 +466,21 @@ export function SpeakUpClient({
         signal: controller.signal,
         body: JSON.stringify({
           scenario: `${active.setting}\n\nQuestion asked: "${activeQuestion}"`,
+          scenarioId: active.id,
+          scenarioTag: active.tag,
           personaId: persona.id,
           difficulty,
           messages: nextMessages,
           exchangeCount: nextExchange,
           forceEnd: force,
           practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
+          practiceGoalLabel: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label : undefined,
         }),
       });
 
       if (epoch !== sessionEpochRef.current) return;
       if (!res.ok) throw new Error("Request failed");
-      const data = (await res.json()) as { type: string; followupQuestion?: string; score?: number; strongPoints?: string[]; improvements?: string[]; modelAnswer?: string; modelConversation?: Array<{ role: "speaker" | "listener"; content: string }> };
+      const data = (await res.json()) as { type: string; followupQuestion?: string; score?: number; strongPoints?: string[]; improvements?: string[]; modelAnswer?: string; modelConversation?: Array<{ role: "speaker" | "listener"; content: string }>; sessionId?: string | null };
       if (epoch !== sessionEpochRef.current) return;
 
       if (data.type === "followup" && data.followupQuestion) {
@@ -490,37 +493,13 @@ export function SpeakUpClient({
           improvements: data.improvements ?? [],
           modelAnswer: data.modelAnswer ?? "",
           modelConversation: data.modelConversation,
+          sessionId: data.sessionId ?? null,
         };
         setResult(finalResult);
         setConvOpen(false);
         setExchangeCount(nextExchange);
-
-        // Auto-save immediately using the result data from this closure
-        if (active && persona) {
-          setSavingSession(true);
-          fetch("/api/speak-sessions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              scenarioId: active.id,
-              scenarioTag: active.tag,
-              personaId: persona.id,
-              personaLabel: persona.label,
-              difficulty,
-              practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label : null,
-              exchangeCount: nextExchange,
-              score: finalResult.score,
-              strongPoints: finalResult.strongPoints,
-              improvements: finalResult.improvements,
-              modelAnswer: finalResult.modelAnswer,
-              modelConversation: finalResult.modelConversation ?? null,
-              messages: nextMessages,
-            }),
-          })
-            .then((res) => { if (res.ok) setSavedSession(true); else setSaveError(true); })
-            .catch(() => setSaveError(true))
-            .finally(() => setSavingSession(false));
-        }
+        setSavedSession(!!finalResult.sessionId);
+        setSaveError(!finalResult.sessionId);
       }
     } catch (err) {
       if ((err as Error).name === "AbortError" || epoch !== sessionEpochRef.current) return;
@@ -880,7 +859,7 @@ export function SpeakUpClient({
           ) : saveError ? (
             <span>Session completed, but could not be saved. Check your connection.</span>
           ) : (
-            <span>{savingSession ? "Saving session…" : "Session not saved"}</span>
+            <span>Session not saved</span>
           )}
           {savedSession ? (
             <Link href="/speak-up/history" className="ml-auto text-xs text-emerald-400/70 hover:text-emerald-300 transition">

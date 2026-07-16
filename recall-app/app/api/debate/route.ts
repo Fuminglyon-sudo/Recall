@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { conductDebate, streamDebateReply, REACTION_SENTINEL_RE } from "@/lib/anthropic";
 import { OPPONENT_IDS, OPPONENT_LABELS, buildOpponentPrompt } from "@/lib/debate-opponents";
-import { getCurrentUserId } from "@/lib/session";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { prisma } from "@/lib/prisma";
 
 const messageSchema = z.object({
   role: z.enum(["user", "opponent"]),
@@ -49,7 +50,42 @@ export async function POST(req: NextRequest) {
         motion, position, opponentType, opponentPrompt,
         messages, exchangeCount, forceEnd: true,
       });
-      return NextResponse.json(result);
+
+      if (result.type !== "feedback") {
+        return NextResponse.json(result);
+      }
+
+      // Persist the session server-side, from the score the LLM judge just
+      // computed — not from anything the client could supply. The old flow
+      // had the client re-POST its own score to /api/debate-sessions after
+      // receiving this same feedback, which meant a crafted request could
+      // save a fabricated win with no relationship to an actual debate.
+      let sessionId: string | null = null;
+      try {
+        const uid = scopedUserId(userId);
+        const session = await prisma.debateSession.create({
+          data: {
+            userId: uid,
+            motion,
+            position,
+            opponentType,
+            difficulty,
+            exchangeCount,
+            score: result.score,
+            strongPoints: result.strongPoints,
+            improvements: result.improvements,
+            keyFallacy: result.keyFallacy,
+            missedArg: result.missedArg,
+            modelRebuttal: result.modelRebuttal,
+            messages,
+          },
+        });
+        sessionId = session.id;
+      } catch (err) {
+        console.error("[debate] failed to save session", err);
+      }
+
+      return NextResponse.json({ ...result, sessionId });
     }
 
     const stream = streamDebateReply({ motion, position, opponentPrompt, messages });
