@@ -136,6 +136,10 @@ model Streak {
   longestStreak  Int       @default(0)
   lastReviewDate DateTime?
   recoveryUsedAt DateTime?
+  // When the current streak began (first review, or the day it last reset
+  // to 1). Used to tell whether a recovery was used *during* this streak
+  // ("Perfect Streak" badge) vs. in some earlier streak.
+  streakStartedAt DateTime?
   // null = admin streak; set for all new users
   userId         String?   @unique
   user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)

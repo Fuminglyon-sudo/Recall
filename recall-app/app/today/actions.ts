@@ -58,7 +58,7 @@ export async function gradeCard(formData: FormData) {
 
     if (!streak) {
       await tx.streak.create({
-        data: { currentStreak: 1, longestStreak: 1, lastReviewDate: today, userId: uid },
+        data: { currentStreak: 1, longestStreak: 1, lastReviewDate: today, streakStartedAt: today, userId: uid },
       });
       newCurrentStreak = 1;
       return;
@@ -69,17 +69,23 @@ export async function gradeCard(formData: FormData) {
     yesterday.setDate(yesterday.getDate() - 1);
 
     let currentStreak = streak.currentStreak;
-    if (!lastDate) currentStreak = 1;
+    let isNewStreak = false;
+    if (!lastDate) { currentStreak = 1; isNewStreak = true; }
     else if (isSameCalendarDay(lastDate, today)) currentStreak = streak.currentStreak;
     else if (isSameCalendarDay(lastDate, yesterday)) currentStreak = streak.currentStreak + 1;
-    else currentStreak = 1;
+    else { currentStreak = 1; isNewStreak = true; }
 
     newCurrentStreak = currentStreak;
     const longestStreak = Math.max(streak.longestStreak, currentStreak);
 
     await tx.streak.update({
       where: { id: streak.id },
-      data: { currentStreak, longestStreak, lastReviewDate: today },
+      data: {
+        currentStreak,
+        longestStreak,
+        lastReviewDate: today,
+        ...(isNewStreak ? { streakStartedAt: today } : {}),
+      },
     });
   });
 
