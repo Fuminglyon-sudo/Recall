@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
 import { isSameCalendarDay } from "@/lib/date";
@@ -8,9 +10,20 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { computeDistribution } from "@/lib/mastery";
 import { achievementsFromReview } from "@/lib/achievements";
 
+const gradeSchema = z.object({
+  cardId: z.string().min(1),
+  grade: z.coerce.number().int().min(0).max(5),
+  association: z.string().max(1000).optional(),
+});
+
 export async function gradeCard(formData: FormData) {
-  const cardId = String(formData.get("cardId") ?? "");
-  const grade = Number(formData.get("grade") ?? 0);
+  const parsed = gradeSchema.safeParse({
+    cardId: formData.get("cardId"),
+    grade: formData.get("grade"),
+    association: formData.get("association") ?? undefined,
+  });
+  if (!parsed.success) return;
+  const { cardId, grade } = parsed.data;
 
   const userId = await getCurrentUserId();
   if (!userId) return;
@@ -28,7 +41,7 @@ export async function gradeCard(formData: FormData) {
     grade,
   });
 
-  const association = String(formData.get("association") ?? "").trim();
+  const association = parsed.data.association?.trim() ?? "";
 
   let newCurrentStreak = 0;
 
@@ -76,42 +89,46 @@ export async function gradeCard(formData: FormData) {
     });
   });
 
-  // Award achievements — non-critical, skip for admin (null uid)
+  // Achievements scan the whole collection — run after the response so the
+  // grade round-trip stays at one transaction. Skip for admin (null uid).
   if (uid) {
-    try {
-      const [totalReviews, allCards, existingAchievements] = await Promise.all([
-        prisma.reviewLog.count({ where: { card: { deck: { userId: uid } } } }),
-        prisma.card.findMany({
-          where: { deck: { userId: uid } },
-          select: { interval: true, repetitions: true, easeFactor: true },
-        }),
-        prisma.userAchievement.findMany({
-          where: { userId: uid },
-          select: { achievementId: true },
-        }),
-      ]);
+    const streakForAchievements = newCurrentStreak;
+    after(async () => {
+      try {
+        const [totalReviews, allCards, existingAchievements] = await Promise.all([
+          prisma.reviewLog.count({ where: { card: { deck: { userId: uid } } } }),
+          prisma.card.findMany({
+            where: { deck: { userId: uid } },
+            select: { interval: true, repetitions: true, easeFactor: true },
+          }),
+          prisma.userAchievement.findMany({
+            where: { userId: uid },
+            select: { achievementId: true },
+          }),
+        ]);
 
-      const { mastered } = computeDistribution(allCards);
-      const existingIds = new Set(existingAchievements.map((a) => a.achievementId));
-      const earned = achievementsFromReview({
-        totalReviews,
-        currentStreak: newCurrentStreak,
-        masteredCount: mastered,
-      });
-      const toAward = earned.filter((id) => !existingIds.has(id));
-
-      if (toAward.length > 0) {
-        await prisma.userAchievement.createMany({
-          data: toAward.map((achievementId) => ({
-            id: crypto.randomUUID(),
-            userId: uid,
-            achievementId,
-          })),
+        const { mastered } = computeDistribution(allCards);
+        const existingIds = new Set(existingAchievements.map((a) => a.achievementId));
+        const earned = achievementsFromReview({
+          totalReviews,
+          currentStreak: streakForAchievements,
+          masteredCount: mastered,
         });
+        const toAward = earned.filter((id) => !existingIds.has(id));
+
+        if (toAward.length > 0) {
+          await prisma.userAchievement.createMany({
+            data: toAward.map((achievementId) => ({
+              id: crypto.randomUUID(),
+              userId: uid,
+              achievementId,
+            })),
+          });
+        }
+      } catch {
+        // Non-critical
       }
-    } catch {
-      // Non-critical
-    }
+    });
   }
 
   revalidatePath("/");

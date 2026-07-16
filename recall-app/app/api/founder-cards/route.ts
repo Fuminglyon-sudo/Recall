@@ -13,7 +13,7 @@ const schema = z.object({
 export async function POST(request: Request) {
   const userId = await getCurrentUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  if (!checkRateLimit(userId, 20)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
+  if (!checkRateLimit("founder-cards", userId, 20)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
 
   try {
     const body = await request.json();
