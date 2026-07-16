@@ -683,7 +683,7 @@ export type DebateRequest = {
 };
 
 export type DebateStep =
-  | { type: "response"; message: string }
+  | { type: "response"; message: string; audienceReaction: number }
   | {
       type: "feedback";
       score: number;
@@ -700,6 +700,7 @@ function fallbackDebateStep(exchangeCount: number): DebateStep {
       type: "response",
       message:
         "That's an interesting point, but I'm not convinced. Can you back that up with something more concrete?",
+      audienceReaction: 0,
     };
   }
   return {
@@ -797,17 +798,103 @@ ${input.opponentPrompt}
 Debate so far:
 ${history}
 
-Respond now as the opponent. Keep your response to 2-4 sentences. Be direct and specific — react to exactly what they just said. Push back hard but stay on topic. Do not concede the whole argument, but you may acknowledge a point if it genuinely lands.`;
+Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and specific — react to exactly what they just said. Push back hard but stay on topic. Do not concede the whole argument, but you may acknowledge a point if it genuinely lands.
+
+Also rate how the audience is responding to the debater's most recent argument. audienceReaction is an integer from -3 to 3:
+  -3 = audience clearly swaying against the debater (weak, confused, or fallacious argument)
+  -1 to -2 = audience slightly unmoved or leaning away
+  0 = neutral / too early to tell
+  1 to 2 = audience leaning toward the debater
+  3 = audience clearly persuaded by this argument (strong evidence, sharp logic)
+
+Return strict JSON: { "message": "your in-character rebuttal", "audienceReaction": integer }`;
 
   const response = await client.messages.create({
     model: "claude-sonnet-4-6",
-    max_tokens: 300,
+    max_tokens: 350,
     temperature: 0.7,
     system:
-      "You are a skilled debater. Respond in plain prose — no bullet points, no headers. Stay in character. Be sharp and specific.",
+      "Return only valid JSON with keys message and audienceReaction. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
   });
 
-  const message = extractText(response.content).trim();
-  return { type: "response", message: message || "Interesting — but I need a stronger argument than that. What's your evidence?" };
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as { message?: string; audienceReaction?: number };
+    return {
+      type: "response",
+      message: parsed.message?.trim() || "Interesting — but I need a stronger argument than that. What's your evidence?",
+      audienceReaction: typeof parsed.audienceReaction === "number" ? Math.max(-3, Math.min(3, Math.round(parsed.audienceReaction))) : 0,
+    };
+  } catch {
+    return {
+      type: "response",
+      message: "Interesting — but I need a stronger argument than that. What's your evidence?",
+      audienceReaction: 0,
+    };
+  }
+}
+
+// ─── Debate Prep Room ──────────────────────────────────────────────────────
+
+export type DebatePrepRequest = {
+  motion: string;
+  position: "for" | "against";
+  opponentType: string;
+};
+
+export type DebatePrepResult = {
+  keyArguments: string[];
+  likelyCounters: Array<{ attack: string; rebuttal: string }>;
+  watchOut: string;
+};
+
+export async function generateDebatePrep(input: DebatePrepRequest): Promise<DebatePrepResult> {
+  if (!client) return fallbackDebatePrep(input);
+
+  const prompt = `You are a debate coach preparing someone to argue ${input.position.toUpperCase()} the motion: "${input.motion}"
+Their opponent is: ${input.opponentType}
+
+Return strict JSON with exactly these fields:
+{
+  "keyArguments": ["3 strong arguments they should make, each 1-2 sentences. Concrete, specific, defensible."],
+  "likelyCounters": [
+    { "attack": "The most likely challenge this opponent will make", "rebuttal": "How to answer it effectively in 1-2 sentences" },
+    { "attack": "Second most likely challenge", "rebuttal": "How to answer it" }
+  ],
+  "watchOut": "One-sentence warning about the most common mistake people make arguing this side of this motion — and how to avoid it"
+}`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 600,
+    temperature: 0.45,
+    system: "Return only valid JSON. No markdown. No preamble.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as DebatePrepResult;
+    return {
+      keyArguments: Array.isArray(parsed.keyArguments) ? parsed.keyArguments.slice(0, 3) : fallbackDebatePrep(input).keyArguments,
+      likelyCounters: Array.isArray(parsed.likelyCounters) ? parsed.likelyCounters.slice(0, 2) : fallbackDebatePrep(input).likelyCounters,
+      watchOut: typeof parsed.watchOut === "string" ? parsed.watchOut : fallbackDebatePrep(input).watchOut,
+    };
+  } catch {
+    return fallbackDebatePrep(input);
+  }
+}
+
+function fallbackDebatePrep(input: DebatePrepRequest): DebatePrepResult {
+  return {
+    keyArguments: [
+      `Make a clear claim about what arguing ${input.position} the motion means in practice.`,
+      "Back it up with one concrete real-world example or data point.",
+      "Pre-empt the strongest counterargument and show why it doesn't outweigh your position.",
+    ],
+    likelyCounters: [
+      { attack: "Your opponent will challenge your core evidence or example.", rebuttal: "Acknowledge any limitations, then explain why the evidence still supports your case on balance." },
+      { attack: "Your opponent will reframe the motion to make it harder to argue.", rebuttal: "Bring it back to the plain meaning of the motion and show why their reframe is a distraction." },
+    ],
+    watchOut: `Avoid making sweeping generalisations when arguing ${input.position} — ground every claim in something specific and provable.`,
+  };
 }

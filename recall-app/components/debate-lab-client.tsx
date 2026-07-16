@@ -38,6 +38,12 @@ type Feedback = {
   modelRebuttal: string;
 };
 
+type PrepResult = {
+  keyArguments: string[];
+  likelyCounters: Array<{ attack: string; rebuttal: string }>;
+  watchOut: string;
+};
+
 const CATEGORY_LABELS: Record<Category, string> = {
   all: "All motions",
   business: "Business",
@@ -216,6 +222,10 @@ export function DebateLabClient() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [prep, setPrep] = useState<PrepResult | null>(null);
+  const [prepLoading, setPrepLoading] = useState(false);
+  const [showPrep, setShowPrep] = useState(false);
+  const [swayHistory, setSwayHistory] = useState<number[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
@@ -229,6 +239,27 @@ export function DebateLabClient() {
 
   function opponentPromptWithDifficulty() {
     return activeOpponent.prompt + DIFFICULTY_MODIFIER[difficulty];
+  }
+
+  async function loadPrep() {
+    if (!activeMotion || !position) return;
+    setPrepLoading(true);
+    setShowPrep(true);
+    try {
+      const res = await fetch("/api/debate-prep", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ motion: activeMotion.text, position, opponentType: activeOpponent.label }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as PrepResult;
+        setPrep(data);
+      }
+    } catch {
+      // non-fatal — user can still debate without prep
+    } finally {
+      setPrepLoading(false);
+    }
   }
 
   function pickPosition(p: Position | "surprise") {
@@ -249,6 +280,9 @@ export function DebateLabClient() {
     setSaved(false);
     setSaveError(false);
     setScoutOpen(false);
+    setPrep(null);
+    setShowPrep(false);
+    setSwayHistory([]);
     stopRecording();
   }
 
@@ -261,6 +295,8 @@ export function DebateLabClient() {
     setError(null);
     setSaved(false);
     setSaveError(false);
+    setShowPrep(false);
+    setSwayHistory([]);
     stopRecording();
   }
 
@@ -368,12 +404,15 @@ export function DebateLabClient() {
       }
 
       const data = (await response.json()) as
-        | { type: "response"; message: string }
+        | { type: "response"; message: string; audienceReaction: number }
         | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string };
 
       if (data.type === "response") {
         setMessages((prev) => [...prev, { role: "opponent", content: data.message }]);
         setMessagePhases((prev) => [...prev, ""]);
+        if (typeof data.audienceReaction === "number") {
+          setSwayHistory((prev) => [...prev, data.audienceReaction]);
+        }
       } else {
         setFeedback(data);
         autoSave(data, newMessages, newExchangeCount);
@@ -653,15 +692,90 @@ export function DebateLabClient() {
               </div>
             </div>
 
-            <button
-              onClick={() => { if (position) { restartSameMotion(); } }}
-              disabled={!position}
-              className="w-full rounded-2xl bg-amber-400 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Start debate
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { if (position) { restartSameMotion(); } }}
+                disabled={!position}
+                className="flex-1 rounded-2xl bg-amber-400 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Start debate
+              </button>
+              <button
+                onClick={() => { if (position) void loadPrep(); }}
+                disabled={!position || prepLoading}
+                className="rounded-2xl border border-amber-400/25 bg-amber-400/8 px-4 py-3 text-sm font-semibold text-amber-300 transition hover:bg-amber-400/12 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {prepLoading ? "Preparing…" : "Prep me first"}
+              </button>
+            </div>
           </div>
         ) : null}
+      </div>
+    );
+  }
+
+  // ── Prep room ─────────────────────────────────────────────────────────────
+  if (showPrep && activeMotion && position) {
+    return (
+      <div className="space-y-5">
+        <div className="rounded-[2rem] border border-amber-400/15 bg-amber-400/5 p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">Debate prep briefing</p>
+          <p className="mt-1 text-sm font-semibold text-white">
+            {activeMotion.emoji} Arguing <span className={position === "for" ? "text-emerald-300" : "text-red-300"}>{position === "for" ? "FOR" : "AGAINST"}</span> · vs {activeOpponent.label}
+          </p>
+        </div>
+
+        {prepLoading ? (
+          <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-5">
+            <div className="flex gap-1.5">
+              {[0, 1, 2].map((i) => (
+                <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-amber-400/50" style={{ animationDelay: `${i * 120}ms` }} />
+              ))}
+            </div>
+            <p className="text-sm text-slate-400">Preparing your briefing…</p>
+          </div>
+        ) : prep ? (
+          <>
+            <div className="rounded-[2rem] border border-emerald-400/20 bg-emerald-400/5 p-5 space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">Your strongest arguments</p>
+              <ol className="space-y-2">
+                {prep.keyArguments.map((arg, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-emerald-400/30 bg-emerald-400/10 text-[10px] font-bold text-emerald-300">{i + 1}</span>
+                    <p className="text-sm leading-6 text-slate-200">{arg}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="rounded-[2rem] border border-red-400/20 bg-red-400/5 p-5 space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-red-400">Expect these challenges</p>
+              {prep.likelyCounters.map((counter, i) => (
+                <div key={i} className="space-y-1.5">
+                  <p className="text-sm font-medium text-slate-200">{counter.attack}</p>
+                  <p className="text-xs leading-5 text-slate-400">Your answer: {counter.rebuttal}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="rounded-[2rem] border border-amber-400/20 bg-amber-400/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-amber-400">Watch out</p>
+              <p className="mt-2 text-sm leading-6 text-slate-200">{prep.watchOut}</p>
+            </div>
+          </>
+        ) : (
+          <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-4">
+            <p className="text-sm text-slate-400">Couldn&apos;t load prep briefing. You can still debate — good luck!</p>
+          </div>
+        )}
+
+        <button
+          onClick={() => { restartSameMotion(); setShowPrep(false); }}
+          className="w-full rounded-2xl bg-amber-400 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-300"
+          disabled={prepLoading}
+        >
+          {prepLoading ? "Loading…" : "Enter the debate"}
+        </button>
       </div>
     );
   }
@@ -810,6 +924,36 @@ export function DebateLabClient() {
         </div>
         <p className="mt-1 text-xs text-slate-400">{phase.instruction}</p>
       </div>
+
+      {/* Audience sway meter */}
+      {swayHistory.length > 0 ? (() => {
+        const swayScore = Math.max(-9, Math.min(9, swayHistory.reduce((a, b) => a + b, 0)));
+        const pct = Math.abs(swayScore) / 9 * 50;
+        return (
+          <div className="rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-3">
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Audience</p>
+              <p className={`text-[10px] font-semibold ${swayScore > 1 ? "text-emerald-400" : swayScore < -1 ? "text-red-400" : "text-slate-500"}`}>
+                {swayScore > 1 ? "Leaning your way" : swayScore < -1 ? "Leaning against you" : "Undecided"}
+              </p>
+            </div>
+            <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+              <div
+                className={`absolute top-0 h-1.5 rounded-full transition-all duration-500 ${swayScore >= 0 ? "bg-emerald-400" : "bg-red-400"}`}
+                style={{ left: swayScore >= 0 ? "50%" : `${50 - pct}%`, width: `${pct}%` }}
+              />
+              <div className="absolute left-1/2 top-0 h-1.5 w-px bg-white/30" />
+            </div>
+            <div className="mt-2 flex gap-1">
+              {swayHistory.map((r, i) => (
+                <span key={i} title={`Exchange ${i + 1}: ${r > 0 ? "+" : ""}${r}`}
+                  className={`h-1.5 w-5 rounded-full ${r > 0 ? "bg-emerald-400/70" : r < 0 ? "bg-red-400/70" : "bg-white/20"}`}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })() : null}
 
       <div className="min-h-48 space-y-4 rounded-[2rem] border border-white/8 bg-white/[0.02] p-4">
         {messages.length === 0 ? (
