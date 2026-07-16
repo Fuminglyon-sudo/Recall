@@ -684,6 +684,14 @@ export type DebateRequest = {
 
 export type ArgumentNote = { exchange: number; verdict: "strong" | "weak" | "ok"; note: string };
 
+export type SkillScores = {
+  clarity: number | null;
+  evidence: number | null;
+  rebuttal: number | null;
+  logic: number | null;
+  composure: number | null;
+};
+
 export type DebateStep =
   | { type: "response"; message: string; audienceReaction: number }
   | {
@@ -695,6 +703,7 @@ export type DebateStep =
       missedArg: string;
       modelRebuttal: string;
       argumentBreakdown: ArgumentNote[];
+      skillScores: SkillScores | null;
     };
 
 function fallbackDebateStep(exchangeCount: number): DebateStep {
@@ -715,6 +724,7 @@ function fallbackDebateStep(exchangeCount: number): DebateStep {
     missedArg: "The strongest counterpoint went unaddressed — always name your opponent's best argument before rebutting it.",
     modelRebuttal: "A sharp rebuttal names the opponent's claim, concedes what's true in it, then pivots to the key flaw: 'You're right that X, but that ignores Y, which means...'",
     argumentBreakdown: [],
+    skillScores: null,
   };
 }
 
@@ -756,7 +766,14 @@ Return strict JSON with ALL of these fields:
   "argumentBreakdown": [
     for each debater turn in the conversation (index 1-based), one object:
     { "exchange": integer (1-based), "verdict": "strong" | "ok" | "weak", "note": "one sentence on what made this argument strong, acceptable, or weak" }
-  ]
+  ],
+  "skillScores": {
+    "clarity": integer 1-10 (how clearly they stated their claims — was the point obvious or buried?),
+    "evidence": integer 1-10 (how well they backed claims with examples, data, or reasoning — not just assertions),
+    "rebuttal": integer 1-10 (how effectively they responded to the opponent's challenges — did they actually engage with what was said?),
+    "logic": integer 1-10 (was the reasoning sound? Were conclusions supported by their premises?),
+    "composure": integer 1-10 (did they stay focused and structured under pressure, or did they waffle, repeat, or get flustered?)
+  }
 }`;
 
     const response = await client.messages.create({
@@ -777,6 +794,7 @@ Return strict JSON with ALL of these fields:
         missedArg: string;
         modelRebuttal: string;
         argumentBreakdown?: Array<{ exchange: number; verdict: string; note: string }>;
+        skillScores?: { clarity?: number; evidence?: number; rebuttal?: number; logic?: number; composure?: number };
       };
       const score = Math.min(10, Math.max(1, Math.round(Number(parsed.score))));
       const argumentBreakdown: ArgumentNote[] = Array.isArray(parsed.argumentBreakdown)
@@ -788,6 +806,17 @@ Return strict JSON with ALL of these fields:
               note: b.note,
             }))
         : [];
+      const clamp = (n: unknown) => Math.min(10, Math.max(1, Math.round(Number(n))));
+      const ss = parsed.skillScores ?? {};
+      const skillScores = (ss && typeof ss === "object")
+        ? {
+            clarity:   typeof ss.clarity === "number"   ? clamp(ss.clarity)   : null,
+            evidence:  typeof ss.evidence === "number"  ? clamp(ss.evidence)  : null,
+            rebuttal:  typeof ss.rebuttal === "number"  ? clamp(ss.rebuttal)  : null,
+            logic:     typeof ss.logic === "number"     ? clamp(ss.logic)     : null,
+            composure: typeof ss.composure === "number" ? clamp(ss.composure) : null,
+          }
+        : null;
       return {
         type: "feedback",
         score,
@@ -803,6 +832,7 @@ Return strict JSON with ALL of these fields:
             ? parsed.modelRebuttal
             : "Acknowledge what's true in their point, then pivot: 'You're right that X — but that actually supports my case, because...'",
         argumentBreakdown,
+        skillScores,
       };
     } catch {
       return fallbackDebateStep(input.exchangeCount);

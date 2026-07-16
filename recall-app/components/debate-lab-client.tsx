@@ -31,6 +31,14 @@ type Message = { role: "user" | "opponent"; content: string };
 
 type ArgumentNote = { exchange: number; verdict: "strong" | "ok" | "weak"; note: string };
 
+type SkillScores = {
+  clarity: number | null;
+  evidence: number | null;
+  rebuttal: number | null;
+  logic: number | null;
+  composure: number | null;
+};
+
 type Feedback = {
   score: number;
   strongPoints: string[];
@@ -39,6 +47,7 @@ type Feedback = {
   missedArg: string;
   modelRebuttal: string;
   argumentBreakdown: ArgumentNote[];
+  skillScores: SkillScores | null;
 };
 
 type PrepResult = {
@@ -229,6 +238,8 @@ export function DebateLabClient({
   const [categoryFilter, setCategoryFilter] = useState<Category>("all");
   const [activeMotion, setActiveMotion] = useState<Motion | null>(null);
   const [customMotion, setCustomMotion] = useState("");
+  const [customContext, setCustomContext] = useState("");
+  const [customStakes, setCustomStakes] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [position, setPosition] = useState<Position | null>(null);
   const [activeOpponent, setActiveOpponent] = useState<OpponentType>(OPPONENT_TYPES[0]);
@@ -327,6 +338,8 @@ export function DebateLabClient({
     setPosition(null);
     setShowCustomForm(false);
     setCustomMotion("");
+    setCustomContext("");
+    setCustomStakes("");
     setSaved(false);
     setSaveError(false);
     setScoutOpen(false);
@@ -459,7 +472,7 @@ export function DebateLabClient({
 
       const data = (await response.json()) as
         | { type: "response"; message: string; audienceReaction: number }
-        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[] };
+        | { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
 
       if (data.type === "response") {
         setMessages((prev) => [...prev, { role: "opponent", content: data.message }]);
@@ -507,7 +520,7 @@ export function DebateLabClient({
         return;
       }
 
-      const data = (await response.json()) as { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[] };
+      const data = (await response.json()) as { type: "feedback"; score: number; strongPoints: string[]; improvements: string[]; keyFallacy: string | null; missedArg: string; modelRebuttal: string; argumentBreakdown: ArgumentNote[]; skillScores: SkillScores | null };
 
       if (data.type !== "feedback" || typeof data.score !== "number") {
         setError("Feedback couldn't be generated. Please try again.");
@@ -611,20 +624,47 @@ export function DebateLabClient({
           ) : (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
               <p className="text-sm font-medium text-white">Custom motion</p>
-              <input
-                value={customMotion}
-                onChange={(e) => setCustomMotion(e.target.value)}
-                placeholder="e.g. Nigeria should adopt a four-day work week"
-                className="input-base w-full"
-              />
+              <label className="block space-y-1">
+                <span className="text-xs text-slate-400">The proposition <span className="text-slate-500">(required)</span></span>
+                <input
+                  value={customMotion}
+                  onChange={(e) => setCustomMotion(e.target.value)}
+                  placeholder="e.g. We should adopt a four-day work week"
+                  className="input-base w-full"
+                />
+              </label>
+              <label className="block space-y-1">
+                <span className="text-xs text-slate-400">Context <span className="text-slate-500">(optional — who are you arguing with? what&apos;s the setting?)</span></span>
+                <input
+                  value={customContext}
+                  onChange={(e) => setCustomContext(e.target.value)}
+                  placeholder="e.g. Pitching to a skeptical operations director"
+                  className="input-base w-full"
+                />
+              </label>
+              <label className="block space-y-1">
+                <span className="text-xs text-slate-400">Stakes <span className="text-slate-500">(optional — what does winning or losing this argument mean?)</span></span>
+                <input
+                  value={customStakes}
+                  onChange={(e) => setCustomStakes(e.target.value)}
+                  placeholder="e.g. Team buy-in on a major policy change"
+                  className="input-base w-full"
+                />
+              </label>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    const text = customMotion.trim();
-                    if (!text) return;
-                    setActiveMotion({ id: "custom", category: "personal", emoji: "✏️", text, difficulty: 2 });
+                    const base = customMotion.trim();
+                    if (!base) return;
+                    const parts = [base];
+                    if (customContext.trim()) parts.push(`Context: ${customContext.trim()}`);
+                    if (customStakes.trim()) parts.push(`Stakes: ${customStakes.trim()}`);
+                    const text = parts.join(" · ");
+                    setActiveMotion({ id: "custom", category: "real-life", emoji: "✏️", text, difficulty: 2 });
                     setShowCustomForm(false);
                     setCustomMotion("");
+                    setCustomContext("");
+                    setCustomStakes("");
                   }}
                   disabled={!customMotion.trim()}
                   className="rounded-xl bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:opacity-50"
@@ -860,6 +900,40 @@ export function DebateLabClient({
             · vs {activeOpponent.label}
           </p>
         </div>
+
+        {/* Skill sub-scores */}
+        {feedback.skillScores ? (() => {
+          const ss = feedback.skillScores;
+          const skills: { key: keyof SkillScores; label: string }[] = [
+            { key: "clarity",   label: "Clarity" },
+            { key: "evidence",  label: "Evidence" },
+            { key: "rebuttal",  label: "Rebuttal" },
+            { key: "logic",     label: "Logic" },
+            { key: "composure", label: "Composure" },
+          ];
+          return (
+            <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Skill breakdown</p>
+              <div className="mt-3 grid grid-cols-5 gap-3">
+                {skills.map(({ key, label }) => {
+                  const val = ss[key];
+                  if (val === null) return null;
+                  const color = val >= 8 ? "text-emerald-300" : val >= 5 ? "text-amber-300" : "text-red-300";
+                  const bar = val >= 8 ? "bg-emerald-400" : val >= 5 ? "bg-amber-400" : "bg-red-400";
+                  return (
+                    <div key={key} className="flex flex-col items-center gap-1.5">
+                      <div className="relative flex h-16 w-full items-end justify-center overflow-hidden rounded-lg bg-white/5">
+                        <div className={`w-full rounded-t-sm transition-all ${bar}`} style={{ height: `${val * 10}%` }} />
+                      </div>
+                      <span className={`text-sm font-bold tabular-nums ${color}`}>{val}</span>
+                      <span className="text-[9px] font-medium uppercase tracking-wide text-slate-500">{label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })() : null}
 
         {feedback.strongPoints.length > 0 ? (
           <div className="rounded-[2rem] border border-emerald-400/20 bg-emerald-400/5 p-5 space-y-2">
