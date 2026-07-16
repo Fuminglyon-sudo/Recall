@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Mic, ArrowLeft, ChevronDown, History, RotateCcw } from "lucide-react";
 
-type Category = "all" | "business" | "ethics" | "technology" | "personal";
+type Category = "all" | "business" | "ethics" | "technology" | "personal" | "real-life";
 type Difficulty = "easy" | "medium" | "hard";
 type MotionLevel = 1 | 2 | 3;
 type Position = "for" | "against";
@@ -49,6 +49,7 @@ type PrepResult = {
 
 const CATEGORY_LABELS: Record<Category, string> = {
   all: "All motions",
+  "real-life": "Real life",
   business: "Business",
   ethics: "Ethics",
   technology: "Technology",
@@ -56,6 +57,7 @@ const CATEGORY_LABELS: Record<Category, string> = {
 };
 
 const CATEGORY_COLORS: Record<Exclude<Category, "all">, string> = {
+  "real-life": "border-cyan-300/20 bg-cyan-400/10 text-cyan-200",
   business: "border-amber-300/20 bg-amber-400/10 text-amber-200",
   ethics: "border-violet-300/20 bg-violet-400/10 text-violet-200",
   technology: "border-sky-300/20 bg-sky-400/10 text-sky-200",
@@ -86,6 +88,18 @@ const MOTIONS: Motion[] = [
   { id: "m18", category: "personal",   emoji: "😌", text: "Ambition without contentment leads to unhappiness",                       difficulty: 2 },
   { id: "m19", category: "personal",   emoji: "💪", text: "Vulnerability is a strength, not a weakness",                             difficulty: 1 },
   { id: "m20", category: "personal",   emoji: "🧠", text: "Comfort zones should be escaped, not expanded gradually",                 difficulty: 1 },
+
+  // Real-life scenarios
+  { id: "r1", category: "real-life", emoji: "🚀", text: "This feature should be on our product roadmap next quarter",                                   difficulty: 2 },
+  { id: "r2", category: "real-life", emoji: "💼", text: "I deserve a promotion and I can justify exactly why",                                           difficulty: 2 },
+  { id: "r3", category: "real-life", emoji: "💵", text: "Our pricing is fair and here is why it is worth it",                                            difficulty: 2 },
+  { id: "r4", category: "real-life", emoji: "🤝", text: "We should pursue this partnership despite the risks",                                           difficulty: 2 },
+  { id: "r5", category: "real-life", emoji: "🔄", text: "The decision I made was the right call given what we knew at the time",                         difficulty: 2 },
+  { id: "r6", category: "real-life", emoji: "📣", text: "This is the right strategy even though the team disagrees",                                     difficulty: 3 },
+  { id: "r7", category: "real-life", emoji: "💡", text: "My startup idea is worth the investment",                                                       difficulty: 2 },
+  { id: "r8", category: "real-life", emoji: "❌", text: "We should kill this project even though people are emotionally invested in it",                  difficulty: 3 },
+  { id: "r9", category: "real-life", emoji: "🎯", text: "Focusing on fewer priorities will make the team more productive, not less",                     difficulty: 2 },
+  { id: "r10", category: "real-life", emoji: "🏗️", text: "We should rebuild this from scratch rather than patching the existing system",                 difficulty: 3 },
 ];
 
 const OPPONENT_TYPES: OpponentType[] = [

@@ -128,9 +128,10 @@ export default async function DebateLabHistoryPage() {
             </div>
           ) : (
             sessions.map((s) => (
-              <div
+              <Link
                 key={s.id}
-                className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4"
+                href={`/debate-lab/history/${s.id}`}
+                className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 transition hover:border-white/20 hover:bg-white/8"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-white">{s.motion}</p>
@@ -169,7 +170,7 @@ export default async function DebateLabHistoryPage() {
                     {s.score >= 7 ? "Win" : s.score >= 5 ? "Draw" : "Loss"}
                   </span>
                 </div>
-              </div>
+              </Link>
             ))
           )}
         </div>
