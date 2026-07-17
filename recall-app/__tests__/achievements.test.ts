@@ -1,4 +1,4 @@
-import { ACHIEVEMENTS, STREAK_MILESTONES, getAchievement, achievementsFromReview, achievementsFromSpeakUp } from "@/lib/achievements";
+import { ACHIEVEMENTS, STREAK_MILESTONES, getAchievement, achievementsFromReview, achievementsFromSpeakUp, achievementsFromStreak } from "@/lib/achievements";
 
 describe("achievement registry", () => {
   test("every achievement id is unique", () => {
@@ -40,6 +40,36 @@ describe("achievementsFromReview — streak milestones", () => {
     const earned = achievementsFromReview({ totalReviews: 99, currentStreak: 99, masteredCount: 0 });
     expect(earned).not.toContain("streak_100");
     expect(earned).toContain("streak_60");
+  });
+});
+
+describe("achievementsFromStreak", () => {
+  // Regression coverage for extending the streak to every practice
+  // activity: a debate/Speak Up/Conversation Lab streak must earn the
+  // same milestones a review streak would, via the same shared function
+  // gradeCard, /api/debate, /api/speak-grade, and /api/social-conversation
+  // all now call.
+  test("a streak of 0 earns nothing", () => {
+    expect(achievementsFromStreak(0)).toEqual([]);
+  });
+
+  test("earns exactly the tiers reached, not higher ones", () => {
+    const earned = achievementsFromStreak(60);
+    expect(earned).toEqual(expect.arrayContaining(["streak_3", "streak_7", "streak_30", "streak_60"]));
+    expect(earned).not.toContain("streak_100");
+  });
+
+  test("earns every tier at 365", () => {
+    const earned = achievementsFromStreak(365);
+    expect(earned).toEqual(STREAK_MILESTONES.map((m) => m.id));
+  });
+
+  test("achievementsFromReview's streak tiers match achievementsFromStreak exactly", () => {
+    for (const streak of [0, 3, 6, 7, 29, 30, 59, 60, 99, 100, 179, 180, 364, 365, 400]) {
+      const fromReview = achievementsFromReview({ totalReviews: 0, currentStreak: streak, masteredCount: 0 })
+        .filter((id) => id.startsWith("streak_"));
+      expect(fromReview.sort()).toEqual(achievementsFromStreak(streak).sort());
+    }
   });
 });
 
