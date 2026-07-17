@@ -326,7 +326,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
         ) : null}
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Current streak" value={String(data.currentStreak)} helper={data.reviewedToday ? "You showed up today." : "Your rhythm resumes today."} />
+          <StatCard label="Current streak" value={String(data.currentStreak)} helper={data.reviewedToday ? "You showed up today." : "Your rhythm resumes today."} href="/streak" />
           <StatCard label="Mastered" value={String(data.mastery.mastered)} helper={data.mastery.mastered > 0 ? "Words that have settled into you." : "Your first mastered card is closer than it looks."} />
           <StatCard label="Due today" value={String(data.dueToday)} helper={data.dueToday > 0 ? "A small session is enough." : "You are clear for today."} />
         </div>
