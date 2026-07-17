@@ -464,6 +464,7 @@ export function DebateLabClient({
           difficulty,
           messages: newMessages,
           forceEnd: false,
+          tzOffsetMinutes: new Date().getTimezoneOffset(),
         }),
       });
 
@@ -573,6 +574,7 @@ export function DebateLabClient({
           difficulty,
           messages: finalMessages,
           forceEnd: true,
+          tzOffsetMinutes: new Date().getTimezoneOffset(),
         }),
       });
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { conductSpeakUpConversation } from "@/lib/anthropic";
 import { PERSONA_IDS, PERSONA_LABELS, getPersonaPrompt } from "@/lib/speak-up-personas";
@@ -6,6 +6,7 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { achievementsFromSpeakUp } from "@/lib/achievements";
+import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
 
 const schema = z.object({
   scenario: z.string().min(10).max(2000),
@@ -23,6 +24,7 @@ const schema = z.object({
   forceEnd: z.boolean().optional(),
   practiceGoal: z.string().max(500).optional(),
   practiceGoalLabel: z.string().max(100).optional(),
+  tzOffsetMinutes: z.coerce.number().int().min(-720).max(840).optional().default(0),
 });
 
 export async function POST(req: NextRequest) {
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
-    const { personaId, scenarioId, scenarioTag, practiceGoalLabel, ...rest } = parsed.data;
+    const { personaId, scenarioId, scenarioTag, practiceGoalLabel, tzOffsetMinutes, ...rest } = parsed.data;
     const result = await conductSpeakUpConversation({ ...rest, personaPrompt: getPersonaPrompt(personaId) });
 
     if (result.type !== "final") {
@@ -88,6 +90,9 @@ export async function POST(req: NextRequest) {
           });
         }
       }
+
+      const newStreak = await recordDailyActivity(uid, tzOffsetMinutes);
+      after(() => awardStreakAchievements(uid, newStreak));
     } catch (err) {
       console.error("[speak-grade] failed to save session", err);
     }

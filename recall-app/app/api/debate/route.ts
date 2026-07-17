@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { conductDebate, streamDebateReply, REACTION_SENTINEL_RE } from "@/lib/anthropic";
 import { OPPONENT_IDS, OPPONENT_LABELS, buildOpponentPrompt } from "@/lib/debate-opponents";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
+import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
 
 const messageSchema = z.object({
   role: z.enum(["user", "opponent"]),
@@ -18,6 +19,7 @@ const schema = z.object({
   difficulty: z.enum(["easy", "medium", "hard"]),
   messages: z.array(messageSchema).max(12),
   forceEnd: z.boolean().optional(),
+  tzOffsetMinutes: z.coerce.number().int().min(-720).max(840).optional().default(0),
 });
 
 // Kept in sync with the sentinel length so it never reaches the client mid-flush.
@@ -36,7 +38,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
   }
 
-  const { motion, position, opponentId, difficulty, messages, forceEnd } = parsed.data;
+  const { motion, position, opponentId, difficulty, messages, forceEnd, tzOffsetMinutes } = parsed.data;
   // Server derives the turn count from the transcript — the client can no
   // longer extend the debate past 5 exchanges by holding a stale count.
   const exchangeCount = messages.filter((m) => m.role === "user").length;
@@ -81,6 +83,9 @@ export async function POST(req: NextRequest) {
           },
         });
         sessionId = session.id;
+
+        const newStreak = await recordDailyActivity(uid, tzOffsetMinutes);
+        after(() => awardStreakAchievements(uid, newStreak));
       } catch (err) {
         console.error("[debate] failed to save session", err);
       }

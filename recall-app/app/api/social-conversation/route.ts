@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { conductSocialConversation } from "@/lib/anthropic";
 import { CHARACTER_IDS, CHARACTER_LABELS, buildCharacterPrompt } from "@/lib/conversation-characters";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
+import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
 
 const schema = z.object({
   scenarioContext: z.string().min(10).max(2000),
@@ -25,6 +26,7 @@ const schema = z.object({
   exchangeCount: z.number().int().min(0),
   forceEnd: z.boolean().optional(),
   practiceGoal: z.string().max(500).optional(),
+  tzOffsetMinutes: z.coerce.number().int().min(-720).max(840).optional().default(0),
 });
 
 export async function POST(req: NextRequest) {
@@ -38,7 +40,7 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
-    const { characterId, difficulty, tension, scenarioTag, scenarioEmoji, ...rest } = parsed.data;
+    const { characterId, difficulty, tension, scenarioTag, scenarioEmoji, tzOffsetMinutes, ...rest } = parsed.data;
     const result = await conductSocialConversation({
       ...rest,
       characterType: CHARACTER_LABELS[characterId],
@@ -75,6 +77,9 @@ export async function POST(req: NextRequest) {
         },
       });
       sessionId = session.id;
+
+      const newStreak = await recordDailyActivity(uid, tzOffsetMinutes);
+      after(() => awardStreakAchievements(uid, newStreak));
     } catch (err) {
       console.error("[social-conversation] failed to save session", err);
     }

@@ -433,6 +433,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
           exchangeCount: newExchangeCount,
           forceEnd: false,
           practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
+          tzOffsetMinutes: new Date().getTimezoneOffset(),
         }),
       });
 
@@ -495,6 +496,7 @@ export function SocialSkillsClient({ strugglingWords = [] }: { strugglingWords?:
           exchangeCount: finalCount,
           forceEnd: true,
           practiceGoal: practiceGoal ? SOCIAL_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
+          tzOffsetMinutes: new Date().getTimezoneOffset(),
         }),
       });
 

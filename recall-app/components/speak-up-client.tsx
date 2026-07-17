@@ -476,6 +476,7 @@ export function SpeakUpClient({
           forceEnd: force,
           practiceGoal: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.aiDescription : undefined,
           practiceGoalLabel: practiceGoal ? PRACTICE_GOALS.find((g) => g.id === practiceGoal)?.label : undefined,
+          tzOffsetMinutes: new Date().getTimezoneOffset(),
         }),
       });
 

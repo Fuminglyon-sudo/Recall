@@ -7,13 +7,13 @@ export type Achievement = {
 
 export const ACHIEVEMENTS: Achievement[] = [
   { id: "first_review",     emoji: "✦",  label: "First review",       description: "Completed your first review session." },
-  { id: "streak_3",         emoji: "🔥",  label: "3-day streak",       description: "Reviewed 3 days in a row." },
-  { id: "streak_7",         emoji: "⚡",  label: "7-day streak",       description: "Reviewed 7 days in a row." },
-  { id: "streak_30",        emoji: "💎",  label: "30-day streak",      description: "Reviewed 30 days in a row." },
-  { id: "streak_60",        emoji: "🌙",  label: "60-day streak",      description: "Reviewed 60 days in a row." },
-  { id: "streak_100",       emoji: "🏅",  label: "100-day streak",     description: "Reviewed 100 days in a row." },
-  { id: "streak_180",       emoji: "👑",  label: "180-day streak",     description: "Reviewed 180 days in a row." },
-  { id: "streak_365",       emoji: "🎂",  label: "365-day streak",     description: "A full year of reviews, one day at a time." },
+  { id: "streak_3",         emoji: "🔥",  label: "3-day streak",       description: "Practiced 3 days in a row." },
+  { id: "streak_7",         emoji: "⚡",  label: "7-day streak",       description: "Practiced 7 days in a row." },
+  { id: "streak_30",        emoji: "💎",  label: "30-day streak",      description: "Practiced 30 days in a row." },
+  { id: "streak_60",        emoji: "🌙",  label: "60-day streak",      description: "Practiced 60 days in a row." },
+  { id: "streak_100",       emoji: "🏅",  label: "100-day streak",     description: "Practiced 100 days in a row." },
+  { id: "streak_180",       emoji: "👑",  label: "180-day streak",     description: "Practiced 180 days in a row." },
+  { id: "streak_365",       emoji: "🎂",  label: "365-day streak",     description: "A full year of practice, one day at a time." },
   { id: "cards_50",         emoji: "📚",  label: "50 reviews",         description: "Completed 50 card reviews." },
   { id: "cards_100",        emoji: "🏆",  label: "100 reviews",        description: "Completed 100 card reviews." },
   { id: "first_mastered",   emoji: "★",  label: "First mastered",     description: "Your first word reached mastered level." },
@@ -30,6 +30,25 @@ export function getAchievement(id: string): Achievement | undefined {
 // "next milestone" / unlock-progress display.
 export const STREAK_MILESTONES = ACHIEVEMENTS.filter((a) => a.id.startsWith("streak_"));
 
+const STREAK_THRESHOLDS: Record<string, number> = {
+  streak_3: 3,
+  streak_7: 7,
+  streak_30: 30,
+  streak_60: 60,
+  streak_100: 100,
+  streak_180: 180,
+  streak_365: 365,
+};
+
+/**
+ * IDs earned purely from streak length. The streak itself can now be built
+ * by any practice activity (review, Speak Up, Conversation Lab, Debate
+ * Lab), not just card reviews — see lib/record-activity.ts.
+ */
+export function achievementsFromStreak(currentStreak: number): string[] {
+  return STREAK_MILESTONES.filter((m) => currentStreak >= STREAK_THRESHOLDS[m.id]).map((m) => m.id);
+}
+
 /** IDs earned from a card review event. Supply nulls for fields not yet computed. */
 export function achievementsFromReview({
   totalReviews,
@@ -40,15 +59,8 @@ export function achievementsFromReview({
   currentStreak: number;
   masteredCount: number;
 }): string[] {
-  const earned: string[] = [];
+  const earned: string[] = [...achievementsFromStreak(currentStreak)];
   if (totalReviews >= 1)   earned.push("first_review");
-  if (currentStreak >= 3)   earned.push("streak_3");
-  if (currentStreak >= 7)   earned.push("streak_7");
-  if (currentStreak >= 30)  earned.push("streak_30");
-  if (currentStreak >= 60)  earned.push("streak_60");
-  if (currentStreak >= 100) earned.push("streak_100");
-  if (currentStreak >= 180) earned.push("streak_180");
-  if (currentStreak >= 365) earned.push("streak_365");
   if (totalReviews >= 50)  earned.push("cards_50");
   if (totalReviews >= 100) earned.push("cards_100");
   if (masteredCount >= 1)  earned.push("first_mastered");

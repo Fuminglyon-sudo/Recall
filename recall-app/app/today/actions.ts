@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
-import { isSameCalendarDay, startOfLocalDay } from "@/lib/date";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { computeDistribution } from "@/lib/mastery";
 import { achievementsFromReview } from "@/lib/achievements";
 import { gradeSchema } from "@/lib/grade-schema";
+import { recordDailyActivity } from "@/lib/record-activity";
 
 export async function gradeCard(formData: FormData) {
   const parsed = gradeSchema.safeParse({
@@ -38,8 +38,6 @@ export async function gradeCard(formData: FormData) {
 
   const association = parsed.data.association?.trim() ?? "";
 
-  let newCurrentStreak = 0;
-
   await prisma.$transaction(async (tx) => {
     await tx.reviewLog.create({ data: { cardId, grade } });
     await tx.card.update({
@@ -52,42 +50,9 @@ export async function gradeCard(formData: FormData) {
         ...(association && card.repetitions === 0 ? { association } : {}),
       },
     });
-
-    const streak = await tx.streak.findFirst({ where: { userId: uid } });
-    const today = startOfLocalDay(tzOffsetMinutes);
-
-    if (!streak) {
-      await tx.streak.create({
-        data: { currentStreak: 1, longestStreak: 1, lastReviewDate: today, streakStartedAt: today, userId: uid },
-      });
-      newCurrentStreak = 1;
-      return;
-    }
-
-    const lastDate = streak.lastReviewDate;
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    let currentStreak = streak.currentStreak;
-    let isNewStreak = false;
-    if (!lastDate) { currentStreak = 1; isNewStreak = true; }
-    else if (isSameCalendarDay(lastDate, today)) currentStreak = streak.currentStreak;
-    else if (isSameCalendarDay(lastDate, yesterday)) currentStreak = streak.currentStreak + 1;
-    else { currentStreak = 1; isNewStreak = true; }
-
-    newCurrentStreak = currentStreak;
-    const longestStreak = Math.max(streak.longestStreak, currentStreak);
-
-    await tx.streak.update({
-      where: { id: streak.id },
-      data: {
-        currentStreak,
-        longestStreak,
-        lastReviewDate: today,
-        ...(isNewStreak ? { streakStartedAt: today } : {}),
-      },
-    });
   });
+
+  const newCurrentStreak = await recordDailyActivity(uid, tzOffsetMinutes);
 
   // Achievements scan the whole collection — run after the response so the
   // grade round-trip stays at one transaction. Skip for admin (null uid).
