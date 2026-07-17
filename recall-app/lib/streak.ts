@@ -7,8 +7,16 @@ export function isPerfectStreak(recoveryUsedAt: Date | null, streakStartedAt: Da
   return recoveryUsedAt.getTime() < streakStartedAt.getTime();
 }
 
+// Local getters, not toISOString() — this must match the local Date
+// arithmetic buildMonthGrid uses to construct each cell. Mixing UTC-based
+// keys with local-constructed dates shifts every key by a day in any
+// timezone ahead of UTC (production runs in UTC, so this is invisible
+// there, but it broke local calendar-day matching everywhere else).
 export function dateKey(d: Date): string {
-  return d.toISOString().split("T")[0];
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 export type CalendarDay = {
