@@ -156,7 +156,7 @@ async function main() {
       front: "freemium",
       back: "A pricing model where a basic version of the product is free and users pay for additional features, capacity, or depth.",
       partOfSpeech: "noun",
-      example: "Recall uses a freemium-adjacent model — core review is free and the AI-powered features add value on top.",
+      example: "Soro Soke uses a freemium-adjacent model — core review is free and the AI-powered features add value on top.",
       hook: "Freemium trades access for conversion — the free tier is also marketing.",
       synonyms: "free tier, try before you buy, gated features",
     },

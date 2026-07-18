@@ -466,7 +466,7 @@ async function main() {
       front: "north star metric",
       back: "The single metric that best captures the core value the product delivers to users — the one number the whole team optimises around as a proxy for long-term success.",
       partOfSpeech: "noun",
-      example: "Recall's north star metric could be 'cards reviewed this week' — a user who reviews regularly retains vocabulary. Everything else follows from that.",
+      example: "Soro Soke's north star metric could be 'cards reviewed this week' — a user who reviews regularly retains vocabulary. Everything else follows from that.",
       hook: "The north star metric is the one number that is true before and after you hit it.",
       synonyms: "NSM, primary metric, focus metric, key metric",
     },

@@ -1,6 +1,6 @@
-# Recall
+# Sọrọ Sọkẹ
 
-Recall is a small vocabulary and memory app built with Next.js, TypeScript, Tailwind, Prisma, PostgreSQL, and server-side Anthropic drafting.
+Sọrọ Sọkẹ is a small vocabulary and memory app built with Next.js, TypeScript, Tailwind, Prisma, PostgreSQL, and server-side Anthropic drafting.
 
 ## What it does
 
