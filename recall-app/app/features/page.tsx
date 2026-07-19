@@ -8,10 +8,10 @@ import { MarketingFooter } from "@/components/marketing-footer";
 export const metadata: Metadata = {
   title: { absolute: "Features — Sọrọ Sọkẹ AI" },
   description:
-    "Sọrọ Sọkẹ AI features: Speak Up speaking practice, Conversation Lab social coaching, Debate Lab reasoning practice, and SM-2 spaced repetition with AI-drafted flashcards so the vocabulary actually sticks.",
+    "Sọrọ Sọkẹ AI features: Speak Up speaking practice, Small Talk Lab social coaching, Debate Lab reasoning practice, and SM-2 spaced repetition with AI-drafted flashcards so the vocabulary actually sticks.",
   keywords: [
     "Speak Up practice",
-    "Conversation Lab",
+    "Small Talk Lab",
     "Debate Lab",
     "debate practice app",
     "argument coaching",
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Features — Sọrọ Sọkẹ AI",
-    description: "Speak Up, Conversation Lab, Debate Lab, and SM-2 spaced repetition with AI-drafted flashcards.",
+    description: "Speak Up, Small Talk Lab, Debate Lab, and SM-2 spaced repetition with AI-drafted flashcards.",
   },
 };
 
 const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
   ["Speak Up speaking practice", true,  false, false, false],
-  ["Conversation Lab coaching",  true,  false, false, false],
+  ["Small Talk Lab coaching",  true,  false, false, false],
   ["Debate Lab reasoning practice", true, false, false, false],
   ["SM-2 spaced repetition",     true,  true,  false, false],
   ["Soro Soke-drafted cards",        true,  false, false, false],
@@ -79,7 +79,7 @@ export default function FeaturesPage() {
             {([
               { src: "/dashboard.png", alt: "Soro Soke dashboard showing review streak, 30-day activity heatmap, and deck list with mastery progress", label: "Dashboard" },
               { src: "/speak_up_cards.png", alt: "Speak Up scenario picker with high-stakes practice categories", label: "Speak Up" },
-              { src: "/conversation_lab.png", alt: "Conversation Lab social scenario picker", label: "Conversation Lab" },
+              { src: "/conversation_lab.png", alt: "Small Talk Lab social scenario picker", label: "Small Talk Lab" },
             ] as const).map(({ src, alt, label }) => (
               <div key={label} className="overflow-hidden rounded-2xl border border-white/10 shadow-lg shadow-black/30">
                 <Image src={src} alt={alt} width={600} height={420} className="w-full h-auto" />
@@ -113,7 +113,7 @@ export default function FeaturesPage() {
                   desc: "Rehearse before a specific high-pressure moment: a pitch, an interview, a negotiation. You perform; the AI coaches.",
                 },
                 {
-                  label: "Conversation Lab",
+                  label: "Small Talk Lab",
                   href: "/conversation-lab",
                   accent: "text-sky-300",
                   accentBg: "bg-sky-400/10",

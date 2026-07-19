@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                 We store your review grades and scheduling data (intervals, ease factors, review dates)
                 so the SM-2 algorithm can schedule future reviews correctly.
               </p>
-              <p><span className="text-slate-300 font-medium">Speak Up and Conversation Lab sessions.</span>{" "}
+              <p><span className="text-slate-300 font-medium">Speak Up and Small Talk Lab sessions.</span>{" "}
                 Session content is processed to generate feedback but is not stored permanently beyond
                 the session. Saved session summaries (score, key feedback) are stored when you choose to save them.
               </p>
@@ -94,7 +94,7 @@ export default function PrivacyPage() {
                 and email address with us. Google&apos;s privacy policy governs their handling of your data.
               </p>
               <p><span className="text-slate-300 font-medium">AI providers.</span>{" "}
-                Card drafting, Speak Up feedback, and Conversation Lab coaching are powered by AI. Text
+                Card drafting, Speak Up feedback, and Small Talk Lab coaching are powered by AI. Text
                 you submit for these features is sent to our AI provider for processing. We do not
                 authorise providers to use your content to train their models.
               </p>

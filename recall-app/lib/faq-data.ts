@@ -33,7 +33,7 @@ export const FAQS = [
   },
   {
     q: "Does Soro Soke work offline?",
-    a: "Partially. If you lose your connection mid-review, Soro Soke detects it and holds the grading buttons until you reconnect — so you never accidentally lose a session. Features that require AI (card drafting, Speak Up, Conversation Lab) need an active connection. Full offline review caching for commutes is on the roadmap.",
+    a: "Partially. If you lose your connection mid-review, Soro Soke detects it and holds the grading buttons until you reconnect — so you never accidentally lose a session. Features that require AI (card drafting, Speak Up, Small Talk Lab) need an active connection. Full offline review caching for commutes is on the roadmap.",
   },
   {
     q: "Does Soro Soke track my streak or daily progress?",
@@ -61,15 +61,15 @@ export const FAQS = [
   },
   {
     q: "Is my data private? Can anyone see my Speak Up sessions?",
-    a: "Your sessions are private. Speak Up conversations and Conversation Lab exchanges are not stored beyond the session — they exist to give you feedback, not to build a record. Your card data is tied to your account and never shared or sold.",
+    a: "Your sessions are private. Speak Up conversations and Small Talk Lab exchanges are not stored beyond the session — they exist to give you feedback, not to build a record. Your card data is tied to your account and never shared or sold.",
   },
   {
     q: "How is Soro Soke different from Anki or Quizlet?",
-    a: "Anki uses the same SM-2 algorithm as Soro Soke and is powerful — but it requires you to build everything yourself and has a steep learning curve. Quizlet is primarily a recognition tool with limited scheduling depth. Soro Soke adds Soro Soke-drafted cards (no blank-card friction), Speak Up for high-stakes speaking practice, and Conversation Lab for social fluency. It's built for professionals who want to communicate better — not students drilling for exams.",
+    a: "Anki uses the same SM-2 algorithm as Soro Soke and is powerful — but it requires you to build everything yourself and has a steep learning curve. Quizlet is primarily a recognition tool with limited scheduling depth. Soro Soke adds Soro Soke-drafted cards (no blank-card friction), Speak Up for high-stakes speaking practice, and Small Talk Lab for social fluency. It's built for professionals who want to communicate better — not students drilling for exams.",
   },
   {
-    q: "What's the difference between Speak Up and Conversation Lab?",
-    a: "Speak Up is for high-stakes prepared scenarios — a job interview, a salary negotiation, a pitch, pushing back on a decision. You rehearse before a specific kind of moment happens. Conversation Lab is for social fluency — you open a conversation in a natural setting (a networking event, a long flight, a dinner party) with no script or guided prompts, then get coaching on your conversational moves. One builds professional confidence under pressure; the other builds social ease.",
+    q: "What's the difference between Speak Up and Small Talk Lab?",
+    a: "Speak Up is for high-stakes prepared scenarios — a job interview, a salary negotiation, a pitch, pushing back on a decision. You rehearse before a specific kind of moment happens. Small Talk Lab is for social fluency — you open a conversation in a natural setting (a networking event, a long flight, a dinner party) with no script or guided prompts, then get coaching on your conversational moves. One builds professional confidence under pressure; the other builds social ease.",
   },
   {
     q: "How does Speak Up scoring work?",

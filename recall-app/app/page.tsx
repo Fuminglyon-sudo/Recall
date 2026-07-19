@@ -381,7 +381,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
             </Link>
             <Link href="/conversation-lab" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">3 · Connect naturally</p>
-              <p className="mt-1 text-sm font-medium text-white">Conversation Lab</p>
+              <p className="mt-1 text-sm font-medium text-white">Small Talk Lab</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">Connect with people naturally. Open, sustain, close well.</p>
             </Link>
             <Link href="/debate-lab" className="group rounded-2xl border border-amber-400/10 bg-amber-400/5 p-4 transition hover:border-amber-400/20 hover:bg-amber-400/8">
@@ -407,7 +407,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
               ) : null}
               {data.practiceStats.socialCount > 0 && data.practiceStats.socialAvg !== null ? (
                 <div className="flex-1 min-w-[8rem] rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Conversation Lab</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500">Small Talk Lab</p>
                   <p className="mt-1 text-2xl font-semibold text-white">{data.practiceStats.socialAvg}<span className="text-sm font-normal text-slate-500">/10</span></p>
                   <p className="mt-0.5 text-xs text-slate-500">{data.practiceStats.socialCount} session{data.practiceStats.socialCount === 1 ? "" : "s"}</p>
                   <Link href="/conversation-lab/history" className="mt-2 block text-[10px] font-medium text-slate-500 transition hover:text-slate-300">View history →</Link>

@@ -134,7 +134,7 @@ export function BlogContentGate({ blocks }: { blocks: Block[] }) {
               }}
             >
               Create a free Soro Soke account to read the full article — and get access to spaced
-              repetition, Speak Up, and Conversation Lab while you&apos;re at it.
+              repetition, Speak Up, and Small Talk Lab while you&apos;re at it.
             </p>
 
             <Link

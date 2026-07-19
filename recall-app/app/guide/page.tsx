@@ -4,13 +4,13 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: { absolute: "Guide — How to Use Sọrọ Sọkẹ AI" },
   description:
-    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, easing social anxiety with Conversation Lab, and building reasoning confidence with Debate Lab.",
+    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, easing social anxiety with Small Talk Lab, and building reasoning confidence with Debate Lab.",
   keywords: [
     "Soro Soke guide",
     "how to use spaced repetition",
     "flashcard guide",
     "Speak Up guide",
-    "Conversation Lab guide",
+    "Small Talk Lab guide",
     "Debate Lab guide",
     "social anxiety practice",
     "SM-2 tutorial",
@@ -118,7 +118,7 @@ const FEATURES: Feature[] = [
   },
   {
     href: "/conversation-lab",
-    label: "Conversation Lab",
+    label: "Small Talk Lab",
     icon: MessageCircle,
     tagline: "Become someone conversations come easily to.",
     what: "Ten real-world social scenarios — a networking mixer, a flight next to a stranger, a wedding reception where you know nobody, a dinner party, and more. Each opens with a coaching tip specific to that context, so you go in with a concrete strategy rather than hoping for the best. You start the conversation, keep it going, then receive a score, strong points, one specific improvement, and the exact exchange where things shifted — so you know precisely what to work on next time.",

@@ -36,7 +36,7 @@ const CORE_LINKS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/today", label: "Today", icon: CalendarCheck2, exact: false },
   { href: "/speak-up", label: "Speak Up", icon: Mic, exact: false },
-  { href: "/conversation-lab", label: "Conversation Lab", icon: MessageCircle, exact: false },
+  { href: "/conversation-lab", label: "Small Talk Lab", icon: MessageCircle, exact: false },
   { href: "/debate-lab", label: "Debate Lab", icon: Gavel, exact: false },
 ];
 

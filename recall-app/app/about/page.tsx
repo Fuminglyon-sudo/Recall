@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
 import {
@@ -17,13 +18,13 @@ import {
 export const metadata: Metadata = {
   title: { absolute: "About Sọrọ Sọkẹ AI — Learn Words. Practice Using Them. Keep Both." },
   description:
-    "Sọrọ Sọkẹ AI is a communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, Conversation Lab eases social anxiety, and Debate Lab builds reasoning confidence. Learn the word. Practice using it. Own it.",
+    "Sọrọ Sọkẹ AI is a communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, Small Talk Lab eases social anxiety, and Debate Lab builds reasoning confidence. Learn the word. Practice using it. Own it.",
   keywords: [
     "how Soro Soke works",
     "spaced repetition algorithm",
     "SM-2",
     "Speak Up practice",
-    "Conversation Lab",
+    "Small Talk Lab",
     "Debate Lab",
     "vocabulary app",
     "AI flashcards",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About Sọrọ Sọkẹ AI — Spaced Repetition, Speak Up, Conversation & Debate Lab",
     description:
-      "How Sọrọ Sọkẹ AI works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, Conversation Lab social-anxiety practice, and Debate Lab reasoning practice.",
+      "How Sọrọ Sọkẹ AI works: SM-2 spaced repetition, AI-drafted flashcards, high-stakes Speak Up scenarios, Small Talk Lab social-anxiety practice, and Debate Lab reasoning practice.",
     type: "website",
     url: "/about",
   },
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "About Sọrọ Sọkẹ AI",
     description:
-      "SM-2 spaced repetition, AI-drafted flashcards, and Speak Up, Conversation Lab & Debate Lab practice for confidence and social anxiety — all in one app.",
+      "SM-2 spaced repetition, AI-drafted flashcards, and Speak Up, Small Talk Lab & Debate Lab practice for confidence and social anxiety — all in one app.",
   },
 };
 
@@ -146,7 +147,7 @@ export default function AboutPage() {
                 {
                   n: "03",
                   title: "Practice",
-                  body: "Speak Up puts you in high-stakes scenarios. Conversation Lab drops you into real social moments. Words you can use under pressure are words you actually own.",
+                  body: "Speak Up puts you in high-stakes scenarios. Small Talk Lab drops you into real social moments. Words you can use under pressure are words you actually own.",
                 },
               ].map(({ n, title, body }) => (
                 <div key={n} className="relative space-y-5 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8">
@@ -228,7 +229,7 @@ export default function AboutPage() {
                 },
                 {
                   icon: MessageCircle,
-                  label: "Conversation Lab",
+                  label: "Small Talk Lab",
                   href: "/conversation-lab",
                   tagline: "Become someone conversations come easily to.",
                   body: "Ten real social scenarios — networking mixers, dinner parties, long-haul flights. Pick your character type. Open the conversation yourself, no guided prompts. Get coaching on your opener and one move to try next time.",
@@ -281,6 +282,38 @@ export default function AboutPage() {
                   <p className="text-sm leading-6 text-slate-400">{body}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Who's behind it ── */}
+        <section className="py-20 border-b border-white/8">
+          <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 sm:flex-row sm:items-center sm:gap-8">
+            <Image
+              src="/japa-reality-logo.png"
+              alt="Japa Reality"
+              width={64}
+              height={64}
+              className="h-16 w-16 shrink-0 rounded-2xl"
+            />
+            <div className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">A product of Japa Reality</p>
+              <p className="text-base leading-7 text-slate-300">
+                Soro Soke is built by the team behind{" "}
+                <a
+                  href="https://japareality.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-emerald-300 underline decoration-emerald-300/30 underline-offset-4 transition hover:text-emerald-200"
+                >
+                  Japa Reality
+                </a>
+                , an AI-powered platform that helps African professionals plan their emigration —
+                matching them to the countries and routes that fit their profile, with transparent
+                costs and real-time policy data, instead of generic advice. &ldquo;Own your journey&rdquo;
+                is the same belief that shapes Soro Soke: give people the specific tools they need
+                for the moment ahead of them, not a one-size-fits-all script.
+              </p>
             </div>
           </div>
         </section>

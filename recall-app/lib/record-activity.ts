@@ -4,7 +4,7 @@ import { achievementsFromStreak } from "./achievements";
 
 /**
  * Updates the daily streak for any completed practice activity — a card
- * review, or a finished Debate Lab / Speak Up / Conversation Lab session.
+ * review, or a finished Debate Lab / Speak Up / Small Talk Lab session.
  * One streak, shared across every activity: doing more than one thing on
  * the same day doesn't advance it further (isSameCalendarDay short-circuits
  * to a no-op), and it's safe to call multiple times per day.

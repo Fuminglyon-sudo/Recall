@@ -74,7 +74,7 @@ async function getData() {
     prisma.reviewLog.count({ where: realReviewLog }),
     prisma.pushSubscription.count(),
     // Active users — "active" mirrors lib/record-activity.ts's own
-    // definition (any review, Speak Up, Conversation Lab, or Debate Lab
+    // definition (any review, Speak Up, Small Talk Lab, or Debate Lab
     // session), since every one of those updates Streak.lastReviewDate.
     prisma.streak.count({ where: { ...REAL_USER, lastReviewDate: { gte: todayStart } } }),
     prisma.streak.count({ where: { ...REAL_USER, lastReviewDate: { gte: sevenDaysAgo } } }),
@@ -101,7 +101,7 @@ async function getData() {
     features: [
       { label: "Card reviews", total: totalReviews, recent30d: reviewsRecent30d, color: "#4ade80" },
       { label: "Speak Up", total: speakUpTotal, recent30d: speakUpRecent30d, color: "#38bdf8" },
-      { label: "Conversation Lab", total: socialTotal, recent30d: socialRecent30d, color: "#a78bfa" },
+      { label: "Small Talk Lab", total: socialTotal, recent30d: socialRecent30d, color: "#a78bfa" },
       { label: "Debate Lab", total: debateTotal, recent30d: debateRecent30d, color: "#fbbf24" },
     ] satisfies FeatureUsage[],
   };

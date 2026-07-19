@@ -26,7 +26,7 @@ export default async function ConversationLabPage() {
     <AppShell>
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur sm:p-8">
-          <p className="text-sm font-medium text-emerald-300">Conversation Lab</p>
+          <p className="text-sm font-medium text-emerald-300">Small Talk Lab</p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">
             Talk to anyone, in any room.
           </h1>

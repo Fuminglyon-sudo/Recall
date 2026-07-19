@@ -113,7 +113,7 @@ const SLIDES: Slide[] = [
         desc: "Practice high-pressure moments until your response feels natural.",
       },
       {
-        label: "Conversation Lab",
+        label: "Small Talk Lab",
         href: "/conversation-lab",
         desc: "Rehearse real social situations and learn the next best move.",
       },

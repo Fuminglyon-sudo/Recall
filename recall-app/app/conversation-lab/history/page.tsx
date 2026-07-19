@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
-export const metadata = { title: "Conversation Lab History — Soro Soke" };
+export const metadata = { title: "Small Talk Lab History — Soro Soke" };
 
 const DIFFICULTY_LABELS: Record<string, string> = {
   easy: "Warm-up",
@@ -49,12 +49,12 @@ export default async function ConversationLabHistoryPage() {
           href="/conversation-lab"
           className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Conversation Lab
+          <ArrowLeft className="h-4 w-4" /> Back to Small Talk Lab
         </Link>
 
         <div>
           <p className="text-sm font-medium text-emerald-300">Session history</p>
-          <h1 className="mt-2 text-2xl font-semibold text-white">Your Conversation Lab sessions</h1>
+          <h1 className="mt-2 text-2xl font-semibold text-white">Your Small Talk Lab sessions</h1>
           {avg !== null ? (
             <p className="mt-1 text-sm text-slate-400">
               {sessions.length} session{sessions.length !== 1 ? "s" : ""} · average score{" "}
@@ -99,7 +99,7 @@ export default async function ConversationLabHistoryPage() {
           {sessions.length === 0 ? (
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center">
               <p className="text-sm text-slate-400">
-                No sessions saved yet. Complete a Conversation Lab session to see your history here.
+                No sessions saved yet. Complete a Small Talk Lab session to see your history here.
               </p>
               <Link
                 href="/conversation-lab"

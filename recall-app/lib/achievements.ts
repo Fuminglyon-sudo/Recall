@@ -42,7 +42,7 @@ const STREAK_THRESHOLDS: Record<string, number> = {
 
 /**
  * IDs earned purely from streak length. The streak itself can now be built
- * by any practice activity (review, Speak Up, Conversation Lab, Debate
+ * by any practice activity (review, Speak Up, Small Talk Lab, Debate
  * Lab), not just card reviews — see lib/record-activity.ts.
  */
 export function achievementsFromStreak(currentStreak: number): string[] {

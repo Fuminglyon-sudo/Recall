@@ -45,7 +45,7 @@ describe("achievementsFromReview — streak milestones", () => {
 
 describe("achievementsFromStreak", () => {
   // Regression coverage for extending the streak to every practice
-  // activity: a debate/Speak Up/Conversation Lab streak must earn the
+  // activity: a debate/Speak Up/Small Talk Lab streak must earn the
   // same milestones a review streak would, via the same shared function
   // gradeCard, /api/debate, /api/speak-grade, and /api/social-conversation
   // all now call.

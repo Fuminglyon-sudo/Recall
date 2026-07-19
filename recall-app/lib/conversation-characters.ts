@@ -1,4 +1,4 @@
-// Server-owned Conversation Lab character registry. The client only ever
+// Server-owned Small Talk Lab character registry. The client only ever
 // sends a characterId + difficulty — never free-text prompt content —
 // mirroring the fix already applied to Debate Lab's opponents and Speak
 // Up's personas.

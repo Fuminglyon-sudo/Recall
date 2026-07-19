@@ -53,7 +53,7 @@ export default function TermsPage() {
             <p>
               Soro Soke is a vocabulary and communication-practice tool that uses spaced repetition
               (SM-2 algorithm), AI-assisted card drafting, and speaking/conversation practice features
-              including Speak Up and Conversation Lab. The Service is provided &quot;as is&quot; and is free
+              including Speak Up and Small Talk Lab. The Service is provided &quot;as is&quot; and is free
               to use during its current beta period.
             </p>
           </section>

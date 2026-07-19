@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "flashcard app questions",
     "vocabulary app help",
     "Speak Up practice questions",
-    "Conversation Lab FAQ",
+    "Small Talk Lab FAQ",
     "Debate Lab FAQ",
     "debate practice questions",
     "AI debate coach",
@@ -27,14 +27,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/faq" },
   openGraph: {
     title: "FAQ — Sọrọ Sọkẹ AI",
-    description: "Everything you want to know about how Sọrọ Sọkẹ AI works — spaced repetition, card drafting, Speak Up, Conversation Lab, and more.",
+    description: "Everything you want to know about how Sọrọ Sọkẹ AI works — spaced repetition, card drafting, Speak Up, Small Talk Lab, and more.",
     type: "website",
     url: "/faq",
   },
   twitter: {
     card: "summary",
     title: "FAQ — Sọrọ Sọkẹ AI",
-    description: "Common questions about spaced repetition, Speak Up, Conversation Lab, and pricing.",
+    description: "Common questions about spaced repetition, Speak Up, Small Talk Lab, and pricing.",
   },
 };
 

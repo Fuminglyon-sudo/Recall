@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SoroSokeLogo } from "./soro-soke-logo";
 import { SoroSokeMark } from "./soro-soke-mark";
 
@@ -56,8 +57,18 @@ export function MarketingFooter() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-white/5 pt-6 text-center text-xs text-slate-700">
-          © {new Date().getFullYear()} Sọrọ Sọkẹ. All rights reserved.
+        <div className="border-t border-white/5 pt-6 flex flex-col items-center gap-3 text-center text-xs text-slate-700">
+          <p>© {new Date().getFullYear()} Sọrọ Sọkẹ. All rights reserved.</p>
+          <a
+            href="https://japareality.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-slate-600 transition hover:text-slate-300"
+          >
+            <span>A product of</span>
+            <Image src="/japa-reality-logo.png" alt="Japa Reality" width={16} height={16} className="rounded-sm" />
+            <span className="font-medium">Japa Reality</span>
+          </a>
         </div>
       </div>
     </footer>

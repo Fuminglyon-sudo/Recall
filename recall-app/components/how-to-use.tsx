@@ -31,7 +31,7 @@ const TABS = [
     desc: "Pick a real scenario — a job interview, asking for a raise, explaining what you do, making a toast. Choose who you're talking to and how much pressure you want. Say your answer, get honest feedback with a stronger version, and try the opener again right from the results screen.",
   },
   {
-    name: "Conversation Lab",
+    name: "Small Talk Lab",
     href: "/conversation-lab",
     desc: "10 real-world social scenarios — networking mixer, long-haul flight, wedding reception, dinner party, and more. Pick a character type (The Introvert, Worldly Traveler, Hard to Read…), open the conversation yourself, and get coaching feedback plus one power move to try next time.",
   },
