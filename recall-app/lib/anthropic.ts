@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { PRINCESS_SYSTEM_PROMPT, PRINCESS_FALLBACK_REPLY } from "./princess-knowledge";
 
 const client = process.env.ANTHROPIC_API_KEY
   ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -993,4 +994,23 @@ function fallbackDebatePrep(input: DebatePrepRequest): DebatePrepResult {
     ],
     watchOut: `Avoid making sweeping generalisations when arguing ${input.position} — ground every claim in something specific and provable.`,
   };
+}
+
+// ─── Princess (homepage chat assistant) ───────────────────────────────────
+
+export type PrincessMessage = { role: "user" | "assistant"; content: string };
+
+export async function chatWithPrincess(messages: PrincessMessage[]): Promise<string> {
+  if (!client) return PRINCESS_FALLBACK_REPLY;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 400,
+    temperature: 0.6,
+    system: PRINCESS_SYSTEM_PROMPT,
+    messages: messages.map((m) => ({ role: m.role, content: m.content })),
+  });
+
+  const text = extractText(response.content).trim();
+  return text.length > 0 ? text : PRINCESS_FALLBACK_REPLY;
 }

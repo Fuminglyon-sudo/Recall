@@ -6,6 +6,7 @@ import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, LayoutDashboard, Se
 import { SoroSokeLogo } from "./soro-soke-logo";
 import { SoroSokeMark } from "./soro-soke-mark";
 import { ThemeToggle } from "./theme-toggle";
+import { PrincessChat } from "./princess-chat";
 import { purgeOfflineCaches } from "@/lib/service-worker";
 
 interface LandingPageProps {
@@ -804,6 +805,8 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           })}
         </div>
       </div>
+
+      <PrincessChat />
     </>
   );
 }

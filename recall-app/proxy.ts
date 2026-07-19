@@ -23,6 +23,9 @@ export async function proxy(req: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
+    // Princess is the anonymous homepage chat widget — it has no session
+    // to check by design, and rate-limits by IP inside the route itself.
+    pathname === "/api/princess-chat" ||
     pathname === "/sw.js" ||
     pathname === "/favicon.ico" ||
     pathname === "/favicon.svg" ||
