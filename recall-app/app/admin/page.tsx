@@ -3,15 +3,52 @@ import Link from "next/link";
 import { isAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
+import { UsagePanel, type FeatureUsage } from "./usage-panel";
 import { upsertSiteConfig } from "./actions";
+import { bucketCountsByDay } from "@/lib/usage-stats";
 import { Users, Crown, Zap, BarChart2, Settings, ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 // ── Data fetching ────────────────────────────────────────────────────────────
 
+// Non-null userId excludes the env-var admin's own rows (admin-owned decks,
+// streak, and sessions all carry userId: null) — otherwise the founder's
+// own testing/QA activity would inflate "active users" and feature usage.
+const REAL_USER = { userId: { not: null as string | null } };
+
 async function getData() {
-  const [users, founderConfig, totalReviews, pushCount] = await Promise.all([
+  const now = new Date();
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const thirtyDaysAgo = new Date(now);
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const fourteenDaysAgo = new Date(now);
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+  fourteenDaysAgo.setHours(0, 0, 0, 0);
+
+  const realReviewLog = { card: { deck: { userId: { not: null as string | null } } } };
+
+  const [
+    users,
+    founderConfig,
+    totalReviews,
+    pushCount,
+    activeToday,
+    activeWeek,
+    activeMonth,
+    newUsersRaw,
+    reviewsRaw,
+    reviewsRecent30d,
+    speakUpTotal,
+    speakUpRecent30d,
+    socialTotal,
+    socialRecent30d,
+    debateTotal,
+    debateRecent30d,
+  ] = await Promise.all([
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       select: {
@@ -34,11 +71,40 @@ async function getData() {
       },
     }),
     prisma.siteConfig.findUnique({ where: { key: "founder_spots_total" } }),
-    prisma.reviewLog.count(),
+    prisma.reviewLog.count({ where: realReviewLog }),
     prisma.pushSubscription.count(),
+    // Active users — "active" mirrors lib/record-activity.ts's own
+    // definition (any review, Speak Up, Conversation Lab, or Debate Lab
+    // session), since every one of those updates Streak.lastReviewDate.
+    prisma.streak.count({ where: { ...REAL_USER, lastReviewDate: { gte: todayStart } } }),
+    prisma.streak.count({ where: { ...REAL_USER, lastReviewDate: { gte: sevenDaysAgo } } }),
+    prisma.streak.count({ where: { ...REAL_USER, lastReviewDate: { gte: thirtyDaysAgo } } }),
+    prisma.user.findMany({ where: { createdAt: { gte: fourteenDaysAgo } }, select: { createdAt: true } }),
+    prisma.reviewLog.findMany({ where: { ...realReviewLog, reviewedAt: { gte: fourteenDaysAgo } }, select: { reviewedAt: true } }),
+    prisma.reviewLog.count({ where: { ...realReviewLog, reviewedAt: { gte: thirtyDaysAgo } } }),
+    prisma.speakUpSession.count({ where: REAL_USER }),
+    prisma.speakUpSession.count({ where: { ...REAL_USER, createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.socialSession.count({ where: REAL_USER }),
+    prisma.socialSession.count({ where: { ...REAL_USER, createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.debateSession.count({ where: REAL_USER }),
+    prisma.debateSession.count({ where: { ...REAL_USER, createdAt: { gte: thirtyDaysAgo } } }),
   ]);
 
   const founderTotal = parseInt(founderConfig?.value ?? "100", 10);
+
+  const usage = {
+    activeToday,
+    activeWeek,
+    activeMonth,
+    signupBuckets: bucketCountsByDay(newUsersRaw.map((u) => u.createdAt), 14, now),
+    reviewBuckets: bucketCountsByDay(reviewsRaw.map((r) => r.reviewedAt), 14, now),
+    features: [
+      { label: "Card reviews", total: totalReviews, recent30d: reviewsRecent30d, color: "#4ade80" },
+      { label: "Speak Up", total: speakUpTotal, recent30d: speakUpRecent30d, color: "#38bdf8" },
+      { label: "Conversation Lab", total: socialTotal, recent30d: socialRecent30d, color: "#a78bfa" },
+      { label: "Debate Lab", total: debateTotal, recent30d: debateRecent30d, color: "#fbbf24" },
+    ] satisfies FeatureUsage[],
+  };
 
   const enriched = users.map((u) => ({
     id: u.id,
@@ -69,6 +135,7 @@ async function getData() {
       pushCount,
     },
     founderTotal,
+    usage,
   };
 }
 
@@ -242,7 +309,7 @@ function SiteConfigPanel({ founderTotal }: { founderTotal: number }) {
 export default async function AdminPage() {
   if (!(await isAdmin())) redirect("/login");
 
-  const { users, stats, founderTotal } = await getData();
+  const { users, stats, founderTotal, usage } = await getData();
 
   return (
     <div
@@ -328,6 +395,9 @@ export default async function AdminPage() {
             <StatCard icon={Users}    label="Push subs"     value={stats.pushCount} />
           </div>
         </section>
+
+        {/* Usage */}
+        <UsagePanel {...usage} />
 
         {/* Site config */}
         <SiteConfigPanel founderTotal={founderTotal} />
