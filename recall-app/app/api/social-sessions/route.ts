@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { getCurrentUserId, scopedUserId, ADMIN_USER_ID } from "@/lib/session";
 
 // Sessions are created server-side in /api/social-conversation at the
 // moment the LLM judge computes the score — there is no longer a
@@ -10,7 +10,7 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 export async function GET() {
   try {
     const userId = await getCurrentUserId();
-    if (!userId) {
+    if (userId !== ADMIN_USER_ID) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { conductSocialConversation } from "@/lib/anthropic";
 import { CHARACTER_IDS, CHARACTER_LABELS, buildCharacterPrompt } from "@/lib/conversation-characters";
-import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { getCurrentUserId, scopedUserId, ADMIN_USER_ID } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
@@ -31,7 +31,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   const userId = await getCurrentUserId();
-  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  if (userId !== ADMIN_USER_ID) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   if (!checkRateLimit("social-conversation", userId, 30)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
 
   try {

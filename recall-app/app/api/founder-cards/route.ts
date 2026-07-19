@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { generateFounderBatch } from "@/lib/anthropic";
-import { getCurrentUserId } from "@/lib/session";
+import { getCurrentUserId, ADMIN_USER_ID } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
@@ -12,7 +12,7 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   const userId = await getCurrentUserId();
-  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  if (userId !== ADMIN_USER_ID) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   if (!checkRateLimit("founder-cards", userId, 20)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
 
   try {

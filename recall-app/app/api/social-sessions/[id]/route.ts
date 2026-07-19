@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { getCurrentUserId, scopedUserId, ADMIN_USER_ID } from "@/lib/session";
 
 export async function DELETE(
   _req: NextRequest,
@@ -8,7 +8,7 @@ export async function DELETE(
 ) {
   try {
     const userId = await getCurrentUserId();
-    if (!userId) {
+    if (userId !== ADMIN_USER_ID) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
 
