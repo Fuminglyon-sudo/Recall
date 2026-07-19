@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
+import { SoroSokeMark } from "@/components/soro-soke-mark";
 import { ReadingProgressBar } from "@/components/reading-progress-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BlogContentGate } from "@/components/blog-content-gate";
@@ -87,7 +88,8 @@ export default async function BlogPostPage({
       {/* Nav */}
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
-          <Link href="/landing">
+          <Link href="/landing" className="flex items-center gap-2">
+            <SoroSokeMark size={30} className="shrink-0" />
             <SoroSokeLogo fontSize="1.9rem" />
           </Link>
           <div className="flex items-center gap-4">

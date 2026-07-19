@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
+import { SoroSokeMark } from "@/components/soro-soke-mark";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
@@ -18,7 +19,8 @@ export default function PrivacyPage() {
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-white/8 bg-slate-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-          <Link href="/landing">
+          <Link href="/landing" className="flex items-center gap-2">
+            <SoroSokeMark size={30} className="shrink-0" />
             <SoroSokeLogo fontSize="1.9rem" />
           </Link>
           <Link href="/landing" className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">

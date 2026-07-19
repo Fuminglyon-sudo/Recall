@@ -1,9 +1,17 @@
 import Link from "next/link";
+import { SoroSokeLogo } from "./soro-soke-logo";
+import { SoroSokeMark } from "./soro-soke-mark";
 
 export function MarketingFooter() {
   return (
     <footer className="border-t border-white/8 bg-slate-950">
       <div className="mx-auto max-w-5xl px-6 py-12">
+        <div className="mb-10">
+          <Link href="/landing" className="inline-flex items-center gap-2">
+            <SoroSokeMark size={26} className="shrink-0" />
+            <SoroSokeLogo fontSize="1.5rem" duration={0.8} />
+          </Link>
+        </div>
         <div className="grid gap-10 sm:grid-cols-3 mb-10">
           <div className="space-y-3">
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-600">Product</p>
@@ -49,7 +57,7 @@ export function MarketingFooter() {
           </div>
         </div>
         <div className="border-t border-white/5 pt-6 text-center text-xs text-slate-700">
-          © {new Date().getFullYear()} Soro Soke. All rights reserved.
+          © {new Date().getFullYear()} Sọrọ Sọkẹ. All rights reserved.
         </div>
       </div>
     </footer>

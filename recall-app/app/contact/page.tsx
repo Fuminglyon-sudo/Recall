@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
+import { SoroSokeMark } from "@/components/soro-soke-mark";
 import { MarketingFooter } from "@/components/marketing-footer";
 import { ArrowLeft, Mail, MessageCircle } from "lucide-react";
 
@@ -16,7 +17,8 @@ export default function ContactPage() {
       {/* Nav */}
       <header className="border-b border-white/8 bg-slate-950/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-6">
-          <Link href="/landing">
+          <Link href="/landing" className="flex items-center gap-2">
+            <SoroSokeMark size={30} className="shrink-0" />
             <SoroSokeLogo fontSize="1.9rem" />
           </Link>
           <Link href="/landing" className="flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">

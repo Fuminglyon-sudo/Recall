@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { SoroSokeLogo } from "./soro-soke-logo";
+import { SoroSokeMark } from "./soro-soke-mark";
 import { ThemeToggle } from "./theme-toggle";
 import { purgeOfflineCaches } from "@/lib/service-worker";
 
@@ -224,8 +225,10 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
           <button
             onClick={() => scrollToSlide(0)}
             aria-label="Back to start"
+            className="flex items-center gap-2"
             style={{ background: "none", border: "none", padding: 0, cursor: activeSlide > 0 ? "pointer" : "default" }}
           >
+            <SoroSokeMark size={30} className="shrink-0" />
             <SoroSokeLogo fontSize="1.9rem" color="#fff" textShadow="0 1px 12px rgba(0,0,0,0.9)" />
           </button>
 
@@ -536,7 +539,8 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                     className="relative max-w-2xl space-y-7"
                     style={{ animation: "slideContentIn 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both" }}
                   >
-                    <div className="flex justify-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <SoroSokeMark size={22} className="shrink-0" />
                       <SoroSokeLogo
                         fontSize="1.35rem"
                         color="#4ade80"

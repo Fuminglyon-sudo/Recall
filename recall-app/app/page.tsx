@@ -22,6 +22,7 @@ import { LandingPage } from "@/components/landing-page";
 import { AchievementsDisplay } from "@/components/achievements-display";
 import { RecoverStreakButton } from "@/components/recover-streak-button";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
+import { SoroSokeMark } from "@/components/soro-soke-mark";
 
 // ── SEO metadata (shown to crawlers on the landing route) ───────────────────
 export const metadata: Metadata = {
@@ -308,7 +309,10 @@ async function Dashboard({ uid }: { uid: string | null }) {
     <AppShell>
       <section className="space-y-6">
         <div className="space-y-3">
-          <SoroSokeLogo fontSize="1.05rem" color="#4ade80" textShadow="0 0 20px rgba(52,211,153,0.25)" duration={1.2} />
+          <div className="flex items-center gap-1.5">
+            <SoroSokeMark size={18} className="shrink-0" />
+            <SoroSokeLogo fontSize="1.05rem" color="#4ade80" textShadow="0 0 20px rgba(52,211,153,0.25)" duration={1.2} />
+          </div>
           <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
             A calm place to keep words, ideas, and language close.
           </h1>
