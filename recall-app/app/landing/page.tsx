@@ -34,14 +34,14 @@ export const metadata: Metadata = {
       "Build vocabulary with spaced repetition. Practice high-stakes speaking, ease social anxiety in conversation, and build confidence in real-world debate with AI feedback. Free for the first 50 users.",
     type: "website",
     url: "/",
-    images: [{ url: "/dashboard.png", width: 1200, height: 630, alt: "Sọrọ Sọkẹ AI" }],
+    // Share image comes from app/opengraph-image.tsx (a purpose-built
+    // card, not a screenshot) — omitting `images` here lets it inherit.
   },
   twitter: {
     card: "summary_large_image",
     title: "Sọrọ Sọkẹ AI — Practice Vocabulary, Speaking, Conversation & Debate Skills",
     description:
       "Build vocabulary with spaced repetition. Practice speaking, conversation, and debate with AI feedback.",
-    images: ["/dashboard.png"],
   },
 };
 

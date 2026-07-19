@@ -70,14 +70,15 @@ export const metadata: Metadata = {
     siteName: "Sọrọ Sọkẹ AI",
     type: "website",
     url: SITE_URL,
-    images: [{ url: "/dashboard.png", width: 1200, height: 630, alt: "Sọrọ Sọkẹ AI dashboard" }],
+    // Share image comes from app/opengraph-image.tsx (a purpose-built
+    // card, not a screenshot) — Next wires up og:image automatically.
   },
   twitter: {
     card: "summary_large_image",
     title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking, Conversation & Confidence Practice",
     description:
       "Build vocabulary with spaced repetition. Ease social anxiety and build confidence with AI-coached speaking, conversation, and debate practice. Free for the first 50 users.",
-    images: ["/dashboard.png"],
+    // Share image comes from app/twitter-image.tsx.
   },
   appleWebApp: {
     capable: true,

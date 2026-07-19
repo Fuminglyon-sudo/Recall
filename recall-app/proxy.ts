@@ -27,6 +27,12 @@ export async function proxy(req: NextRequest) {
     pathname === "/favicon.ico" ||
     pathname === "/favicon.svg" ||
     pathname === "/manifest.webmanifest" ||
+    // Social-share image routes — link-preview crawlers (WhatsApp, iMessage,
+    // Twitter/X, etc.) fetch these with no session cookie, so they must stay
+    // public or every shared link silently redirects to /login instead of
+    // returning the image. Matches at any route segment (e.g. both
+    // /opengraph-image and /landing/opengraph-image), not just the root.
+    /\/(opengraph-image|twitter-image)$/.test(pathname) ||
     // All static file types served from /public/ — images, fonts, etc.
     /\.(png|jpe?g|webp|gif|svg|ico|woff2?|ttf|eot|mp4|mp3|pdf|txt|xml)$/i.test(pathname)
   ) {
