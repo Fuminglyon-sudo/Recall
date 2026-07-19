@@ -102,6 +102,16 @@ export default function PrivacyPage() {
                 Soro Soke is hosted on infrastructure that stores your data in secure, encrypted databases.
                 Data is stored in the European Union or United States, depending on the provider region.
               </p>
+              <p><span className="text-slate-300 font-medium">Analytics.</span>{" "}
+                We use Google Analytics to understand how people use Soro Soke — which pages are
+                visited and how the product is navigated. Google Analytics sets cookies and may
+                collect your IP address and device information. We do not use this data for
+                advertising. See{" "}
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">
+                  Google&apos;s privacy policy
+                </a>{" "}
+                for how they handle it.
+              </p>
             </div>
           </section>
 
@@ -109,8 +119,9 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-white">Cookies and session data</h2>
             <p>
               We use session cookies to keep you signed in. These are essential for the service to
-              function and are not used for tracking or advertising. No third-party tracking cookies
-              are set on Soro Soke.
+              function and are not used for tracking or advertising. We also use Google Analytics
+              cookies to understand product usage — see &quot;Third-party services&quot; above for
+              details.
             </p>
           </section>
 

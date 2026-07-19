@@ -5,9 +5,10 @@ import type { NextConfig } from "next";
 // and the tight connect-src / img-src allowlists.
 // 'unsafe-eval' is only needed by Next.js dev (Turbopack/webpack HMR eval) —
 // keeping it out of the production CSP closes off a real XSS-escalation path.
+// googletagmanager.com serves gtag.js (the Google Analytics tag).
 const scriptSrc = process.env.NODE_ENV === "production"
-  ? "script-src 'self' 'unsafe-inline'"
-  : "script-src 'self' 'unsafe-inline' 'unsafe-eval'";
+  ? "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com"
+  : "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com";
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
@@ -15,7 +16,10 @@ const ContentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",                // Tailwind inline styles
   "img-src 'self' data: https://lh3.googleusercontent.com https://lh4.googleusercontent.com",
   "font-src 'self'",
-  "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.google.com",
+  // google-analytics.com/analytics.google.com receive gtag.js's collect
+  // (pageview/event) beacons; GA4 routes to region-specific subdomains,
+  // hence the wildcards.
+  "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.google.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com",
   "frame-src https://accounts.google.com",
   "frame-ancestors 'none'",   // prevents clickjacking (stronger than X-Frame-Options)
   "form-action 'self'",       // blocks form submissions to foreign origins
