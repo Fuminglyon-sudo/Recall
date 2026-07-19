@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { POSTS } from "./blog/data";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosoke.ai";
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosokeai.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

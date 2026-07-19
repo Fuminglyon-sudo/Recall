@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosoke.ai";
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosokeai.com";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -22,6 +22,13 @@ export default function robots(): MetadataRoute.Robots {
           "/saved-sessions",
           "/search",
           "/voice",
+          "/debate-lab",
+          "/social-skills",
+          "/streak",
+          "/pitch-practice",
+          "/sentence-challenge",
+          "/corporate-jargon",
+          "/founder-words",
         ],
       },
     ],

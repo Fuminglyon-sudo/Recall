@@ -25,7 +25,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosoke.ai";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosokeai.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

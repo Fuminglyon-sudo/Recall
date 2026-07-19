@@ -51,6 +51,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // Both www.sorosokeai.com and sorosokeai.com serve identical content
+      // with no redirect between them today — the canonical tag alone is a
+      // hint, not a guarantee, so backlinks/crawl signals split across two
+      // URLs instead of consolidating onto the one we want ranked. A
+      // permanent (308) redirect is the stronger signal.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.sorosokeai.com" }],
+        destination: "https://sorosokeai.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

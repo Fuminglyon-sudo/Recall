@@ -61,6 +61,7 @@ export default async function BlogPostPage({
   const prev = POSTS[postIndex - 1] ?? null;
   const next = POSTS[postIndex + 1] ?? null;
   const image = POST_IMAGES[slug];
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosokeai.com";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -68,13 +69,14 @@ export default async function BlogPostPage({
     headline: post.title,
     description: post.description,
     datePublished: post.date,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}/blog/${slug}` },
     author: { "@type": "Organization", name: "Sọrọ Sọkẹ AI" },
     publisher: {
       "@type": "Organization",
       name: "Sọrọ Sọkẹ AI",
-      logo: { "@type": "ImageObject", url: "/favicon.svg" },
+      logo: { "@type": "ImageObject", url: `${siteUrl}/favicon.svg` },
     },
-    ...(image ? { image } : {}),
+    ...(image ? { image: `${siteUrl}${image}` } : {}),
   };
 
   return (

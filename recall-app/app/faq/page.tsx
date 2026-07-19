@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MarketingNav } from "@/components/marketing-nav";
 import { LandingFaq } from "@/components/landing-faq";
 import { MarketingFooter } from "@/components/marketing-footer";
+import { FAQS } from "@/lib/faq-data";
 
 export const metadata: Metadata = {
   title: { absolute: "FAQ — Sọrọ Sọkẹ AI" },
@@ -37,9 +38,23 @@ export const metadata: Metadata = {
   },
 };
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white antialiased flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <MarketingNav />
 
       <main className="mx-auto max-w-3xl flex-1 px-6 py-20 space-y-12">
