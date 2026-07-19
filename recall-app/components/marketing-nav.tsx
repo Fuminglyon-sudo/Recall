@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SoroSokeLogo } from "./soro-soke-logo";
+import { SoroSokeMark } from "./soro-soke-mark";
 import { ThemeToggle } from "./theme-toggle";
 
 const NAV_LINKS = [
@@ -26,7 +27,8 @@ export function MarketingNav() {
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 sm:px-10">
         {/* Logo */}
-        <Link href="/landing">
+        <Link href="/landing" className="flex items-center gap-2">
+          <SoroSokeMark size={30} className="shrink-0" />
           <SoroSokeLogo fontSize="1.9rem" duration={1.0} />
         </Link>
 

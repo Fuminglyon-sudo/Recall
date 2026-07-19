@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SoroSokeLogo } from "./soro-soke-logo";
+import { SoroSokeMark } from "./soro-soke-mark";
 import { ThemeToggle } from "./theme-toggle";
 import { purgeOfflineCaches } from "@/lib/service-worker";
 import {
@@ -158,7 +159,8 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center justify-between p-5 pb-2">
-        <Link href="/landing" onClick={onClose}>
+        <Link href="/landing" onClick={onClose} className="flex items-center gap-2">
+          <SoroSokeMark size={30} className="shrink-0" />
           <SoroSokeLogo fontSize="1.9rem" duration={1.0} />
         </Link>
         <div className="flex items-center gap-1">
@@ -241,7 +243,8 @@ export function Sidebar({
         className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between px-4 backdrop-blur-xl lg:hidden"
         style={{ borderBottom: "1px solid var(--stroke-s)", background: "color-mix(in oklab, var(--background) 90%, transparent)" }}
       >
-        <Link href="/landing">
+        <Link href="/landing" className="flex items-center gap-2">
+          <SoroSokeMark size={26} className="shrink-0" />
           <SoroSokeLogo fontSize="1.8rem" duration={1.0} />
         </Link>
         <div className="flex items-center gap-1">

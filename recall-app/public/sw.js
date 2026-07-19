@@ -1,9 +1,16 @@
-const CACHE = "sorosoke-v4";
+const CACHE = "sorosoke-v5";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE).then((c) =>
-      c.addAll(["/manifest.webmanifest", "/favicon.svg", "/pwa-icon/192", "/pwa-icon/512"])
+      c.addAll([
+        "/manifest.webmanifest",
+        "/favicon.svg",
+        "/favicon.ico",
+        "/brand/app-icon-192.png",
+        "/brand/app-icon-512.png",
+        "/brand/apple-touch-icon-180.png",
+      ])
     ).then(() => self.skipWaiting())
   );
 });
@@ -79,8 +86,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: "/icon.png",
-      badge: "/icon.png",
+      icon: "/brand/app-icon-192.png",
+      badge: "/brand/app-icon-192.png",
       data: { url: data.url },
       tag: "recall-daily",
       renotify: false,

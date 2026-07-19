@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 200" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <rect width="680" height="200" fill="#0f172a"/>
+  <g transform="translate(28 10) scale(0.9)">
+    <path d="M54 54 C70 82 70 118 54 146 L146 146 C130 118 130 82 146 54 Z" fill="#D97706"/>
+    <path d="M64 58 C76 84 76 116 64 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M82 58 C89 85 89 115 82 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="100" y1="58" x2="100" y2="142" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M118 58 C111 85 111 115 118 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M136 58 C124 84 124 116 136 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="52" rx="48" ry="13" fill="#FDE68A"/>
+    <ellipse cx="100" cy="148" rx="48" ry="13" fill="#F59E0B"/>
+    <path d="M158 38 a16 16 0 0 1 0 28" fill="none" stroke="#FCD34D" stroke-width="6" stroke-linecap="round"/>
+    <path d="M172 30 a26 26 0 0 1 0 44" fill="none" stroke="#FCD34D" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  <text x="228" y="122" font-size="58" font-weight="800" fill="#F8FAFC">Sọrọ Sọkẹ<tspan fill="#F59E0B" font-weight="500"> AI</tspan></text>
+</svg>

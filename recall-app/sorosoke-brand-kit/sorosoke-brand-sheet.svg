@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1070" font-family="'Segoe UI', -apple-system, 'Helvetica Neue', Arial, sans-serif">
+  <rect width="800" height="1070" fill="#0f172a"/>
+  <text x="60" y="64" font-size="13" font-weight="600" letter-spacing="5" fill="#64748B">SỌRỌ SỌKẸ AI — BRAND KIT</text>
+  <text x="60" y="104" font-size="30" font-weight="800" fill="#F8FAFC">The Talking Drum</text>
+
+  <!-- Primary dark -->
+  <text x="60" y="152" font-size="13" letter-spacing="3" fill="#64748B">PRIMARY — DARK</text>
+  <rect x="60" y="166" width="680" height="180" rx="20" fill="#1E293B" stroke="#334155"/>
+  <g transform="translate(96 182) scale(0.82)">
+    <path d="M54 54 C70 82 70 118 54 146 L146 146 C130 118 130 82 146 54 Z" fill="#D97706"/>
+    <path d="M64 58 C76 84 76 116 64 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M82 58 C89 85 89 115 82 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="100" y1="58" x2="100" y2="142" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M118 58 C111 85 111 115 118 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M136 58 C124 84 124 116 136 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="52" rx="48" ry="13" fill="#FDE68A"/>
+    <ellipse cx="100" cy="148" rx="48" ry="13" fill="#F59E0B"/>
+    <path d="M158 38 a16 16 0 0 1 0 28" fill="none" stroke="#FCD34D" stroke-width="6" stroke-linecap="round"/>
+    <path d="M172 30 a26 26 0 0 1 0 44" fill="none" stroke="#FCD34D" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  <text x="280" y="274" font-size="46" font-weight="800" fill="#F8FAFC">Sọrọ Sọkẹ<tspan fill="#F59E0B" font-weight="500"> AI</tspan></text>
+
+  <!-- Primary light -->
+  <text x="60" y="392" font-size="13" letter-spacing="3" fill="#64748B">PRIMARY — LIGHT</text>
+  <rect x="60" y="406" width="680" height="180" rx="20" fill="#FFFFFF"/>
+  <g transform="translate(96 422) scale(0.82)">
+    <path d="M54 54 C70 82 70 118 54 146 L146 146 C130 118 130 82 146 54 Z" fill="#B45309"/>
+    <path d="M64 58 C76 84 76 116 64 142" fill="none" stroke="#78350F" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M82 58 C89 85 89 115 82 142" fill="none" stroke="#78350F" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="100" y1="58" x2="100" y2="142" stroke="#78350F" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M118 58 C111 85 111 115 118 142" fill="none" stroke="#78350F" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M136 58 C124 84 124 116 136 142" fill="none" stroke="#78350F" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="52" rx="48" ry="13" fill="#F59E0B"/>
+    <ellipse cx="100" cy="148" rx="48" ry="13" fill="#D97706"/>
+    <path d="M158 38 a16 16 0 0 1 0 28" fill="none" stroke="#D97706" stroke-width="6" stroke-linecap="round"/>
+    <path d="M172 30 a26 26 0 0 1 0 44" fill="none" stroke="#D97706" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  <text x="280" y="514" font-size="46" font-weight="800" fill="#0f172a">Sọrọ Sọkẹ<tspan fill="#D97706" font-weight="500"> AI</tspan></text>
+
+  <!-- App icon + favicon -->
+  <text x="60" y="632" font-size="13" letter-spacing="3" fill="#64748B">APP ICON</text>
+  <rect x="60" y="646" width="170" height="170" rx="38" fill="#0f172a" stroke="#334155"/>
+  <g transform="translate(74 664) scale(0.72)">
+    <path d="M54 54 C70 82 70 118 54 146 L146 146 C130 118 130 82 146 54 Z" fill="#D97706"/>
+    <path d="M64 58 C76 84 76 116 64 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M82 58 C89 85 89 115 82 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="100" y1="58" x2="100" y2="142" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M118 58 C111 85 111 115 118 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M136 58 C124 84 124 116 136 142" fill="none" stroke="#7C2D12" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="52" rx="48" ry="13" fill="#FDE68A"/>
+    <ellipse cx="100" cy="148" rx="48" ry="13" fill="#F59E0B"/>
+    <path d="M158 38 a16 16 0 0 1 0 28" fill="none" stroke="#FCD34D" stroke-width="6" stroke-linecap="round"/>
+    <path d="M172 30 a26 26 0 0 1 0 44" fill="none" stroke="#FCD34D" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  </g>
+
+  <text x="300" y="632" font-size="13" letter-spacing="3" fill="#64748B">FAVICON — 48 / 32 / 16</text>
+  <g transform="translate(300 690) scale(0.24)">
+    <rect width="200" height="200" rx="36" fill="#0f172a" stroke="#334155" stroke-width="6"/>
+    <rect x="44" y="34" width="112" height="24" rx="12" fill="#F59E0B"/>
+    <path d="M56 60 C74 88 74 112 56 140 L144 140 C126 112 126 88 144 60 Z" fill="#D97706"/>
+    <rect x="44" y="142" width="112" height="24" rx="12" fill="#F59E0B"/>
+  </g>
+  <g transform="translate(366 706) scale(0.16)">
+    <rect width="200" height="200" rx="36" fill="#0f172a" stroke="#334155" stroke-width="8"/>
+    <rect x="44" y="34" width="112" height="24" rx="12" fill="#F59E0B"/>
+    <path d="M56 60 C74 88 74 112 56 140 L144 140 C126 112 126 88 144 60 Z" fill="#D97706"/>
+    <rect x="44" y="142" width="112" height="24" rx="12" fill="#F59E0B"/>
+  </g>
+  <g transform="translate(414 714) scale(0.08)">
+    <rect width="200" height="200" rx="36" fill="#0f172a" stroke="#334155" stroke-width="14"/>
+    <rect x="44" y="34" width="112" height="24" rx="12" fill="#F59E0B"/>
+    <path d="M56 60 C74 88 74 112 56 140 L144 140 C126 112 126 88 144 60 Z" fill="#D97706"/>
+    <rect x="44" y="142" width="112" height="24" rx="12" fill="#F59E0B"/>
+  </g>
+  <text x="300" y="790" font-size="14" fill="#94A3B8">Cords and sound arcs drop out at small sizes —</text>
+  <text x="300" y="812" font-size="14" fill="#94A3B8">the solid silhouette stays readable at 16px.</text>
+
+  <!-- Palette -->
+  <text x="60" y="884" font-size="13" letter-spacing="3" fill="#64748B">PALETTE</text>
+  <rect x="60" y="900" width="100" height="64" rx="12" fill="#0f172a" stroke="#334155"/>
+  <text x="60" y="988" font-size="13" fill="#94A3B8">Midnight</text>
+  <text x="60" y="1006" font-size="12" fill="#64748B">#0F172A</text>
+  <rect x="176" y="900" width="100" height="64" rx="12" fill="#D97706"/>
+  <text x="176" y="988" font-size="13" fill="#94A3B8">Drum Amber</text>
+  <text x="176" y="1006" font-size="12" fill="#64748B">#D97706</text>
+  <rect x="292" y="900" width="100" height="64" rx="12" fill="#F59E0B"/>
+  <text x="292" y="988" font-size="13" fill="#94A3B8">Gold</text>
+  <text x="292" y="1006" font-size="12" fill="#64748B">#F59E0B</text>
+  <rect x="408" y="900" width="100" height="64" rx="12" fill="#FDE68A"/>
+  <text x="408" y="988" font-size="13" fill="#94A3B8">Drum Head</text>
+  <text x="408" y="1006" font-size="12" fill="#64748B">#FDE68A</text>
+  <rect x="524" y="900" width="100" height="64" rx="12" fill="#FCD34D"/>
+  <text x="524" y="988" font-size="13" fill="#94A3B8">Sound Gold</text>
+  <text x="524" y="1006" font-size="12" fill="#64748B">#FCD34D</text>
+  <rect x="640" y="900" width="100" height="64" rx="12" fill="#7C2D12"/>
+  <text x="640" y="988" font-size="13" fill="#94A3B8">Cord Brown</text>
+  <text x="640" y="1006" font-size="12" fill="#64748B">#7C2D12</text>
+
+  <text x="60" y="1048" font-size="13" fill="#475569">Sọrọ Sọkẹ AI · The drum that speaks · 2026</text>
+</svg>

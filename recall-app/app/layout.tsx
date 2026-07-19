@@ -59,10 +59,11 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
       { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/pwa-icon/192", sizes: "192x192", type: "image/png" },
+      { url: "/brand/app-icon-192.png", sizes: "192x192", type: "image/png" },
     ],
-    apple: [{ url: "/pwa-icon/180", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: "/brand/apple-touch-icon-180.png", sizes: "180x180", type: "image/png" }],
   },
   openGraph: {
     siteName: "Sọrọ Sọkẹ AI",
