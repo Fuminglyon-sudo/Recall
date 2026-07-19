@@ -1,22 +1,98 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Sparkles, X, Send } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { X, Send } from "lucide-react";
+import { PRINCESS_GREETING } from "@/lib/princess-knowledge";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
-const GREETING: ChatMessage = {
-  role: "assistant",
-  content:
-    "Hi, I'm Princess. I can walk you through Speak Up, Small Talk Lab, and Debate Lab, tell you how Sọrọ Sọkẹ compares to Anki or Quizlet, explain the pricing, or tell you about Japa Reality, our sister app. What would you like to know?",
-};
+const GREETING: ChatMessage = { role: "assistant", content: PRINCESS_GREETING };
 
 // Only the last few exchanges go to the API — enough for the reply to
 // stay coherent without letting the request grow unbounded.
 const HISTORY_WINDOW = 12;
 
+// Shows the attention nudge once per browser session, not on every page
+// view — sessionStorage clears when the tab/browser closes, localStorage
+// wouldn't (and would nag returning visitors forever).
+const NUDGE_SEEN_KEY = "princess-nudge-seen";
+const NUDGE_SHOW_DELAY_MS = 1500;
+const NUDGE_AUTO_HIDE_MS = 10000;
+
+function PrincessAvatar({ size }: { size: number }) {
+  return (
+    <span
+      className="relative flex shrink-0 overflow-hidden rounded-full ring-1 ring-white/15"
+      style={{ width: size, height: size }}
+    >
+      <Image src="/princess_avatar.PNG" alt="Princess" fill sizes={`${size}px`} className="object-cover" />
+    </span>
+  );
+}
+
+// A narrow markdown subset — paragraphs, "- " bullet lists, and
+// [label](url) links — parsed into React elements directly (never
+// dangerouslySetInnerHTML) so there's no injection surface regardless of
+// what the model outputs. Matches exactly what the system prompt is
+// instructed to produce; anything else just renders as plain text.
+function renderInline(text: string, keyPrefix: string): ReactNode[] {
+  const linkPattern = /\[([^\]]+)\]\((\/[a-zA-Z0-9/_-]*|https:\/\/[^\s)]+)\)/g;
+  const nodes: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let i = 0;
+
+  while ((match = linkPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) nodes.push(text.slice(lastIndex, match.index));
+    const [full, label, href] = match;
+    const linkClass = "font-semibold text-emerald-300 underline decoration-emerald-400/40 underline-offset-2 transition hover:text-emerald-200";
+    nodes.push(
+      href.startsWith("/") ? (
+        <Link key={`${keyPrefix}-a${i}`} href={href} className={linkClass}>
+          {label}
+        </Link>
+      ) : (
+        <a key={`${keyPrefix}-a${i}`} href={href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+          {label}
+        </a>
+      )
+    );
+    lastIndex = match.index + full.length;
+    i++;
+  }
+  if (lastIndex < text.length) nodes.push(text.slice(lastIndex));
+  return nodes;
+}
+
+function PrincessMessageContent({ content }: { content: string }) {
+  const blocks = content.trim().split(/\n\s*\n/).filter(Boolean);
+
+  return (
+    <div className="space-y-2">
+      {blocks.map((block, bi) => {
+        const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+        const isList = lines.length > 0 && lines.every((l) => /^[-•]\s+/.test(l));
+
+        if (isList) {
+          return (
+            <ul key={bi} className="list-disc space-y-1 pl-4 marker:text-emerald-400/60">
+              {lines.map((line, li) => (
+                <li key={li}>{renderInline(line.replace(/^[-•]\s+/, ""), `${bi}-${li}`)}</li>
+              ))}
+            </ul>
+          );
+        }
+        return <p key={bi}>{renderInline(lines.join(" "), `${bi}`)}</p>;
+      })}
+    </div>
+  );
+}
+
 export function PrincessChat() {
   const [open, setOpen] = useState(false);
+  const [showNudge, setShowNudge] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,6 +107,28 @@ export function PrincessChat() {
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
+
+  // First-visit nudge: one short pop-up drawing the eye to the launcher,
+  // shown once per session (not once ever, not on every page).
+  useEffect(() => {
+    if (sessionStorage.getItem(NUDGE_SEEN_KEY)) return;
+    const showTimer = setTimeout(() => {
+      sessionStorage.setItem(NUDGE_SEEN_KEY, "1");
+      setShowNudge(true);
+    }, NUDGE_SHOW_DELAY_MS);
+    return () => clearTimeout(showTimer);
+  }, []);
+
+  useEffect(() => {
+    if (!showNudge) return;
+    const hideTimer = setTimeout(() => setShowNudge(false), NUDGE_AUTO_HIDE_MS);
+    return () => clearTimeout(hideTimer);
+  }, [showNudge]);
+
+  function openChat() {
+    setShowNudge(false);
+    setOpen(true);
+  }
 
   async function send() {
     const text = input.trim();
@@ -65,15 +163,30 @@ export function PrincessChat() {
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full border border-emerald-400/30 bg-slate-950/90 px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl transition hover:border-emerald-400/50 hover:bg-slate-900"
-      >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950">
-          <Sparkles className="h-4 w-4" />
-        </span>
-        <span className="hidden text-sm font-semibold text-white sm:inline">Ask Princess</span>
-      </button>
+      <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
+        {showNudge ? (
+          <div className="flex max-w-[15rem] items-start gap-2.5 rounded-2xl rounded-br-sm border border-emerald-400/25 bg-slate-950/97 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+            <PrincessAvatar size={28} />
+            <p className="flex-1 pt-0.5 text-xs leading-5 text-slate-200">
+              Curious if this is right for you? Ask me anything.
+            </p>
+            <button
+              onClick={() => setShowNudge(false)}
+              aria-label="Dismiss"
+              className="shrink-0 rounded-full p-0.5 text-slate-500 transition hover:text-slate-300"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        ) : null}
+        <button
+          onClick={openChat}
+          className="flex items-center gap-2 rounded-full border border-emerald-400/30 bg-slate-950/90 px-3.5 py-2.5 shadow-[0_8px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl transition hover:border-emerald-400/50 hover:bg-slate-900"
+        >
+          <PrincessAvatar size={32} />
+          <span className="hidden text-sm font-semibold text-white sm:inline">Ask Princess</span>
+        </button>
+      </div>
     );
   }
 
@@ -81,9 +194,7 @@ export function PrincessChat() {
     <div className="fixed bottom-5 right-5 z-40 flex h-[32rem] max-h-[80vh] w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/97 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3 border-b border-white/8 px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-slate-950">
-            <Sparkles className="h-4 w-4" />
-          </span>
+          <PrincessAvatar size={36} />
           <div>
             <p className="text-sm font-bold text-white">Princess</p>
             <p className="text-[11px] text-emerald-300">Your Sọrọ Sọkẹ guide</p>
@@ -101,16 +212,18 @@ export function PrincessChat() {
       <div ref={scrollRef} role="log" aria-live="polite" className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
         {messages.map((m, i) => (
           <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
-            <p
-              className={
-                m.role === "user"
-                  ? "max-w-[85%] rounded-2xl rounded-br-sm bg-emerald-400 px-3.5 py-2 text-sm text-slate-950"
-                  : "max-w-[85%] rounded-2xl rounded-bl-sm bg-white/8 px-3.5 py-2 text-sm text-slate-200"
-              }
-              style={{ lineHeight: 1.5 }}
-            >
-              {m.content}
-            </p>
+            {m.role === "user" ? (
+              <p className="max-w-[85%] rounded-2xl rounded-br-sm bg-emerald-400 px-3.5 py-2 text-sm text-slate-950" style={{ lineHeight: 1.5 }}>
+                {m.content}
+              </p>
+            ) : (
+              <div
+                className="max-w-[85%] rounded-2xl rounded-bl-sm bg-white/8 px-3.5 py-2 text-sm text-slate-200"
+                style={{ lineHeight: 1.5 }}
+              >
+                <PrincessMessageContent content={m.content} />
+              </div>
+            )}
           </div>
         ))}
         {loading && (

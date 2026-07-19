@@ -332,7 +332,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
             A calm place to practice speaking up, easing into a conversation, and holding your ground.
           </h1>
           <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Review what's due, rehearse the moment before it happens, and argue your side until it's solid. Three things that build on each other — and compound the more consistently you do them.
+            Review what&apos;s due, rehearse the moment before it happens, and argue your side until it&apos;s solid. Three things that build on each other — and compound the more consistently you do them.
           </p>
         </div>
 
