@@ -6,7 +6,7 @@ import { SoroSokeMark } from "@/components/soro-soke-mark";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
-  title: "Sign In",
+  title: { absolute: "Sign In — Sọrọ Sọkẹ AI" },
   description: "Sign in to your Soro Soke account to continue your vocabulary practice and speaking sessions.",
   robots: { index: false, follow: false },
 };

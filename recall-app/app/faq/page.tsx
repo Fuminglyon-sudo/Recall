@@ -5,7 +5,7 @@ import { LandingFaq } from "@/components/landing-faq";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "FAQ — Sọrọ Sọkẹ AI",
+  title: { absolute: "FAQ — Sọrọ Sọkẹ AI" },
   description:
     "Answers to common questions about Sọrọ Sọkẹ AI: how spaced repetition works, what's included, pricing, privacy, grading, streaks, and what's coming next.",
   keywords: [

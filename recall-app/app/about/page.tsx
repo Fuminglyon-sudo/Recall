@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Sọrọ Sọkẹ AI — Learn Words. Practice Using Them. Keep Both.",
+  title: { absolute: "About Sọrọ Sọkẹ AI — Learn Words. Practice Using Them. Keep Both." },
   description:
     "Sọrọ Sọkẹ AI is a communication-confidence tool: SM-2 spaced repetition builds vocabulary that sticks, Speak Up rehearses high-stakes career conversations, Conversation Lab eases social anxiety, and Debate Lab builds reasoning confidence. Learn the word. Practice using it. Own it.",
   keywords: [
@@ -294,7 +294,7 @@ export default function AboutPage() {
             <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>
               The words you reach for — finally within reach
             </h2>
-            <p className="text-slate-400">Claim one of the remaining founder spots and get every feature free — forever. After 100, it&apos;s $9.99/mo.</p>
+            <p className="text-slate-400">Claim one of the remaining founder spots and get every feature free — forever. After 50, it&apos;s $9.99/mo.</p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/login"

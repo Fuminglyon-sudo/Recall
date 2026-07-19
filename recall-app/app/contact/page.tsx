@@ -6,7 +6,7 @@ import { MarketingFooter } from "@/components/marketing-footer";
 import { ArrowLeft, Mail, MessageCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Contact Soro Soke",
+  title: { absolute: "Contact — Sọrọ Sọkẹ AI" },
   description:
     "Have a question about Soro Soke, spaced repetition, building confidence, or how the app works? Reach out to the team — we'd love to hear from you.",
 };

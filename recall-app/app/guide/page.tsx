@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Guide — How to Use Soro Soke",
+  title: { absolute: "Guide — How to Use Sọrọ Sọkẹ AI" },
   description:
     "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, easing social anxiety with Conversation Lab, and building reasoning confidence with Debate Lab.",
   keywords: [

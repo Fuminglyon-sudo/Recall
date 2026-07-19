@@ -7,7 +7,7 @@ import { POSTS, formatDate } from "./data";
 import { POST_IMAGES, CATEGORY_STYLES } from "./images";
 
 export const metadata: Metadata = {
-  title: "Blog — Sọrọ Sọkẹ AI",
+  title: { absolute: "Blog — Sọrọ Sọkẹ AI" },
   description:
     "Articles on spaced repetition, vocabulary building, speaking confidence, overcoming social anxiety, and the science of memory — from the Sọrọ Sọkẹ AI team.",
   keywords: [

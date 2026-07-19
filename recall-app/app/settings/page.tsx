@@ -8,7 +8,7 @@ import { updateDailyCardLimit } from "./actions";
 import { Settings } from "lucide-react";
 
 export const metadata = {
-  title: "Settings — Soro Soke",
+  title: { absolute: "Settings — Sọrọ Sọkẹ AI" },
 };
 
 export default async function SettingsPage() {

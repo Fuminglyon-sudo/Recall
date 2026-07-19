@@ -6,7 +6,7 @@ import { SoroSokeMark } from "@/components/soro-soke-mark";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Soro Soke",
+  title: { absolute: "Privacy Policy — Sọrọ Sọkẹ AI" },
   description: "How Soro Soke collects, uses, and protects your personal data.",
   robots: { index: true, follow: true },
 };

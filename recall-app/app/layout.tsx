@@ -30,27 +30,27 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosoke.ai";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Sọrọ Sọkẹ AI — Vocabulary, Speaking, Conversation & Confidence Practice",
+    default: "Sọrọ Sọkẹ AI — Speaking, Conversation, Debate & Vocabulary Practice",
     template: "%s | Sọrọ Sọkẹ AI",
   },
   description:
-    "Sọrọ Sọkẹ AI helps you build vocabulary with SM-2 spaced repetition, practice high-stakes speaking with Speak Up, ease social anxiety with Conversation Lab, and build reasoning confidence with Debate Lab. Practice the moment before the anxiety does. Free for the first 50 users.",
+    "Sọrọ Sọkẹ AI helps you practice high-stakes speaking with Speak Up, ease social anxiety with Conversation Lab, and build reasoning confidence with Debate Lab — backed by SM-2 spaced repetition so the vocabulary sticks. Practice the moment before the anxiety does. Free for the first 50 users.",
   keywords: [
-    "spaced repetition",
-    "vocabulary builder",
-    "conversation practice",
     "speaking confidence",
-    "flashcard app",
-    "SM-2 algorithm",
+    "conversation practice",
+    "debate lab",
     "social skills",
     "communication skills",
     "speak up practice",
     "conversation lab",
-    "debate lab",
     "social anxiety app",
     "confidence building app",
     "overcome social anxiety",
     "social confidence training",
+    "spaced repetition",
+    "vocabulary builder",
+    "flashcard app",
+    "SM-2 algorithm",
     "Soro Soke",
     "language learning app",
   ],
@@ -75,9 +75,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sọrọ Sọkẹ AI — Vocabulary, Speaking, Conversation & Confidence Practice",
+    title: "Sọrọ Sọkẹ AI — Speaking, Conversation, Debate & Vocabulary Practice",
     description:
-      "Build vocabulary with spaced repetition. Ease social anxiety and build confidence with AI-coached speaking, conversation, and debate practice. Free for the first 50 users.",
+      "Ease social anxiety and build confidence with AI-coached speaking, conversation, and debate practice — vocabulary sticks because of spaced repetition underneath. Free for the first 50 users.",
     // Share image comes from app/twitter-image.tsx.
   },
   appleWebApp: {

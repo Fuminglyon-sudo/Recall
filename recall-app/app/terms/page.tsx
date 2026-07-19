@@ -6,7 +6,7 @@ import { SoroSokeMark } from "@/components/soro-soke-mark";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — Soro Soke",
+  title: { absolute: "Terms of Service — Sọrọ Sọkẹ AI" },
   description: "The terms that govern your use of Soro Soke.",
   robots: { index: true, follow: true },
 };

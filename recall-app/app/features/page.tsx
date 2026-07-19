@@ -6,15 +6,10 @@ import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
 
 export const metadata: Metadata = {
-  title: "Features — Sọrọ Sọkẹ AI",
+  title: { absolute: "Features — Sọrọ Sọkẹ AI" },
   description:
-    "Sọrọ Sọkẹ AI features: SM-2 spaced repetition, AI-drafted flashcards, free recall sessions, Speak Up speaking practice, Conversation Lab social coaching, and Debate Lab reasoning practice.",
+    "Sọrọ Sọkẹ AI features: Speak Up speaking practice, Conversation Lab social coaching, Debate Lab reasoning practice, and SM-2 spaced repetition with AI-drafted flashcards so the vocabulary actually sticks.",
   keywords: [
-    "spaced repetition features",
-    "AI flashcard app",
-    "SM-2 algorithm",
-    "free recall",
-    "vocabulary app features",
     "Speak Up practice",
     "Conversation Lab",
     "Debate Lab",
@@ -22,34 +17,38 @@ export const metadata: Metadata = {
     "argument coaching",
     "social anxiety app",
     "confidence building app",
-    "flashcard comparison Anki Duolingo",
+    "spaced repetition features",
+    "AI flashcard app",
+    "SM-2 algorithm",
+    "free recall",
+    "vocabulary app features",
     "Soro Soke features",
   ],
   robots: { index: true, follow: true },
   alternates: { canonical: "/features" },
   openGraph: {
     title: "Features — Sọrọ Sọkẹ AI",
-    description: "How Sọrọ Sọkẹ AI's spaced repetition, smart drafting, and speaking practice features work — and how they compare to Anki, Duolingo, and paper cards.",
+    description: "How Sọrọ Sọkẹ AI's speaking, debate, and conversation practice work — plus the spaced-repetition engine underneath that makes sure the words stick.",
     type: "website",
     url: "/features",
   },
   twitter: {
     card: "summary_large_image",
     title: "Features — Sọrọ Sọkẹ AI",
-    description: "SM-2 spaced repetition, AI-drafted flashcards, free recall, Speak Up, and Conversation Lab.",
+    description: "Speak Up, Conversation Lab, Debate Lab, and SM-2 spaced repetition with AI-drafted flashcards.",
   },
 };
 
 const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
+  ["Speak Up speaking practice", true,  false, false, false],
+  ["Conversation Lab coaching",  true,  false, false, false],
+  ["Debate Lab reasoning practice", true, false, false, false],
   ["SM-2 spaced repetition",     true,  true,  false, false],
   ["Soro Soke-drafted cards",        true,  false, false, false],
   ["Free recall sessions",       true,  false, false, false],
   ["Clean, focused UI",          true,  false, true,  false],
   ["CSV export & import",        true,  true,  false, false],
   ["Push reminders",             true,  false, true,  false],
-  ["Speak Up speaking practice", true,  false, false, false],
-  ["Conversation Lab coaching",  true,  false, false, false],
-  ["Debate Lab reasoning practice", true, false, false, false],
   ["Build your own vocabulary",  true,  true,  false, true ],
   ["Free trial included",        true,  true,  true,  true ],
 ];
@@ -65,11 +64,12 @@ export default function FeaturesPage() {
         <section className="py-20 space-y-4 border-b border-white/8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Features</p>
           <h1 className="text-4xl font-extrabold text-white sm:text-5xl" style={{ textWrap: "balance" } as React.CSSProperties}>
-            Designed around how memory actually works
+            Built so the words show up when it counts
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-slate-400">
-            Every feature in Soro Soke exists because it has a measurable effect on long-term retention.
-            Nothing is added because it feels productive. Everything is here because it works.
+            Every feature exists to get you from knowing a word to using it under pressure — in a pitch, a hard
+            conversation, a debate you didn&apos;t see coming. Nothing is here because it feels productive.
+            Everything is here because it works.
           </p>
         </section>
 
@@ -89,8 +89,85 @@ export default function FeaturesPage() {
           </div>
         </section>
 
+        {/* ── Practice modes ── */}
+        <section className="py-20 border-b border-white/8">
+          <div className="space-y-10">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Practice modes</p>
+              <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>Apply what you know under pressure</h2>
+              <p className="text-slate-400">Three interactive modes that put your language and thinking to the test in real situations.</p>
+            </div>
+            <div className="grid gap-5 sm:grid-cols-3">
+              {[
+                {
+                  label: "Speak Up",
+                  href: "/speak-up",
+                  accent: "text-violet-300",
+                  accentBg: "bg-violet-400/10",
+                  bullets: [
+                    "High-stakes scenario library",
+                    "Voice or typed responses",
+                    "Score, filler-word count, model answer",
+                    "Ideal full-conversation replay",
+                  ],
+                  desc: "Rehearse before a specific high-pressure moment: a pitch, an interview, a negotiation. You perform; the AI coaches.",
+                },
+                {
+                  label: "Conversation Lab",
+                  href: "/conversation-lab",
+                  accent: "text-sky-300",
+                  accentBg: "bg-sky-400/10",
+                  bullets: [
+                    "Open social scenarios",
+                    "Real-time next-move coaching",
+                    "No script or guided prompts",
+                    "Social fluency scoring",
+                  ],
+                  desc: "Drop into a natural setting — a networking event, a long flight, a dinner party — with no script and get coached on every move.",
+                },
+                {
+                  label: "Debate Lab",
+                  href: "/debate-lab",
+                  accent: "text-amber-300",
+                  accentBg: "bg-amber-400/10",
+                  bullets: [
+                    "Formal motions or real-life situations",
+                    "4 opponent archetypes with scouting reports",
+                    "Prep room before you begin",
+                    "Skill sub-scores across 5 dimensions",
+                  ],
+                  desc: "Go five structured exchanges against an AI that argues back. Win on logic, evidence, and composure — not just volume.",
+                },
+              ].map(({ label, href, accent, accentBg, bullets, desc }) => (
+                <div key={label} className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <div className={`inline-flex items-center rounded-xl px-3 py-1 text-xs font-semibold ${accentBg} ${accent}`}>
+                    {label}
+                  </div>
+                  <p className="text-sm leading-6 text-slate-400">{desc}</p>
+                  <ul className="space-y-2">
+                    {bullets.map((b) => (
+                      <li key={b} className="flex items-start gap-2.5 text-sm text-slate-300">
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{b}
+                      </li>
+                    ))}
+                  </ul>
+                  <a href={href} className={`inline-flex items-center gap-1 text-xs font-medium ${accent} hover:underline`}>
+                    Try it →
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ── Feature deep-dives ── */}
         <section className="py-20 border-b border-white/8 space-y-20">
+
+          <div className="max-w-2xl space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">The engine underneath</p>
+            <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>None of that works if the words aren&apos;t there yet</h2>
+            <p className="text-slate-400">Before you can use a word under pressure, it has to actually be in your head. This is how it gets there.</p>
+          </div>
 
           {/* Spaced repetition */}
           <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
@@ -184,77 +261,6 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* ── Practice modes ── */}
-        <section className="py-20 border-b border-white/8">
-          <div className="space-y-10">
-            <div className="max-w-2xl space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Practice modes</p>
-              <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>Apply what you know under pressure</h2>
-              <p className="text-slate-400">Three interactive modes that put your language and thinking to the test in real situations.</p>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-3">
-              {[
-                {
-                  label: "Speak Up",
-                  href: "/speak-up",
-                  accent: "text-violet-300",
-                  accentBg: "bg-violet-400/10",
-                  bullets: [
-                    "High-stakes scenario library",
-                    "Voice or typed responses",
-                    "Score, filler-word count, model answer",
-                    "Ideal full-conversation replay",
-                  ],
-                  desc: "Rehearse before a specific high-pressure moment: a pitch, an interview, a negotiation. You perform; the AI coaches.",
-                },
-                {
-                  label: "Conversation Lab",
-                  href: "/conversation-lab",
-                  accent: "text-sky-300",
-                  accentBg: "bg-sky-400/10",
-                  bullets: [
-                    "Open social scenarios",
-                    "Real-time next-move coaching",
-                    "No script or guided prompts",
-                    "Social fluency scoring",
-                  ],
-                  desc: "Drop into a natural setting — a networking event, a long flight, a dinner party — with no script and get coached on every move.",
-                },
-                {
-                  label: "Debate Lab",
-                  href: "/debate-lab",
-                  accent: "text-amber-300",
-                  accentBg: "bg-amber-400/10",
-                  bullets: [
-                    "Formal motions or real-life situations",
-                    "4 opponent archetypes with scouting reports",
-                    "Prep room before you begin",
-                    "Skill sub-scores across 5 dimensions",
-                  ],
-                  desc: "Go five structured exchanges against an AI that argues back. Win on logic, evidence, and composure — not just volume.",
-                },
-              ].map(({ label, href, accent, accentBg, bullets, desc }) => (
-                <div key={label} className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-6">
-                  <div className={`inline-flex items-center rounded-xl px-3 py-1 text-xs font-semibold ${accentBg} ${accent}`}>
-                    {label}
-                  </div>
-                  <p className="text-sm leading-6 text-slate-400">{desc}</p>
-                  <ul className="space-y-2">
-                    {bullets.map((b) => (
-                      <li key={b} className="flex items-start gap-2.5 text-sm text-slate-300">
-                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />{b}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href={href} className={`inline-flex items-center gap-1 text-xs font-medium ${accent} hover:underline`}>
-                    Try it →
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── Everything else ── */}
         <section className="py-20 border-b border-white/8">
           <div className="space-y-10">
@@ -291,6 +297,7 @@ export default function FeaturesPage() {
               </h2>
               <p className="text-slate-400">
                 Most tools ask you to manage the practice. Soro Soke manages it for you — so you can just show up.
+                Most of what&apos;s below, other tools already do. The top three rows are the reason Sọrọ Sọkẹ exists.
               </p>
             </div>
             <div className="overflow-x-auto rounded-3xl border border-white/10">
@@ -334,7 +341,7 @@ export default function FeaturesPage() {
             <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>
               The words you reach for — finally within reach
             </h2>
-            <p className="text-slate-400">Claim one of the remaining founder spots and get every feature free — forever. After 100, it&apos;s $9.99/mo.</p>
+            <p className="text-slate-400">Claim one of the remaining founder spots and get every feature free — forever. After 50, it&apos;s $9.99/mo.</p>
             <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/login"

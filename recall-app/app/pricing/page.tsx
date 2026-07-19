@@ -7,7 +7,7 @@ import { PricingContent } from "./pricing-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Pricing — Sọrọ Sọkẹ AI",
+  title: { absolute: "Pricing — Sọrọ Sọkẹ AI" },
   description:
     "Sọrọ Sọkẹ AI pricing: free for the first 50 founders, then $9.99/month or $99/year for Pro. 14-day free trial, no card required.",
   keywords: ["Soro Soke pricing", "spaced repetition app price", "vocabulary app subscription", "confidence building app price", "founder pricing", "free trial"],

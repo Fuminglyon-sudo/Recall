@@ -23,13 +23,28 @@ import { AchievementsDisplay } from "@/components/achievements-display";
 import { RecoverStreakButton } from "@/components/recover-streak-button";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
 import { SoroSokeMark } from "@/components/soro-soke-mark";
+import { landingMetadata } from "@/app/landing/page";
 
-// ── SEO metadata (shown to crawlers on the landing route) ───────────────────
-export const metadata: Metadata = {
-  title: "Dashboard — Sọrọ Sọkẹ AI",
-  description: "Your Sọrọ Sọkẹ AI dashboard: review due cards, track your streak, and manage your decks.",
-  robots: { index: false, follow: false },
-};
+// ── SEO metadata ──────────────────────────────────────────────────────────
+// "/" is auth-gated content, not a fixed page: logged-out visitors (which
+// includes every crawler — Googlebot never carries a session cookie) get
+// the marketing LandingPage below, logged-in visitors get the Dashboard.
+// A static `metadata` export can't see auth state, so it previously
+// declared "Dashboard" + noindex unconditionally — meaning Google saw
+// good marketing content on the site's most important URL, wrapped in
+// meta tags telling it not to index that URL or follow its links.
+// generateMetadata() lets each case get metadata that actually matches
+// what's rendered.
+export async function generateMetadata(): Promise<Metadata> {
+  const userId = await getCurrentUserId();
+  if (!userId) return landingMetadata;
+
+  return {
+    title: "Dashboard — Sọrọ Sọkẹ AI",
+    description: "Your Sọrọ Sọkẹ AI dashboard: review due cards, track your streak, and manage your decks.",
+    robots: { index: false, follow: false },
+  };
+}
 
 // ── Dashboard data ───────────────────────────────────────────────────────────
 async function getDashboardData(uid: string | null) {

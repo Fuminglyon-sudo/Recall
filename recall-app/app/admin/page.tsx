@@ -90,7 +90,7 @@ async function getData() {
     prisma.debateSession.count({ where: { ...REAL_USER, createdAt: { gte: thirtyDaysAgo } } }),
   ]);
 
-  const founderTotal = parseInt(founderConfig?.value ?? "100", 10);
+  const founderTotal = parseInt(founderConfig?.value ?? "50", 10);
 
   const usage = {
     activeToday,

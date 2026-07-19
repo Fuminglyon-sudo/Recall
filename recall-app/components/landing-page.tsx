@@ -134,7 +134,7 @@ const SLIDES: Slide[] = [
       { text: "\n" },
       { text: "that knows what to say.", italic: true },
     ],
-    body: "Train recall, speaking, and social confidence in one daily loop. Free for the first 50 — then $9.99/mo.",
+    body: "Train speaking, social confidence, and recall in one daily loop. Free for the first 50 — then $9.99/mo.",
     caption: null,
     loop: null,
     features: null,
