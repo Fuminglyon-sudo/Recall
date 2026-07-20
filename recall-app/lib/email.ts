@@ -13,14 +13,14 @@ function getClient(): Resend | null {
 
 const FROM = process.env.EMAIL_FROM ?? "Sọrọ Sọkẹ AI <onboarding@resend.dev>";
 
-export async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }): Promise<void> {
+export async function sendEmail({ to, subject, html, text }: { to: string; subject: string; html: string; text: string }): Promise<void> {
   const resend = getClient();
   if (!resend) {
     console.warn(`RESEND_API_KEY not set — skipped email "${subject}" to ${to}`);
     return;
   }
   try {
-    await resend.emails.send({ from: FROM, to, subject, html });
+    await resend.emails.send({ from: FROM, to, subject, html, text });
   } catch (err) {
     console.error("EMAIL_SEND_FAILED", { to, subject, err });
   }

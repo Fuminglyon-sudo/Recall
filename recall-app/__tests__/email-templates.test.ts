@@ -19,11 +19,34 @@ describe("welcomeEmail", () => {
     expect(html).not.toMatch(/free, forever/i);
   });
 
-  test("includes all three getting-started steps", () => {
+  test("names all three practice modes as their own steps", () => {
     const { html } = welcomeEmail({ name: "Ada" });
     expect(html).toContain("Add your first word");
-    expect(html).toContain("Review it");
-    expect(html).toContain("Try a practice mode");
+    expect(html).toContain("Speak Up");
+    expect(html).toContain("Small Talk Lab");
+    expect(html).toContain("Debate Lab");
+  });
+
+  test("includes the founder's note and signs off as Priscilla", () => {
+    const { html } = welcomeEmail({ name: "Ada" });
+    expect(html).toMatch(/I'm Priscilla/);
+    expect(html).toContain("— Priscilla, founder");
+  });
+
+  test("includes the hosted logo image, not an emoji placeholder", () => {
+    const { html } = welcomeEmail({ name: "Ada" });
+    expect(html).toContain("/brand/app-icon-192.png");
+    expect(html).not.toContain("🥁");
+  });
+
+  test("has a plain-text alternative with the same key content", () => {
+    const { text } = welcomeEmail({ name: "Ada" });
+    expect(text).toContain("Hi Ada,");
+    expect(text).toContain("Add your first word");
+    expect(text).toContain("Speak Up");
+    expect(text).toMatch(/I'm Priscilla/);
+    expect(text).toMatch(/14-day free trial/i);
+    expect(text).not.toMatch(/<[a-z][\s\S]*>/i); // no leftover HTML tags
   });
 });
 
@@ -41,10 +64,25 @@ describe("founderWelcomeEmail", () => {
     expect(html).not.toMatch(/14-day free trial/i);
   });
 
-  test("includes all three getting-started steps", () => {
+  test("names all three practice modes as their own steps", () => {
     const { html } = founderWelcomeEmail({ name: "Ada" });
     expect(html).toContain("Add your first word");
-    expect(html).toContain("Review it");
-    expect(html).toContain("Try a practice mode");
+    expect(html).toContain("Speak Up");
+    expect(html).toContain("Small Talk Lab");
+    expect(html).toContain("Debate Lab");
+  });
+
+  test("includes the founder's note and signs off as Priscilla", () => {
+    const { html } = founderWelcomeEmail({ name: "Ada" });
+    expect(html).toMatch(/I'm Priscilla/);
+    expect(html).toContain("— Priscilla, founder");
+  });
+
+  test("has a plain-text alternative with the same key content", () => {
+    const { text } = founderWelcomeEmail({ name: "Ada" });
+    expect(text).toContain("Hi Ada,");
+    expect(text).toMatch(/free, forever/i);
+    expect(text).toMatch(/I'm Priscilla/);
+    expect(text).not.toMatch(/<[a-z][\s\S]*>/i); // no leftover HTML tags
   });
 });

@@ -58,7 +58,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           ? founderWelcomeEmail({ name: user.name ?? null })
           : welcomeEmail({ name: user.name ?? null });
         if (user.email) {
-          await sendEmail({ to: user.email, subject: template.subject, html: template.html });
+          await sendEmail({ to: user.email, subject: template.subject, html: template.html, text: template.text });
         }
       } catch (err) {
         console.error("NEW_USER_ONBOARDING_FAILED", { userId: user.id, err });
