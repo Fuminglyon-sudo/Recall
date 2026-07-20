@@ -330,10 +330,10 @@ async function Dashboard({ uid }: { uid: string | null }) {
             <SoroSokeLogo fontSize="1.05rem" color="#4ade80" textShadow="0 0 20px rgba(52,211,153,0.25)" duration={1.2} />
           </div>
           <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            A calm place to practice speaking up, easing into a conversation, and holding your ground.
+            Rehearse the room. Ease into the conversation. Hold your ground.
           </h1>
           <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Review what&apos;s due, rehearse the moment before it happens, and argue your side until it&apos;s solid. Three things that build on each other — and compound the more consistently you do them.
+            Speak Up, Small Talk Lab, and Debate Lab — three ways to practice the moment before it happens.
           </p>
         </div>
 
