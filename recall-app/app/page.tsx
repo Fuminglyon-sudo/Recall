@@ -23,6 +23,7 @@ import { AchievementsDisplay } from "@/components/achievements-display";
 import { RecoverStreakButton } from "@/components/recover-streak-button";
 import { SoroSokeLogo } from "@/components/soro-soke-logo";
 import { SoroSokeMark } from "@/components/soro-soke-mark";
+import { OnboardingChecklist } from "@/components/onboarding-checklist";
 import { landingMetadata } from "@/app/landing/page";
 
 // ── SEO metadata ──────────────────────────────────────────────────────────
@@ -335,6 +336,12 @@ async function Dashboard({ uid }: { uid: string | null }) {
             Review what&apos;s due, rehearse the moment before it happens, and argue your side until it&apos;s solid. Three things that build on each other — and compound the more consistently you do them.
           </p>
         </div>
+
+        <OnboardingChecklist
+          hasCards={data.totalCards > 0}
+          hasReviewed={data.reviewDays.length > 0}
+          hasTriedPractice={data.practiceStats.speakCount + data.practiceStats.socialCount + data.practiceStats.debateCount > 0}
+        />
 
         {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? (
           <PushPrompt vapidPublicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
