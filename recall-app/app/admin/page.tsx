@@ -3,10 +3,11 @@ import Link from "next/link";
 import { isAdmin } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { UsersTable } from "./users-table";
+import { BannedEmailsTable } from "./banned-emails-table";
 import { UsagePanel, type FeatureUsage } from "./usage-panel";
-import { upsertSiteConfig } from "./actions";
+import { upsertSiteConfig, banEmail } from "./actions";
 import { bucketCountsByDay } from "@/lib/usage-stats";
-import { Users, Crown, Zap, BarChart2, Settings, ArrowLeft } from "lucide-react";
+import { Users, Crown, Zap, BarChart2, Settings, ArrowLeft, ShieldBan } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +49,7 @@ async function getData() {
     socialRecent30d,
     debateTotal,
     debateRecent30d,
+    bannedEmails,
   ] = await Promise.all([
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
@@ -88,6 +90,7 @@ async function getData() {
     prisma.socialSession.count({ where: { ...REAL_USER, createdAt: { gte: thirtyDaysAgo } } }),
     prisma.debateSession.count({ where: REAL_USER }),
     prisma.debateSession.count({ where: { ...REAL_USER, createdAt: { gte: thirtyDaysAgo } } }),
+    prisma.bannedEmail.findMany({ orderBy: { bannedAt: "desc" } }),
   ]);
 
   const founderTotal = parseInt(founderConfig?.value ?? "50", 10);
@@ -136,6 +139,7 @@ async function getData() {
     },
     founderTotal,
     usage,
+    bannedEmails,
   };
 }
 
@@ -304,12 +308,95 @@ function SiteConfigPanel({ founderTotal }: { founderTotal: number }) {
   );
 }
 
+// ── Banned emails panel ─────────────────────────────────────────────────────
+
+function BannedEmailsPanel({ bans }: { bans: { email: string; reason: string | null; bannedAt: Date }[] }) {
+  return (
+    <section
+      style={{
+        borderRadius: "1rem",
+        border: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(255,255,255,0.03)",
+        padding: "1.5rem",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+        <ShieldBan className="h-4 w-4 text-slate-500" />
+        <h2 style={{ fontSize: "0.85rem", fontWeight: 700, color: "#e2e8f0" }}>Banned emails</h2>
+      </div>
+      <p style={{ fontSize: "0.72rem", color: "#475569", marginBottom: "1.25rem", lineHeight: 1.5, maxWidth: "60ch" }}>
+        A banned email can never sign in — checked before any account is created, so deleting someone&apos;s
+        account and banning them here stops them from simply signing back in with the same Google account.
+      </p>
+
+      <form
+        action={async (fd: FormData) => {
+          "use server";
+          const email = fd.get("email")?.toString().trim() ?? "";
+          const reason = fd.get("reason")?.toString().trim() ?? "";
+          if (email) await banEmail(email, reason);
+        }}
+        style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.5rem" }}
+      >
+        <input
+          name="email"
+          type="email"
+          placeholder="email@example.com"
+          required
+          style={{
+            flex: "1 1 220px",
+            borderRadius: "0.6rem",
+            border: "1px solid rgba(255,255,255,0.12)",
+            background: "rgba(255,255,255,0.05)",
+            color: "#e2e8f0",
+            padding: "0.4em 0.75em",
+            fontSize: "0.82rem",
+            outline: "none",
+          }}
+        />
+        <input
+          name="reason"
+          type="text"
+          placeholder="Reason (optional)"
+          style={{
+            flex: "1 1 220px",
+            borderRadius: "0.6rem",
+            border: "1px solid rgba(255,255,255,0.12)",
+            background: "rgba(255,255,255,0.05)",
+            color: "#e2e8f0",
+            padding: "0.4em 0.75em",
+            fontSize: "0.82rem",
+            outline: "none",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            borderRadius: "0.6rem",
+            background: "rgba(251,191,36,0.15)",
+            border: "1px solid rgba(251,191,36,0.3)",
+            color: "#fcd34d",
+            padding: "0.4em 1em",
+            fontSize: "0.78rem",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Ban email
+        </button>
+      </form>
+
+      <BannedEmailsTable bans={bans} />
+    </section>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function AdminPage() {
   if (!(await isAdmin())) redirect("/login");
 
-  const { users, stats, founderTotal, usage } = await getData();
+  const { users, stats, founderTotal, usage, bannedEmails } = await getData();
 
   return (
     <div
@@ -401,6 +488,9 @@ export default async function AdminPage() {
 
         {/* Site config */}
         <SiteConfigPanel founderTotal={founderTotal} />
+
+        {/* Banned emails */}
+        <BannedEmailsPanel bans={bannedEmails} />
 
         {/* Users */}
         <section>

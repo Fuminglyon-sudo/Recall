@@ -16,9 +16,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Without this, a browser with an active Google session silently
+      // re-authenticates with zero prompt — so deleting your account and
+      // immediately clicking "Continue with Google" just recreates a fresh
+      // one with no visible friction. Forcing the account chooser every
+      // time makes that a deliberate choice instead of an invisible one.
+      authorization: { params: { prompt: "select_account" } },
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (!user.email) return true;
+      const banned = await prisma.bannedEmail.findUnique({ where: { email: user.email.toLowerCase() } });
+      return banned ? "/login?banned=1" : true;
+    },
     jwt({ token, user }) {
       // Persist the user's DB id into the JWT on first sign-in
       if (user?.id) token.userId = user.id;

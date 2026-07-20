@@ -322,3 +322,16 @@ model SiteConfig {
   value     String
   updatedAt DateTime @updatedAt
 }
+
+// ─── Bans ──────────────────────────────────────────────────────────────────
+// Deleting a User is a hard delete (by design — decks/cards/sessions really
+// are gone), which means a re-signup with the same Google account is
+// indistinguishable from a brand-new user. This is the block-list checked in
+// NextAuth's signIn callback, before any Account/User row is ever created,
+// so a banned email can't come back by simply signing in again.
+
+model BannedEmail {
+  email    String   @id
+  reason   String?
+  bannedAt DateTime @default(now())
+}

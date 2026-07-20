@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition, useMemo } from "react";
-import { updateUserPlan, deleteUser } from "./actions";
-import { Search, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { updateUserPlan, deleteUser, banUser } from "./actions";
+import { Search, Trash2, ChevronUp, ChevronDown, Ban } from "lucide-react";
 
 type Plan = "free" | "founder" | "pro";
 
@@ -132,6 +132,50 @@ function DeleteButton({ userId }: { userId: string }) {
         }}
       >
         {pending ? "…" : "Confirm"}
+      </button>
+      <button
+        onClick={() => setConfirm(false)}
+        style={{ fontSize: "0.65rem", color: "#64748b" }}
+      >
+        Cancel
+      </button>
+    </span>
+  );
+}
+
+function BanButton({ userId }: { userId: string }) {
+  const [pending, startTransition] = useTransition();
+  const [confirm, setConfirm] = useState(false);
+
+  if (!confirm) {
+    return (
+      <button
+        onClick={() => setConfirm(true)}
+        className="text-slate-600 transition hover:text-amber-400"
+        title="Ban & delete user"
+      >
+        <Ban className="h-3.5 w-3.5" />
+      </button>
+    );
+  }
+
+  return (
+    <span className="flex items-center gap-1">
+      <button
+        onClick={() => startTransition(async () => { await banUser(userId); })}
+        disabled={pending}
+        style={{
+          fontSize: "0.65rem",
+          padding: "0.2em 0.5em",
+          borderRadius: "0.4rem",
+          background: "rgba(251,191,36,0.15)",
+          border: "1px solid rgba(251,191,36,0.3)",
+          color: "#fcd34d",
+          cursor: pending ? "wait" : "pointer",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {pending ? "…" : "Ban + delete"}
       </button>
       <button
         onClick={() => setConfirm(false)}
@@ -278,7 +322,7 @@ export function UsersTable({ users }: { users: User[] }) {
               <th style={{ padding: "0.65rem 1rem", textAlign: "left", fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#64748b" }}>
                 Change plan
               </th>
-              <th style={{ padding: "0.65rem 1rem", width: "2rem" }} />
+              <th style={{ padding: "0.65rem 1rem", width: "4rem" }} />
             </tr>
           </thead>
           <tbody>
@@ -322,8 +366,11 @@ export function UsersTable({ users }: { users: User[] }) {
                 <td style={{ padding: "0.7rem 1rem" }}>
                   <PlanPicker userId={u.id} current={u.plan} />
                 </td>
-                <td style={{ padding: "0.7rem 0.75rem", textAlign: "center" }}>
-                  <DeleteButton userId={u.id} />
+                <td style={{ padding: "0.7rem 0.75rem" }}>
+                  <span className="flex items-center justify-center gap-2.5">
+                    <BanButton userId={u.id} />
+                    <DeleteButton userId={u.id} />
+                  </span>
                 </td>
               </tr>
             ))}
