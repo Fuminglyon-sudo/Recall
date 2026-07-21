@@ -36,11 +36,11 @@ function shell(preheader: string, bodyHtml: string): string {
             <tr>
               <td style="padding:28px 36px 8px;">
                 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-                  <td style="padding-right:10px; vertical-align:middle;">
-                    <img src="${LOGO_URL}" width="28" height="28" alt="Sọrọ Sọkẹ" style="display:block; border-radius:7px;">
+                  <td style="padding-right:14px; vertical-align:middle;">
+                    <img src="${LOGO_URL}" width="48" height="48" alt="Sọrọ Sọkẹ" style="display:block; border-radius:11px;">
                   </td>
                   <td style="vertical-align:middle;">
-                    <span style="font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:20px; color:#0a1512;">Sọ́rọ́ Sọ́kẹ́</span>
+                    <span style="font-family:Georgia,'Times New Roman',serif; font-style:italic; font-size:23px; color:#0a1512;">Sọ́rọ́ Sọ́kẹ́</span>
                   </td>
                 </tr></table>
               </td>
@@ -64,18 +64,12 @@ function button(label: string, href: string): string {
 }
 
 // Leads with the three differentiators — the point of the product, not the
-// mechanics of it. "Add your first word" carries the spaced-repetition
-// explanation since that's supporting infrastructure, not what makes this
-// different from any other vocab app.
+// mechanics of it. Capturing words comes last, reframed as what you bring
+// back FROM those sessions rather than a prerequisite before you can use
+// them — closes the loop instead of gating it.
 function stepsList(): string {
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%; margin:20px 0;">
-      <tr>
-        <td style="padding:10px 0; border-top:1px solid #eef2f0;">
-          <strong style="color:#0f172a;">Add your first word</strong><br>
-          <span style="color:#64748b; font-size:14px;">Type any word — AI drafts the definition, hook, and example. Spaced repetition brings it back right before you'd forget it.</span>
-        </td>
-      </tr>
       <tr>
         <td style="padding:10px 0; border-top:1px solid #eef2f0;">
           <strong style="color:#0f172a;">Speak Up</strong><br>
@@ -89,19 +83,25 @@ function stepsList(): string {
         </td>
       </tr>
       <tr>
-        <td style="padding:10px 0; border-top:1px solid #eef2f0; border-bottom:1px solid #eef2f0;">
+        <td style="padding:10px 0; border-top:1px solid #eef2f0;">
           <strong style="color:#0f172a;">Debate Lab</strong><br>
           <span style="color:#64748b; font-size:14px;">Hold your ground before you need to — argue it out against an AI that actually pushes back.</span>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0; border-top:1px solid #eef2f0; border-bottom:1px solid #eef2f0;">
+          <strong style="color:#0f172a;">Keep what you learn</strong><br>
+          <span style="color:#64748b; font-size:14px;">A word from Speak Up, an opener from Small Talk Lab, an argument from Debate Lab — turn it into a card, and spaced repetition keeps it coming back.</span>
         </td>
       </tr>
     </table>`;
 }
 
 const STEPS_TEXT = [
-  "Add your first word — type any word, AI drafts the definition, hook, and example. Spaced repetition brings it back right before you'd forget it.",
   "Speak Up — rehearse the room before you're in it. Say it out loud, get honest feedback, try again.",
   "Small Talk Lab — practice the awkward part first, with coaching on what to try next time.",
   "Debate Lab — hold your ground before you need to, against an AI that actually pushes back.",
+  "Keep what you learn — a word from Speak Up, an opener from Small Talk Lab, an argument from Debate Lab. Turn it into a card, and spaced repetition keeps it coming back.",
 ].map((s, i) => `${i + 1}. ${s}`).join("\n");
 
 function firstName(name: string | null): string {

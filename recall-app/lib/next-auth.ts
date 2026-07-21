@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -5,6 +6,7 @@ import { prisma } from "./prisma";
 import { assignFounderPlanIfAvailable } from "./founder";
 import { sendEmail } from "./email";
 import { welcomeEmail, founderWelcomeEmail } from "./email-templates";
+import { AUTH_INTENT_COOKIE } from "./auth-intent";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -27,8 +29,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async signIn({ user }) {
       if (!user.email) return true;
-      const banned = await prisma.bannedEmail.findUnique({ where: { email: user.email.toLowerCase() } });
-      return banned ? "/login?banned=1" : true;
+      const email = user.email.toLowerCase();
+
+      const banned = await prisma.bannedEmail.findUnique({ where: { email } });
+      if (banned) return "/login?banned=1";
+
+      // Google OAuth has no built-in "sign up" vs "sign in" — this cookie
+      // (set by whichever button was actually clicked, see
+      // app/login/google-button.tsx) is what lets us catch someone using
+      // the wrong one, instead of silently doing what Google's flow always
+      // does: log them in either way.
+      const jar = await cookies();
+      const intent = jar.get(AUTH_INTENT_COOKIE)?.value;
+      jar.delete(AUTH_INTENT_COOKIE);
+
+      if (intent === "signup" || intent === "signin") {
+        const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+        if (intent === "signup" && existing) return "/login?exists=1";
+        if (intent === "signin" && !existing) return "/login?notfound=1";
+      }
+
+      return true;
     },
     jwt({ token, user }) {
       // Persist the user's DB id into the JWT on first sign-in

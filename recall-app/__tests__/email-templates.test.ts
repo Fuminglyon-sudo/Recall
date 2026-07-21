@@ -19,12 +19,14 @@ describe("welcomeEmail", () => {
     expect(html).not.toMatch(/free, forever/i);
   });
 
-  test("names all three practice modes as their own steps", () => {
+  test("names all three practice modes as their own steps, leading the list", () => {
     const { html } = welcomeEmail({ name: "Ada" });
-    expect(html).toContain("Add your first word");
     expect(html).toContain("Speak Up");
     expect(html).toContain("Small Talk Lab");
     expect(html).toContain("Debate Lab");
+    expect(html).toContain("Keep what you learn");
+    // Practice modes lead; word-capture is the closing step, not the opener.
+    expect(html.indexOf("Speak Up")).toBeLessThan(html.indexOf("Keep what you learn"));
   });
 
   test("includes the founder's note and signs off as Priscilla", () => {
@@ -33,16 +35,17 @@ describe("welcomeEmail", () => {
     expect(html).toContain("— Priscilla, founder");
   });
 
-  test("includes the hosted logo image, not an emoji placeholder", () => {
+  test("includes the hosted logo image at a legible size, not an emoji placeholder", () => {
     const { html } = welcomeEmail({ name: "Ada" });
     expect(html).toContain("/brand/app-icon-192.png");
+    expect(html).toContain('width="48" height="48"');
     expect(html).not.toContain("🥁");
   });
 
   test("has a plain-text alternative with the same key content", () => {
     const { text } = welcomeEmail({ name: "Ada" });
     expect(text).toContain("Hi Ada,");
-    expect(text).toContain("Add your first word");
+    expect(text).toContain("Keep what you learn");
     expect(text).toContain("Speak Up");
     expect(text).toMatch(/I'm Priscilla/);
     expect(text).toMatch(/14-day free trial/i);
@@ -64,12 +67,13 @@ describe("founderWelcomeEmail", () => {
     expect(html).not.toMatch(/14-day free trial/i);
   });
 
-  test("names all three practice modes as their own steps", () => {
+  test("names all three practice modes as their own steps, leading the list", () => {
     const { html } = founderWelcomeEmail({ name: "Ada" });
-    expect(html).toContain("Add your first word");
     expect(html).toContain("Speak Up");
     expect(html).toContain("Small Talk Lab");
     expect(html).toContain("Debate Lab");
+    expect(html).toContain("Keep what you learn");
+    expect(html.indexOf("Speak Up")).toBeLessThan(html.indexOf("Keep what you learn"));
   });
 
   test("includes the founder's note and signs off as Priscilla", () => {

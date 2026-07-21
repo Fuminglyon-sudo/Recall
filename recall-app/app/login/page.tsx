@@ -19,6 +19,8 @@ export default async function LoginPage({
   const params = await searchParams;
   const errorCode = params.error;
   const banned = params.banned === "1";
+  const accountExists = params.exists === "1";
+  const accountNotFound = params.notfound === "1";
   const from = params.from ?? "/";
 
   return (
@@ -47,9 +49,28 @@ export default async function LoginPage({
               This account can&apos;t sign in. Contact support if you think that&apos;s a mistake.
             </div>
           )}
+          {accountExists && (
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+              An account with that email already exists — use <strong>Sign in</strong> below instead.
+            </div>
+          )}
+          {accountNotFound && (
+            <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
+              We couldn&apos;t find an account with that email — use <strong>Sign up</strong> below instead.
+            </div>
+          )}
 
-          {/* Primary: Google OAuth */}
-          <GoogleSignInButton from={from} />
+          {/* Primary: new visitors */}
+          <GoogleSignInButton from={from} intent="signup" />
+
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/8" />
+            <span className="text-[11px] uppercase tracking-widest text-slate-600">Already have an account?</span>
+            <span className="h-px flex-1 bg-white/8" />
+          </div>
+
+          {/* Secondary: returning users */}
+          <GoogleSignInButton from={from} intent="signin" />
 
           <p className="text-center text-xs text-slate-500">
             Your progress stays yours — each account is completely separate.
