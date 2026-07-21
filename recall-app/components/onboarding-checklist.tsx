@@ -19,6 +19,13 @@ export function OnboardingChecklist({
 }) {
   const steps: Step[] = [
     {
+      label: "Try a practice mode",
+      body: "This isn't flashcards — it's rehearsal. Speak Up, Small Talk Lab, or Debate Lab: say it out loud, get honest feedback.",
+      cta: "Try Speak Up",
+      href: "/speak-up",
+      done: hasTriedPractice,
+    },
+    {
       label: "Add your first word",
       body: "Type any word — AI drafts the definition, hook, and example. You edit and save.",
       cta: "Add a word",
@@ -31,13 +38,6 @@ export function OnboardingChecklist({
       cta: "Start review",
       href: "/today",
       done: hasReviewed,
-    },
-    {
-      label: "Try a practice mode",
-      body: "Speak Up, Small Talk Lab, or Debate Lab — say it out loud, get honest feedback.",
-      cta: "Try Speak Up",
-      href: "/speak-up",
-      done: hasTriedPractice,
     },
   ];
 

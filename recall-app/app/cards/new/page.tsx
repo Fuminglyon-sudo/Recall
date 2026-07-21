@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { SubmitButton } from "@/components/forms";
 import { createCard, createFounderBatchCards } from "./actions";
+import { createDeck } from "../../decks/actions";
 import { DraftCardForm } from "@/components/draft-card-form";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { FounderBatchGenerator } from "@/components/founder-batch-generator";
@@ -45,17 +46,32 @@ export default async function NewCardPage({ searchParams }: { searchParams: Prom
                 submitButton={<SubmitButton label="Save card" pendingLabel="Saving card..." />}
               />
             ) : (
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-3">
-                <p className="text-sm font-semibold text-white">Create a deck first</p>
-                <p className="text-sm leading-6 text-slate-400">
-                  Cards live inside decks. Go to your decks page to create one, or add a starter pack in seconds.
-                </p>
-                <Link
-                  href="/decks"
-                  className="inline-flex items-center rounded-2xl bg-emerald-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300"
-                >
-                  Go to decks →
-                </Link>
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-5">
+                <div>
+                  <p className="text-sm font-semibold text-white">Create a deck to get started</p>
+                  <p className="mt-1 text-sm leading-6 text-slate-400">
+                    Cards live inside decks. Name one below and you will land right back here, ready to add your first card.
+                  </p>
+                </div>
+                <form action={createDeck} className="space-y-4">
+                  <input type="hidden" name="redirectTo" value="/cards/new" />
+                  <label className="block space-y-2">
+                    <span className="text-sm font-medium text-slate-200">Name</span>
+                    <input name="name" className="input-base" placeholder="e.g. Words I reach for" required />
+                  </label>
+                  <SubmitButton label="Create deck" pendingLabel="Creating deck..." />
+                </form>
+                <div className="border-t border-white/8 pt-4">
+                  <p className="text-sm leading-6 text-slate-400">
+                    Or start with a hand-curated starter pack instead.
+                  </p>
+                  <Link
+                    href="/decks"
+                    className="mt-2 inline-flex items-center text-sm font-semibold text-emerald-300 transition hover:text-emerald-200"
+                  >
+                    Browse starter packs →
+                  </Link>
+                </div>
               </div>
             )}
           </div>

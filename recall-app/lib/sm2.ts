@@ -46,3 +46,8 @@ function addDays(date: Date, days: number) {
   next.setDate(next.getDate() + days);
   return next;
 }
+
+/** The resulting interval (in days) for each grade 0-5, for a "what happens if I pick this?" preview. */
+export function previewGradeIntervals(current: { easeFactor: number; interval: number; repetitions: number }): number[] {
+  return [0, 1, 2, 3, 4, 5].map((grade) => applySm2({ ...current, grade }).interval);
+}

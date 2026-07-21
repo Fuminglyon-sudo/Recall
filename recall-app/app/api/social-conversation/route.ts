@@ -2,10 +2,11 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { z } from "zod";
 import { conductSocialConversation } from "@/lib/anthropic";
 import { CHARACTER_IDS, CHARACTER_LABELS, buildCharacterPrompt } from "@/lib/conversation-characters";
-import { getCurrentUserId, scopedUserId, ADMIN_USER_ID } from "@/lib/session";
+import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
+import { getWeakWords } from "@/lib/weak-words";
 
 const schema = z.object({
   scenarioContext: z.string().min(10).max(2000),
@@ -31,7 +32,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   const userId = await getCurrentUserId();
-  if (userId !== ADMIN_USER_ID) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  if (!userId) return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   if (!checkRateLimit("social-conversation", userId, 30)) return NextResponse.json({ error: "Too many requests. Slow down and try again." }, { status: 429 });
 
   try {
@@ -41,10 +42,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
     const { characterId, difficulty, tension, scenarioTag, scenarioEmoji, tzOffsetMinutes, ...rest } = parsed.data;
+    const weakWords = await getWeakWords(scopedUserId(userId));
     const result = await conductSocialConversation({
       ...rest,
       characterType: CHARACTER_LABELS[characterId],
       characterPrompt: buildCharacterPrompt(characterId, difficulty, tension),
+      weakWords,
     });
 
     if (result.type !== "feedback") {

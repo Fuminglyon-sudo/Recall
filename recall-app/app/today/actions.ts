@@ -9,6 +9,7 @@ import { computeDistribution } from "@/lib/mastery";
 import { achievementsFromReview } from "@/lib/achievements";
 import { gradeSchema } from "@/lib/grade-schema";
 import { recordDailyActivity } from "@/lib/record-activity";
+import { clampTzOffsetMinutes, startOfLocalDay } from "@/lib/date";
 
 export async function gradeCard(formData: FormData) {
   const parsed = gradeSchema.safeParse({
@@ -100,7 +101,7 @@ export async function gradeCard(formData: FormData) {
   revalidatePath("/today");
 }
 
-export async function recoverStreak(): Promise<{ ok?: boolean; error?: string }> {
+export async function recoverStreak(tzOffsetMinutes: number = 0): Promise<{ ok?: boolean; error?: string }> {
   const userId = await getCurrentUserId();
   if (!userId) return { error: "Not signed in." };
   const uid = scopedUserId(userId);
@@ -116,8 +117,9 @@ export async function recoverStreak(): Promise<{ ok?: boolean; error?: string }>
     if (daysSince < 7) return { error: "Recovery is available once every 7 days." };
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Local, not server-UTC, midnight — matches the boundary recordDailyActivity
+  // uses so a recovered streak stays intact under the same rule that broke it.
+  const today = startOfLocalDay(clampTzOffsetMinutes(tzOffsetMinutes));
 
   await prisma.streak.update({
     where: { id: streak.id },

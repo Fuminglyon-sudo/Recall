@@ -28,7 +28,7 @@ export function RecoverStreakButton({ longestStreak }: { longestStreak: number }
         disabled={pending}
         onClick={() =>
           startTransition(async () => {
-            const result = await recoverStreak();
+            const result = await recoverStreak(new Date().getTimezoneOffset());
             if (result?.ok) setDone(true);
             else if (result?.error) setError(result.error);
           })

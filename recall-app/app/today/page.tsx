@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { ReviewCard } from "@/components/review-card";
@@ -8,6 +9,7 @@ import { OfflineBanner } from "@/components/offline-banner";
 import { gradeCard } from "./actions";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { parseTzOffsetMinutes, startOfLocalDay, TZ_COOKIE_NAME } from "@/lib/date";
 
 export default async function TodayPage() {
   const userId = await getCurrentUserId();
@@ -29,8 +31,11 @@ export default async function TodayPage() {
 
   const MAX_NEW = settings?.dailyNewCards ?? 3;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const jar = await cookies();
+  const tzOffsetMinutes = parseTzOffsetMinutes(jar.get(TZ_COOKIE_NAME)?.value);
+  // Local, not server-UTC, midnight — matches the boundary recordDailyActivity
+  // uses so "overdue" here agrees with what actually broke the streak.
+  const today = startOfLocalDay(tzOffsetMinutes);
 
   // Split: cards already reviewed at least once vs brand-new cards
   const reviewCards = allDue.filter((c) => c.repetitions > 0);
@@ -143,6 +148,7 @@ export default async function TodayPage() {
                   deckName: card.deck.name,
                   interval: card.interval,
                   repetitions: card.repetitions,
+                  easeFactor: card.easeFactor,
                 }}
                 stale={card.dueAt < today}
                 onGrade={gradeCard}

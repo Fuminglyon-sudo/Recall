@@ -7,6 +7,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { achievementsFromSpeakUp } from "@/lib/achievements";
 import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
+import { getWeakWords } from "@/lib/weak-words";
 
 const schema = z.object({
   scenario: z.string().min(10).max(2000),
@@ -39,7 +40,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid input.", issues: parsed.error.issues }, { status: 400 });
     }
     const { personaId, scenarioId, scenarioTag, practiceGoalLabel, tzOffsetMinutes, ...rest } = parsed.data;
-    const result = await conductSpeakUpConversation({ ...rest, personaPrompt: getPersonaPrompt(personaId) });
+    const weakWords = await getWeakWords(scopedUserId(userId));
+    const result = await conductSpeakUpConversation({ ...rest, personaPrompt: getPersonaPrompt(personaId), weakWords });
 
     if (result.type !== "final") {
       return NextResponse.json(result);

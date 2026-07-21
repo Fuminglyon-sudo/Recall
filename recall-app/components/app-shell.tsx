@@ -1,4 +1,5 @@
 import { Sidebar } from "./sidebar";
+import { TzSync } from "./tz-sync";
 import { isAdmin } from "@/lib/session";
 import { auth } from "@/lib/next-auth";
 
@@ -14,6 +15,7 @@ export async function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-slate-950">
+      <TzSync />
       <Sidebar isAdmin={admin} userLabel={userLabel} />
       {/* Offset for desktop sidebar width; offset for mobile top bar height */}
       <main className="pt-14 lg:pl-60 lg:pt-0">

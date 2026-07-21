@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   const uid = scopedUserId(userId);
   const deck = await prisma.deck.findFirst({
-    where: { id: deckId, OR: [{ userId: uid }, { userId: null }] },
+    where: { id: deckId, userId: uid },
   });
 
   if (!deck) {

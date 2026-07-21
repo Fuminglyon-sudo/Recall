@@ -31,3 +31,21 @@ export function startOfLocalDay(tzOffsetMinutes: number): Date {
   shifted.setHours(0, 0, 0, 0);
   return shifted;
 }
+
+// Matches new Date().getTimezoneOffset()'s valid range (UTC-12 to UTC+14).
+export function clampTzOffsetMinutes(n: number): number {
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(-720, Math.min(840, Math.trunc(n)));
+}
+
+// Cookie the client keeps refreshed with its own getTimezoneOffset() (see
+// components/tz-sync.tsx), so server components that render a "today"
+// boundary — outside of a form submission's tzOffsetMinutes field — can
+// still align it with the user's local calendar day instead of the
+// server's. Absent (first-ever request) or malformed values fall back to 0.
+export const TZ_COOKIE_NAME = "tz-offset-minutes";
+
+export function parseTzOffsetMinutes(raw: string | undefined): number {
+  if (!raw) return 0;
+  return clampTzOffsetMinutes(Number(raw));
+}

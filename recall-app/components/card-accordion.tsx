@@ -33,6 +33,7 @@ export function CardAccordion({
   resetCardAction?: (formData: FormData) => void;
 }) {
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
+  const [showStrugglingOnly, setShowStrugglingOnly] = useState(false);
 
   function toggle(id: string) {
     setOpenIds((prev) => {
@@ -43,9 +44,34 @@ export function CardAccordion({
     });
   }
 
+  const strugglingCount = cards.filter((c) => c.easeFactor < 2.0 && c.repetitions > 0).length;
+  const shownCards = showStrugglingOnly && strugglingCount > 0 ? cards.filter((c) => c.easeFactor < 2.0 && c.repetitions > 0) : cards;
+
   return (
-    <div className="space-y-2">
-      {cards.map((card) => {
+    <div className="space-y-4">
+      {strugglingCount > 0 ? (
+        <div className="rounded-[2rem] border border-amber-400/25 bg-amber-400/8 px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-amber-300">
+                {strugglingCount} card{strugglingCount === 1 ? "" : "s"} not sticking yet
+              </p>
+              <p className="mt-1 text-sm leading-6 text-amber-200/70">
+                These keep coming back. They&apos;ve been graded poorly several times and their ease factor has dropped below 2.0. You can reset any struggling card to start fresh.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowStrugglingOnly((v) => !v)}
+              className="shrink-0 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/20"
+            >
+              {showStrugglingOnly ? "Show all cards" : "Show struggling cards"}
+            </button>
+          </div>
+        </div>
+      ) : null}
+      <div className="space-y-2">
+      {shownCards.map((card) => {
         const isOpen = openIds.has(card.id);
         const mastery = getMastery(card.interval, card.repetitions);
         const meta = MASTERY[mastery];
@@ -169,6 +195,7 @@ export function CardAccordion({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

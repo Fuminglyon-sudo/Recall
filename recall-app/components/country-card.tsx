@@ -1,6 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { previewGradeIntervals } from "@/lib/sm2";
+
+function formatInterval(days: number): string {
+  return days === 1 ? "tomorrow" : `in ${days}d`;
+}
 
 const GRADES = [
   { value: 0, label: "Blackout",  style: "border-red-500/30    bg-red-500/10    text-red-300    hover:bg-red-500/20" },
@@ -36,6 +41,8 @@ type CountryData = {
   phraseAfternoon: string | null;
   funFact: string | null;
   repetitions: number;
+  interval: number;
+  easeFactor: number;
 };
 
 export function CountryCard({
@@ -48,6 +55,10 @@ export function CountryCard({
   const [revealed, setRevealed] = useState(false);
   const [pendingGrade, setPendingGrade] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
+  const previews = useMemo(
+    () => previewGradeIntervals({ easeFactor: country.easeFactor, interval: country.interval, repetitions: country.repetitions }),
+    [country.easeFactor, country.interval, country.repetitions]
+  );
 
   const isNew = country.repetitions === 0;
   const badgeStyle = CONTINENT_COLOR[country.continent] ?? "text-slate-300 border-white/15 bg-white/5";
@@ -57,6 +68,7 @@ export function CountryCard({
     const fd = new FormData();
     fd.set("id", country.id);
     fd.set("grade", String(value));
+    fd.set("tzOffsetMinutes", String(new Date().getTimezoneOffset()));
     startTransition(() => onGrade(fd));
   }
 
@@ -155,6 +167,7 @@ export function CountryCard({
                       <span className="text-base">{value}</span>
                     )}
                     <span className="text-[10px] font-normal opacity-70">{label}</span>
+                    <span className="text-[9px] font-normal opacity-50">{formatInterval(previews[value])}</span>
                   </button>
                 );
               })}

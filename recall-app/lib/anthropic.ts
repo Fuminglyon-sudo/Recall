@@ -1,5 +1,20 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { PRINCESS_SYSTEM_PROMPT, PRINCESS_FALLBACK_REPLY } from "./princess-knowledge";
+import { formatWeakWords, type WeakWord } from "./weak-words";
+
+// Prompt fragments that weave a reviewer's weak vocabulary into a practice
+// session. `steer` goes in the character's live-reply prompt (subtly create
+// openings); `coach` goes in the feedback prompt (credit words used, flag
+// natural openings missed). Both empty when the user has no weak words, so
+// the surrounding prompts are byte-identical to before for those users.
+function weakWordPromptBlocks(weakWords: WeakWord[] | undefined): { steer: string; coach: string } {
+  if (!weakWords || weakWords.length === 0) return { steer: "", coach: "" };
+  const list = formatWeakWords(weakWords);
+  return {
+    steer: `\nThe person is quietly practising these words they've been struggling to remember: ${list}. Where it feels natural, steer toward topics or questions that give them an opening to reach for one or two of these — but never name the words, quiz them, or force it. If they never come up, that's fine.\n`,
+    coach: `\nThe person is practising these words they've been struggling to remember: ${list}. If they used any of them naturally and correctly, call that out as a specific win in strongPoints. If there was an obvious natural opening for one they missed, mention it once in improvements with a short example of how they could have worked it in — but do not pad the feedback with vocabulary notes if it wasn't relevant.\n`,
+  };
+}
 
 const client = process.env.ANTHROPIC_API_KEY
   ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -56,9 +71,9 @@ export async function generateCardDraft(input: DraftRequest): Promise<DraftRespo
   const prompt = `You are helping one person save a memory or vocabulary card. Return strict JSON with keys definition, partOfSpeech, example, hook, synonyms. The front of the card is: ${input.front}. The deck is ${input.deckName}. Optional deck context: ${input.deckDescription ?? "none"}. Keep tone plain, concrete, and warm. If this is founder/product language, explain it so the user can articulate what they built.`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 500,
-    temperature: 0.4,
+    model: "claude-sonnet-5",
+    max_tokens: 700,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -83,9 +98,9 @@ export async function generateFounderBatch(input: FounderBatchRequest): Promise<
   const prompt = `You are helping a solo founder build practical vocabulary for speeches, product demos, investor conversations, networking, and founder storytelling. Return strict JSON as an array of 3 to 5 objects with keys front, definition, partOfSpeech, example, hook, synonyms, sourceContext. The product focus is ${input.product}. The target deck is ${input.deckName}. Use this context: ${input.context}. Choose words or short phrases that are useful in real conversation, not obscure academic vocabulary. Keep definitions plain-English and examples spoken, natural, and founder-relevant.`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1400,
-    temperature: 0.5,
+    model: "claude-sonnet-5",
+    max_tokens: 1900,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -182,9 +197,9 @@ If type is "final":
   }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 700,
-    temperature: 0.5,
+    model: "claude-sonnet-5",
+    max_tokens: 950,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -251,9 +266,9 @@ export async function generateSentenceScenario(
   const prompt = `Write a 2-3 sentence realistic scenario (a professional or social situation) where someone would naturally use the word "${word}" (meaning: ${definition}). The scenario should feel grounded — like an investor pitch, networking event, product meeting, or startup conversation. End with one short prompt asking the person to write a sentence using "${word}". Return strict JSON: { "scenario": "..." }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 200,
-    temperature: 0.6,
+    model: "claude-sonnet-5",
+    max_tokens: 300,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -295,9 +310,9 @@ Return strict JSON:
 }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 300,
-    temperature: 0.3,
+    model: "claude-sonnet-5",
+    max_tokens: 420,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -330,6 +345,7 @@ export type SocialConversationRequest = {
   exchangeCount: number;
   forceEnd?: boolean;
   practiceGoal?: string;
+  weakWords?: WeakWord[];
 };
 
 export type SocialConversationStep =
@@ -359,6 +375,7 @@ export async function conductSocialConversation(
     .join("\n\n");
 
   const mustEnd = input.forceEnd === true || input.exchangeCount >= 7;
+  const weakWordBlocks = weakWordPromptBlocks(input.weakWords);
 
   if (mustEnd) {
     const prompt = `You were playing this character in a social scenario.
@@ -371,7 +388,7 @@ Full conversation:
 ${history}
 
 Now break character and give coaching feedback on how the person handled this social interaction.
-${input.practiceGoal ? `Their practice focus for this session: ${input.practiceGoal}. Weight your feedback and scoring toward this skill.\n` : ""}Evaluate across: how they opened, showed genuine curiosity, kept it going naturally, built rapport, and came across as confident and interesting.
+${input.practiceGoal ? `Their practice focus for this session: ${input.practiceGoal}. Weight your feedback and scoring toward this skill.\n` : ""}${weakWordBlocks.coach}Evaluate across: how they opened, showed genuine curiosity, kept it going naturally, built rapport, and came across as confident and interesting.
 
 Return strict JSON with ALL of these fields:
 {
@@ -386,9 +403,9 @@ Return strict JSON with ALL of these fields:
 }`;
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 4000,
-      temperature: 0.4,
+      model: "claude-sonnet-5",
+      max_tokens: 5200,
+      thinking: { type: "disabled" },
       system: "Return only valid JSON. No markdown. No preamble.",
       messages: [{ role: "user", content: prompt }],
     });
@@ -450,7 +467,7 @@ Return strict JSON with ALL of these fields:
 Character type: ${input.characterType}
 Your personality: ${input.characterPrompt}
 Scenario: ${input.scenarioContext}
-
+${weakWordBlocks.steer}
 Conversation so far:
 ${history}
 
@@ -464,9 +481,9 @@ Respond naturally as this character would right now.
 Return strict JSON: { "type": "response", "message": "your in-character reply" }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 200,
-    temperature: 0.7,
+    model: "claude-sonnet-5",
+    max_tokens: 300,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -506,6 +523,7 @@ export type SpeakUpRequest = {
   exchangeCount: number;
   forceEnd?: boolean;
   practiceGoal?: string;
+  weakWords?: WeakWord[];
 };
 
 export async function conductSpeakUpConversation(input: SpeakUpRequest): Promise<ConversationStep> {
@@ -535,17 +553,19 @@ Wrap up if they gave a clear, genuine, specific answer — or if you have asked 
     ? `\nTheir practice focus this session: ${input.practiceGoal}. Weight your feedback toward this skill.\n`
     : "";
 
+  const weakWordBlocks = weakWordPromptBlocks(input.weakWords);
+
   const prompt = `You are this person: ${input.personaPrompt}
 
 Scenario: ${input.scenario}
 
 How you behave: ${difficultyGuide}
-${goalBlock}
+${goalBlock}${weakWordBlocks.steer}
 Conversation so far:
 ${history}
 
 ${decisionBlock}
-
+${weakWordBlocks.coach}
 Return strict JSON only:
 
 Continuing: { "type": "followup", "followupQuestion": "your natural response or question — stay in character, keep it short" }
@@ -561,9 +581,9 @@ Wrapping up:
 }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1400,
-    temperature: 0.55,
+    model: "claude-sonnet-5",
+    max_tokens: 1900,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -615,9 +635,9 @@ export async function phraseInVoice(text: string, tone: string): Promise<string>
     : "You are a ghostwriter. Rephrase the text to be clear, direct, and confident. Return only the rephrased text — no explanations, no quotes, no preamble.";
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 400,
-    temperature: 0.6,
+    model: "claude-sonnet-5",
+    max_tokens: 560,
+    thinking: { type: "disabled" },
     system: systemPrompt,
     messages: [{ role: "user", content: text }],
   });
@@ -778,9 +798,9 @@ Return strict JSON with ALL of these fields:
 }`;
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2500,
-      temperature: 0.4,
+      model: "claude-sonnet-5",
+      max_tokens: 3300,
+      thinking: { type: "disabled" },
       system: "Return only valid JSON. No markdown. No preamble.",
       messages: [{ role: "user", content: prompt }],
     });
@@ -860,9 +880,9 @@ Also rate how the audience is responding to the debater's most recent argument. 
 Return strict JSON: { "message": "your in-character rebuttal", "audienceReaction": integer }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 350,
-    temperature: 0.7,
+    model: "claude-sonnet-5",
+    max_tokens: 480,
+    thinking: { type: "disabled" },
     system:
       "Return only valid JSON with keys message and audienceReaction. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
@@ -922,9 +942,9 @@ Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and spe
 After your rebuttal, on its own final line, write exactly ⟦REACTION:n⟧ where n is an integer from -3 to 3 rating how the audience received the debater's most recent argument (-3 = clearly swaying against them, 0 = neutral, 3 = clearly persuaded).`;
 
   return client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 350,
-    temperature: 0.7,
+    model: "claude-sonnet-5",
+    max_tokens: 480,
+    thinking: { type: "disabled" },
     system:
       "You are roleplaying a debate opponent. Reply with plain conversational text only — no JSON, no markdown, no preamble. End with the ⟦REACTION:n⟧ sentinel line.",
     messages: [{ role: "user", content: prompt }],
@@ -962,9 +982,9 @@ Return strict JSON with exactly these fields:
 }`;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 600,
-    temperature: 0.45,
+    model: "claude-sonnet-5",
+    max_tokens: 820,
+    thinking: { type: "disabled" },
     system: "Return only valid JSON. No markdown. No preamble.",
     messages: [{ role: "user", content: prompt }],
   });
@@ -1004,10 +1024,13 @@ export async function chatWithPrincess(messages: PrincessMessage[]): Promise<str
   if (!client) return PRINCESS_FALLBACK_REPLY;
 
   const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 400,
-    temperature: 0.6,
-    system: PRINCESS_SYSTEM_PROMPT,
+    model: "claude-sonnet-5",
+    max_tokens: 560,
+    thinking: { type: "disabled" },
+    // Static and identical for every homepage visitor, sent on every public
+    // chat turn — cache the system prefix so repeat traffic reads it at ~0.1x
+    // instead of reprocessing the full prompt each time.
+    system: [{ type: "text", text: PRINCESS_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   });
 

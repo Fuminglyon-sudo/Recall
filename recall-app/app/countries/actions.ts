@@ -1,13 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
 import { getCurrentUserId, scopedUserId, ADMIN_USER_ID } from "@/lib/session";
+import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
+import { clampTzOffsetMinutes } from "@/lib/date";
 
 export async function gradeCountry(formData: FormData) {
   const countryId = String(formData.get("id") ?? "");
   const grade = Number(formData.get("grade") ?? 0);
+  const tzOffsetMinutes = clampTzOffsetMinutes(Number(formData.get("tzOffsetMinutes") ?? 0));
 
   const userId = await getCurrentUserId();
   if (!userId) return;
@@ -45,6 +49,10 @@ export async function gradeCountry(formData: FormData) {
       update: { easeFactor: next.easeFactor, interval: next.interval, repetitions: next.repetitions, dueAt: next.dueAt },
     });
   }
+
+  const uidForStreak = userId === ADMIN_USER_ID ? null : scopedUserId(userId);
+  const newStreak = await recordDailyActivity(uidForStreak, tzOffsetMinutes);
+  after(() => awardStreakAchievements(uidForStreak, newStreak));
 
   revalidatePath("/countries");
 }

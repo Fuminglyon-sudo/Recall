@@ -1,13 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { applySm2 } from "@/lib/sm2";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
+import { clampTzOffsetMinutes } from "@/lib/date";
 
 type CardGrade = { cardId: string; grade: number };
 
-export async function gradeRecallSession(grades: CardGrade[]) {
+export async function gradeRecallSession(grades: CardGrade[], tzOffsetMinutes: number = 0) {
   const userId = await getCurrentUserId();
   if (!userId || grades.length === 0) return;
   const uid = scopedUserId(userId);
@@ -45,6 +48,9 @@ export async function gradeRecallSession(grades: CardGrade[]) {
       ];
     })
   );
+
+  const newStreak = await recordDailyActivity(uid, clampTzOffsetMinutes(tzOffsetMinutes));
+  after(() => awardStreakAchievements(uid, newStreak));
 
   revalidatePath("/");
   revalidatePath("/today");

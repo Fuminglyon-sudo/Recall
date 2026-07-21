@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Deck = {
   id: string;
@@ -31,9 +31,36 @@ export function DraftCardForm({
   const [sourceContext, setSourceContext] = useState("");
   const [loading, setLoading] = useState(false);
   const [draftError, setDraftError] = useState<string | null>(null);
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
 
   const selectedDeck = useMemo(() => decks.find((deck) => deck.id === deckId), [deckId, decks]);
   const kind = selectedDeck?.name === "People I care about" ? "MEMORY" : selectedDeck?.name === "Founder Vocabulary" ? "FOUNDER" : "VOCABULARY";
+
+  // Non-blocking heads-up if this deck already has a card with the same
+  // front — easy to do by accident once a deck has a few dozen cards.
+  useEffect(() => {
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      const trimmed = front.trim();
+      if (trimmed.length < 2 || !deckId) {
+        if (!cancelled) setDuplicateWarning(null);
+        return;
+      }
+      try {
+        const response = await fetch(`/api/search?q=${encodeURIComponent(trimmed)}`);
+        if (!response.ok || cancelled) return;
+        const results = (await response.json()) as { front: string; deckId: string }[];
+        const match = results.find((r) => r.deckId === deckId && r.front.trim().toLowerCase() === trimmed.toLowerCase());
+        if (!cancelled) setDuplicateWarning(match ? `You already have a card for "${match.front}" in this deck.` : null);
+      } catch {
+        // Non-critical — just skip the warning.
+      }
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [front, deckId]);
 
   async function generateDraft() {
     if (!front.trim() || !deckId) return;
@@ -76,6 +103,9 @@ export function DraftCardForm({
       <Field label="Front">
         <input name="front" value={front} onChange={(event) => setFront(event.target.value)} placeholder="Word, phrase, person, or idea" className="input-base" required />
       </Field>
+      {duplicateWarning && (
+        <p className="rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-2 text-sm text-amber-300">{duplicateWarning}</p>
+      )}
       <div className="flex flex-wrap gap-3">
         <button type="button" onClick={generateDraft} disabled={loading || !front.trim() || !deckId} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60">
           {loading ? "Drafting with Claude..." : "Generate draft"}

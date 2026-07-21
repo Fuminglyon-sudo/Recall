@@ -114,7 +114,7 @@ function fmt(s: number) {
   return `${m}:${sec}`;
 }
 
-type GradeAction = (grades: { cardId: string; grade: number }[]) => Promise<void>;
+type GradeAction = (grades: { cardId: string; grade: number }[], tzOffsetMinutes: number) => Promise<void>;
 
 export function FreeRecallClient({
   decks,
@@ -169,7 +169,7 @@ export function FreeRecallClient({
     ];
     if (grades.length > 0) {
       startTransition(async () => {
-        await gradeAction(grades);
+        await gradeAction(grades, new Date().getTimezoneOffset());
         setGradesSubmitted(true);
       });
     } else {

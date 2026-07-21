@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useMemo, useTransition } from "react";
 import { Volume2, WifiOff } from "lucide-react";
 import { MasteryBadge } from "./mastery-badge";
+import { previewGradeIntervals } from "@/lib/sm2";
+
+function formatInterval(days: number): string {
+  return days === 1 ? "tomorrow" : `in ${days}d`;
+}
 
 const GRADES = [
   { value: 0, label: "Blackout",  style: "border-red-500/30    bg-red-500/10    text-red-300    hover:bg-red-500/20" },
@@ -30,11 +35,16 @@ export function ReviewCard({
     deckName: string;
     interval: number;
     repetitions: number;
+    easeFactor: number;
   };
   stale?: boolean;
   onGrade: (formData: FormData) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
+  const previews = useMemo(
+    () => previewGradeIntervals({ easeFactor: card.easeFactor, interval: card.interval, repetitions: card.repetitions }),
+    [card.easeFactor, card.interval, card.repetitions]
+  );
   const [association, setAssociation] = useState("");
   const [pendingGrade, setPendingGrade] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -165,6 +175,7 @@ export function ReviewCard({
                         <span className="text-base">{value}</span>
                       )}
                       <span className="text-[10px] font-normal opacity-70">{label}</span>
+                      <span className="text-[9px] font-normal opacity-50">{formatInterval(previews[value])}</span>
                     </button>
                   );
                 })}

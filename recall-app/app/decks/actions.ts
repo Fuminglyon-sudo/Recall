@@ -11,6 +11,11 @@ import { STARTER_DECKS } from "@/lib/starter-decks";
 const deckSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
+  // Where to send the user after creation — e.g. back to /cards/new so
+  // creating a first deck from that page doesn't strand them on the deck
+  // detail page with no way to add the card they came to add. Must be a
+  // same-origin relative path; anything else falls back to the deck page.
+  redirectTo: z.string().optional(),
 });
 
 export async function createDeck(formData: FormData) {
@@ -21,10 +26,13 @@ export async function createDeck(formData: FormData) {
   const values = deckSchema.parse({
     name: formData.get("name"),
     description: formData.get("description") || undefined,
+    redirectTo: formData.get("redirectTo") || undefined,
   });
 
-  const deck = await prisma.deck.create({ data: { ...values, userId: uid } });
-  redirect(`/decks/${deck.id}`);
+  const deck = await prisma.deck.create({ data: { name: values.name, description: values.description, userId: uid } });
+
+  const isSafeRelativePath = values.redirectTo?.startsWith("/") && !values.redirectTo.startsWith("//");
+  redirect(isSafeRelativePath ? values.redirectTo! : `/decks/${deck.id}`);
 }
 
 const updateCardSchema = z.object({

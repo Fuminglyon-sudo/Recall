@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { ChevronLeft, ChevronRight, ArrowLeft, Lock, Flame } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +10,7 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { buildMonthGrid, isPerfectStreak, dateKey } from "@/lib/streak";
 import { STREAK_MILESTONES } from "@/lib/achievements";
 import { ShareStreakButton } from "@/components/share-streak-button";
+import { parseTzOffsetMinutes, startOfLocalDay, TZ_COOKIE_NAME } from "@/lib/date";
 
 export const metadata = { title: "Your Streak — Soro Soke" };
 
@@ -35,8 +37,12 @@ export default async function StreakPage({
   if (!userId) redirect("/login");
   const uid = scopedUserId(userId);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const jar = await cookies();
+  const tzOffsetMinutes = parseTzOffsetMinutes(jar.get(TZ_COOKIE_NAME)?.value);
+  // Local, not server-UTC, midnight — matches the boundary recordDailyActivity
+  // uses, so a day this calendar marks "reviewed" agrees with what actually
+  // advanced the streak.
+  const today = startOfLocalDay(tzOffsetMinutes);
 
   const params = await searchParams;
   const { year, month } = parseMonthParam(params.month, today);
@@ -55,7 +61,12 @@ export default async function StreakPage({
       : Promise.resolve([]),
   ]);
 
-  const reviewedDateKeys = new Set(reviewLogs.map((l) => dateKey(l.reviewedAt)));
+  // Shift each timestamp into the user's local frame before keying it, the
+  // same way startOfLocalDay does — otherwise a review just after local
+  // midnight (for anyone ahead of UTC) buckets into the wrong calendar cell.
+  const reviewedDateKeys = new Set(
+    reviewLogs.map((l) => dateKey(new Date(l.reviewedAt.getTime() - tzOffsetMinutes * 60_000)))
+  );
   const grid = buildMonthGrid(year, month, reviewedDateKeys, today);
   const daysPracticed = grid.filter((d) => d.inMonth && d.reviewed).length;
 
