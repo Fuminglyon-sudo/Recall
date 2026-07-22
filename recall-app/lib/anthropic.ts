@@ -1016,6 +1016,138 @@ function fallbackDebatePrep(input: DebatePrepRequest): DebatePrepResult {
   };
 }
 
+// ─── Doc Lab (reading a document with something to say) ───────────────────
+
+export type DocQuestion = {
+  lens: string;
+  issue: string;
+  question: string;
+  severity: "major" | "moderate" | "minor";
+};
+
+export type DocReviewResult = {
+  detectionScore: number;
+  caught: string[];
+  missed: DocQuestion[];
+  topQuestions: DocQuestion[];
+  judgmentNote: string;
+  raisingTip: string;
+};
+
+const DOC_LENSES = `- What is asserted but never evidenced?
+- What is assumed but never stated?
+- Who is affected but not mentioned?
+- What cost or tradeoff is skipped, or mentioned once and never carried through?
+- What does success look like here, and is it actually measurable?
+- What alternatives were considered and rejected, and why? (silence usually means they were not)
+- What has to be true FIRST for this to work?
+- What is out of scope, and does that hide a risk rather than remove it?
+- Does the evidence cited actually support the specific claim it is attached to?`;
+
+export async function reviewDocumentContribution(input: {
+  docText: string;
+  userNotes: string;
+}): Promise<DocReviewResult> {
+  if (!client) return fallbackDocReview(input.userNotes);
+
+  const attempted = input.userNotes.trim().length > 0;
+
+  const prompt = `You are coaching someone who finds it hard to speak up in meetings. They have read the document below and written down what they would raise. Score how well they spotted what actually matters, show the significant things they missed, and give them the questions genuinely worth raising in the room.
+
+DOCUMENT:
+"""
+${input.docText}
+"""
+
+WHAT THEY SAID THEY WOULD RAISE:
+"""
+${attempted ? input.userNotes : "(They did not write anything — they skipped straight to the analysis.)"}
+"""
+
+Read the document through these lenses:
+${DOC_LENSES}
+
+SCORING PRINCIPLE — this matters most: reward judgement, not volume. Someone who names the single most consequential gap scores higher than someone who lists eight small ones. Actively penalise pedantry — typos, formatting, wording preferences, and points that would not change the decision. The goal is contribution that earns respect in a room, not fault-finding.
+
+PHRASING PRINCIPLE: every question must be sayable by someone who finds pushing back uncomfortable. Prefer curious over combative — "Help me understand how this handles X?" lands better and carries less social risk than "You ignored X". Where possible attach the question to a shared goal ("I want this to survive the board's review — I think they'll ask about..."). Never write a question that requires the speaker to accuse anyone.
+
+Return strict JSON with ALL of these fields:
+{
+  "detectionScore": integer 0-10 — how well they identified what actually matters. Use 0 only if they wrote nothing at all. Judge quality of prioritisation, not quantity.,
+  "caught": ["short restatement of each real issue they genuinely identified — empty array if none"],
+  "missed": [up to 3 significant issues they did NOT raise, most important first, each: { "lens": "which lens surfaced it, a few words", "issue": "what is actually wrong or missing, one or two sentences", "question": "the low-risk question to ask in the room", "severity": "major" | "moderate" | "minor" }],
+  "topQuestions": [the 2-3 questions most worth raising about this document, best first, same object shape as missed. These are the ones that would change the decision.],
+  "judgmentNote": "one or two sentences on their prioritisation — did they go for what mattered, or for surface detail? If they wrote nothing, say what to look for first next time.",
+  "raisingTip": "one specific, practical tip on HOW to raise the top question given what this document is and who would be in the room"
+}`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-5",
+    max_tokens: 2000,
+    thinking: { type: "disabled" },
+    system: "Return only valid JSON. No markdown. No preamble.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(extractText(response.content)) as Partial<DocReviewResult>;
+    const toSeverity = (v: unknown): DocQuestion["severity"] =>
+      v === "major" || v === "minor" ? v : "moderate";
+    const toQuestions = (raw: unknown): DocQuestion[] =>
+      Array.isArray(raw)
+        ? raw
+            .filter((q): q is Record<string, unknown> => !!q && typeof q === "object")
+            .map<DocQuestion>((q) => ({
+              lens: typeof q.lens === "string" ? q.lens : "Worth asking",
+              issue: typeof q.issue === "string" ? q.issue : "",
+              question: typeof q.question === "string" ? q.question : "",
+              severity: toSeverity(q.severity),
+            }))
+            .filter((q) => q.question.length > 0)
+        : [];
+
+    return {
+      detectionScore: Math.min(10, Math.max(0, Math.round(Number(parsed.detectionScore)) || 0)),
+      caught: Array.isArray(parsed.caught) ? parsed.caught.filter((c): c is string => typeof c === "string") : [],
+      missed: toQuestions(parsed.missed).slice(0, 3),
+      topQuestions: toQuestions(parsed.topQuestions).slice(0, 3),
+      judgmentNote: typeof parsed.judgmentNote === "string" ? parsed.judgmentNote : "",
+      raisingTip:
+        typeof parsed.raisingTip === "string" && parsed.raisingTip.length > 0
+          ? parsed.raisingTip
+          : "Ask your question early, before the room settles into agreement — it is far easier to open a question than to reopen a closed one.",
+    };
+  } catch {
+    return fallbackDocReview(input.userNotes);
+  }
+}
+
+function fallbackDocReview(userNotes: string): DocReviewResult {
+  return {
+    detectionScore: userNotes.trim().length > 0 ? 5 : 0,
+    caught: [],
+    missed: [],
+    topQuestions: [
+      {
+        lens: "Unstated assumption",
+        issue: "Most proposals rest on at least one condition that is never named out loud.",
+        question: "What has to be true for this to work? I want to make sure we have thought about the dependencies.",
+        severity: "major",
+      },
+      {
+        lens: "Success criteria",
+        issue: "If success is not measurable, the decision cannot be revisited later on evidence.",
+        question: "How will we know in six months whether this worked? What would tell us it had not?",
+        severity: "moderate",
+      },
+    ],
+    judgmentNote:
+      "AI coaching is unavailable right now, so this is the generic starting set. The two questions above work on almost any proposal.",
+    raisingTip:
+      "Lead with the shared goal before the question — 'I want this to land well, so I'm curious…' — it makes a challenge sound like help.",
+  };
+}
+
 // ─── Princess (homepage chat assistant) ───────────────────────────────────
 
 export type PrincessMessage = { role: "user" | "assistant"; content: string };

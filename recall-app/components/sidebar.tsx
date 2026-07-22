@@ -30,6 +30,7 @@ import {
   Briefcase,
   RotateCw,
   Gavel,
+  FileSearch,
 } from "lucide-react";
 
 const CORE_LINKS = [
@@ -38,6 +39,7 @@ const CORE_LINKS = [
   { href: "/speak-up", label: "Speak Up", icon: Mic, exact: false },
   { href: "/conversation-lab", label: "Small Talk Lab", icon: MessageCircle, exact: false },
   { href: "/debate-lab", label: "Debate Lab", icon: Gavel, exact: false },
+  { href: "/doc-lab", label: "Doc Lab", icon: FileSearch, exact: false },
 ];
 
 const TOOLS_LINKS = [
