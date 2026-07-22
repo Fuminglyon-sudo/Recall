@@ -95,4 +95,20 @@ export const FAQS = [
     q: "What does the audience sway meter show?",
     a: "The sway meter tracks how the imagined audience's opinion shifts in real time across each exchange. A strong point swings the meter toward you; a weak or conceded point swings it back. By the end you can see the cumulative arc of the debate and which exchanges moved the needle most — not just your final score.",
   },
+  {
+    q: "What is Doc Lab?",
+    a: "Doc Lab trains the skill of contributing in meetings. Most people read a document and absorb it; the people who get listened to read the same document and arrive with two questions nobody else asked. You read a document, write down what you would raise, and then see what you caught, what you missed, and exactly how to phrase it so it lands without sounding like an attack. You can practise on sample documents across economics, politics, social, tech, health and workplace topics — or paste a real document you have to read before an actual meeting.",
+  },
+  {
+    q: "Do you store the documents I paste into Doc Lab?",
+    a: "No. Your document is never saved. The text is sent to our AI provider to generate the analysis and is then discarded — it is never written to our database and we keep no copy of it. What we do keep is the feedback, the notes you wrote yourself, and the document's title, so your history and progress over time still work. That means confidential material — board papers, internal specs, strategy memos — is safe to paste.",
+  },
+  {
+    q: "How is Doc Lab different from Debate Lab?",
+    a: "Debate Lab is about defending a position you have already been handed. Doc Lab is about the harder and far more common problem: generating something worth saying from a standing start. Plenty of people freeze in meetings not because they cannot argue, but because they read the document, felt something was off, and could not name it — or did not feel it was their place to say it. Doc Lab trains both halves: spotting the issue, and phrasing it so it is genuinely comfortable to raise.",
+  },
+  {
+    q: "Does Doc Lab reward finding as many problems as possible?",
+    a: "Deliberately not. It scores judgement, not volume — naming the one gap that would actually change the decision scores higher than listing eight small ones, and pedantry like typos, formatting and wording preferences is explicitly penalised. The goal is contribution that earns respect in a room, not fault-finding.",
+  },
 ];

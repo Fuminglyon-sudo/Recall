@@ -83,9 +83,9 @@ const SLIDES: Slide[] = [
       { text: "\n" },
       { text: "before the moment.", italic: true },
     ],
-    body: "Daily cards surface words right before you forget them. AI scenarios rehearse the room before you enter it. Debate Lab sharpens your reasoning when someone smart pushes back. Every session compounds into someone who knows what to say — and when.",
+    body: "Daily cards surface words right before you forget them. AI scenarios rehearse the room before you enter it. Debate Lab sharpens your reasoning when someone smart pushes back. Doc Lab teaches you to read a document and arrive with the questions nobody else asked. Every session compounds into someone who knows what to say — and when.",
     caption: null,
-    loop: ["Review", "Speak Up", "Converse", "Debate"],
+    loop: ["Review", "Speak Up", "Converse", "Debate", "Doc Lab"],
     features: null,
   },
   {
@@ -122,6 +122,11 @@ const SLIDES: Slide[] = [
         label: "Debate Lab",
         href: "/debate-lab",
         desc: "Pick a motion, defend your position, and hold your ground against an AI opponent.",
+      },
+      {
+        label: "Doc Lab",
+        href: "/doc-lab",
+        desc: "Read a document and arrive with the questions nobody else asked. Your documents are never stored.",
       },
     ],
   },

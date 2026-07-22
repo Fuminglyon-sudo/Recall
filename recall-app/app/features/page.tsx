@@ -43,6 +43,7 @@ const COMPARISON_ROWS: [string, boolean, boolean, boolean, boolean][] = [
   ["Speak Up speaking practice", true,  false, false, false],
   ["Small Talk Lab coaching",  true,  false, false, false],
   ["Debate Lab reasoning practice", true, false, false, false],
+  ["Doc Lab meeting practice",   true,  false, false, false],
   ["SM-2 spaced repetition",     true,  true,  false, false],
   ["Soro Soke-drafted cards",        true,  false, false, false],
   ["Free recall sessions",       true,  false, false, false],
@@ -95,9 +96,9 @@ export default function FeaturesPage() {
             <div className="max-w-2xl space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Practice modes</p>
               <h2 className="text-2xl font-extrabold text-white sm:text-3xl" style={{ textWrap: "balance" } as React.CSSProperties}>Apply what you know under pressure</h2>
-              <p className="text-slate-400">Three interactive modes that put your language and thinking to the test in real situations.</p>
+              <p className="text-slate-400">Four interactive modes that put your language and thinking to the test in real situations.</p>
             </div>
-            <div className="grid gap-5 sm:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2">
               {[
                 {
                   label: "Speak Up",
@@ -137,6 +138,19 @@ export default function FeaturesPage() {
                     "Skill sub-scores across 5 dimensions",
                   ],
                   desc: "Go five structured exchanges against an AI that argues back. Win on logic, evidence, and composure — not just volume.",
+                },
+                {
+                  label: "Doc Lab",
+                  href: "/doc-lab",
+                  accent: "text-emerald-300",
+                  accentBg: "bg-emerald-400/10",
+                  bullets: [
+                    "Practice documents across 6 topics",
+                    "Or paste a real doc before a real meeting",
+                    "Scored on judgement, not nitpicking",
+                    "Your documents are never stored",
+                  ],
+                  desc: "Read a document and arrive with the questions nobody else asked — then learn to phrase them so they land without sounding like an attack.",
                 },
               ].map(({ label, href, accent, accentBg, bullets, desc }) => (
                 <div key={label} className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-6">

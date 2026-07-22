@@ -4,7 +4,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: { absolute: "Guide — How to Use Sọrọ Sọkẹ AI" },
   description:
-    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, easing social anxiety with Small Talk Lab, and building reasoning confidence with Debate Lab.",
+    "A complete guide to using Soro Soke: setting up flashcard decks with spaced repetition, practicing high-stakes speaking with Speak Up, easing social anxiety with Small Talk Lab, building reasoning confidence with Debate Lab, and learning to speak up in meetings with Doc Lab.",
   keywords: [
     "Soro Soke guide",
     "how to use spaced repetition",
@@ -33,6 +33,7 @@ import {
   Search,
   PlusCircle,
   ArrowRight,
+  FileSearch,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { isAdmin } from "@/lib/session";
@@ -126,6 +127,19 @@ const FEATURES: Feature[] = [
       "Use it to warm up before a meeting, a pitch, or any situation where you want to be sharp. Even five minutes of open dialogue reduces friction when the real moment arrives.",
       "Try explaining something you know well to someone who knows nothing about it. If your words are unclear in the lab, they will be unclear in the room.",
       "The goal is not to say the right thing — it is to stop fearing the wrong thing. The more time you spend in conversation, the less each individual conversation feels like a test.",
+    ],
+  },
+  {
+    href: "/doc-lab",
+    label: "Doc Lab",
+    icon: FileSearch,
+    tagline: "Read like someone who is going to say something.",
+    what: "Most people read a document and absorb it. The people who get listened to read the same document and arrive with two questions nobody else asked — and that is a habit, not a personality. Read a document, write down what you would raise, then see what you caught, what you missed, and exactly how to phrase it so it lands without sounding like an attack. Practise on sample documents across economics, politics, social, tech, health and workplace topics, or paste a real document you have to read before an actual meeting. Documents you paste are never stored — only the feedback and your own notes are kept.",
+    tips: [
+      "Commit to something before you reveal the analysis, even if you are unsure. Writing down one weak guess teaches you far more than reading a perfect answer you did not attempt.",
+      "Resist the urge to list everything. It scores judgement, not volume — one issue that changes the decision beats eight small ones, and pedantry is marked down deliberately.",
+      "If pushing back feels uncomfortable, start with the written route: leave your question as a comment on the document before the meeting. It costs almost nothing socially, and people who comment in docs get invited to speak in rooms.",
+      "Notice which lens keeps catching you out — unstated assumptions, missing stakeholders, unmeasurable success criteria. That pattern is your blind spot, and naming it is most of the fix.",
     ],
   },
   {

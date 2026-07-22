@@ -333,7 +333,7 @@ async function Dashboard({ uid }: { uid: string | null }) {
             Rehearse the room. Ease into the conversation. Hold your ground.
           </h1>
           <p className="max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-            Speak Up, Small Talk Lab, and Debate Lab — three ways to practice the moment before it happens.
+            Speak Up, Small Talk Lab, Debate Lab, and Doc Lab — four ways to practice the moment before it happens.
           </p>
         </div>
 
@@ -374,8 +374,8 @@ async function Dashboard({ uid }: { uid: string | null }) {
         {/* Practice loop */}
         <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur">
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Your practice loop</p>
-          <p className="mt-1 text-sm text-slate-400">Four modes that build on each other.</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <p className="mt-1 text-sm text-slate-400">Five modes that build on each other.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <Link href="/today" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">1 · Remember it</p>
               <p className="mt-1 text-sm font-medium text-white">Daily review</p>
@@ -395,6 +395,11 @@ async function Dashboard({ uid }: { uid: string | null }) {
               <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-500/70 group-hover:text-amber-400">4 · Defend your thinking</p>
               <p className="mt-1 text-sm font-medium text-white">Debate Lab</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">Hold your ground when someone smart disagrees.</p>
+            </Link>
+            <Link href="/doc-lab" className="group rounded-2xl border border-white/8 bg-white/[0.03] p-4 transition hover:border-white/15 hover:bg-white/[0.06]">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 group-hover:text-slate-400">5 · Find what to say</p>
+              <p className="mt-1 text-sm font-medium text-white">Doc Lab</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">Read a document and arrive with the questions others missed.</p>
             </Link>
           </div>
         </div>

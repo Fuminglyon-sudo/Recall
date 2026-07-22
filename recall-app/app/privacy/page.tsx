@@ -67,6 +67,14 @@ export default function PrivacyPage() {
                 Session content is processed to generate feedback but is not stored permanently beyond
                 the session. Saved session summaries (score, key feedback) are stored when you choose to save them.
               </p>
+              <p><span className="text-slate-300 font-medium">Doc Lab documents.</span>{" "}
+                Documents you paste into Doc Lab are <span className="text-slate-300 font-medium">never stored</span>.
+                The text is sent to our AI provider to generate the analysis and is then discarded — it is not written
+                to our database and we keep no copy of it. What we do save is the resulting feedback, the notes you
+                write yourself, and the document&apos;s title, so that your session history and progress over time
+                still work. This means you can paste confidential work material — board papers, specs, internal
+                strategy memos — without it being retained by us.
+              </p>
               <p><span className="text-slate-300 font-medium">Usage data.</span>{" "}
                 We may collect anonymised usage information (pages visited, feature usage) to understand
                 how the product is used and to improve it. This data is not linked to your identity.

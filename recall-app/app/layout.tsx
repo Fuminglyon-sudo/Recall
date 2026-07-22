@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     template: "%s | Sọrọ Sọkẹ AI",
   },
   description:
-    "Sọrọ Sọkẹ AI helps you practice high-stakes speaking with Speak Up, ease social anxiety with Small Talk Lab, and build reasoning confidence with Debate Lab — backed by SM-2 spaced repetition so the vocabulary sticks. Practice the moment before the anxiety does. Free for the first 50 users.",
+    "Sọrọ Sọkẹ AI helps you practice high-stakes speaking with Speak Up, ease social anxiety with Small Talk Lab, build reasoning confidence with Debate Lab, and learn to speak up in meetings with Doc Lab — backed by SM-2 spaced repetition so the vocabulary sticks. Practice the moment before the anxiety does. Free for the first 50 users.",
   keywords: [
     "speaking confidence",
     "conversation practice",
@@ -102,7 +102,7 @@ const websiteJsonLd = {
   name: "Sọrọ Sọkẹ AI",
   url: SITE_URL,
   description:
-    "SM-2 spaced repetition, AI-drafted flashcards, Speak Up high-stakes practice, Small Talk Lab social-anxiety coaching, and Debate Lab reasoning practice — all in one app.",
+    "SM-2 spaced repetition, AI-drafted flashcards, Speak Up high-stakes practice, Small Talk Lab social-anxiety coaching, Debate Lab reasoning practice, and Doc Lab meeting-contribution training — all in one app.",
   applicationCategory: "EducationApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/LimitedAvailability" },

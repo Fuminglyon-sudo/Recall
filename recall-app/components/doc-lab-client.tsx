@@ -1,7 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, FileText, Loader2, Lightbulb, MessageSquareQuote, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  Loader2,
+  Lightbulb,
+  MessageSquareQuote,
+  CheckCircle2,
+  AlertCircle,
+  ShieldCheck,
+} from "lucide-react";
 import {
   SAMPLE_DOCS,
   TOPIC_LABELS,
@@ -132,12 +141,20 @@ export function DocLabClient() {
             A proposal, a spec, a strategy memo, a board paper. You will get the two or three questions genuinely worth
             raising — phrased so they are easy to say out loud.
           </p>
+          <div className="mt-4 flex items-start gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
+            <p className="text-xs leading-5 text-slate-400">
+              <span className="font-medium text-slate-200">Your document is never saved.</span> It is sent for analysis
+              and then discarded — we keep only the feedback and the notes you write yourself, so you can track
+              progress. Nothing of the document itself is stored, so confidential work is safe to paste here.
+            </p>
+          </div>
           <textarea
             value={pasted}
             onChange={(e) => setPasted(e.target.value)}
             rows={6}
             placeholder="Paste the document here…"
-            className="input-base mt-4 text-sm leading-6"
+            className="input-base mt-3 text-sm leading-6"
           />
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <button

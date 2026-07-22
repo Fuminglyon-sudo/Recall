@@ -20,7 +20,7 @@ export function OnboardingChecklist({
   const steps: Step[] = [
     {
       label: "Try a practice mode",
-      body: "This isn't flashcards — it's rehearsal. Speak Up, Small Talk Lab, or Debate Lab: say it out loud, get honest feedback.",
+      body: "This isn't flashcards — it's rehearsal. Speak Up, Small Talk Lab, Debate Lab, or Doc Lab: say it out loud, get honest feedback.",
       cta: "Try Speak Up",
       href: "/speak-up",
       done: hasTriedPractice,
