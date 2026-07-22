@@ -811,7 +811,9 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
         </div>
       </div>
 
-      <PrincessChat />
+      {/* The mobile nav pill is only rendered on slides 1–5; lift the launcher
+          clear of it exactly when it's actually there. */}
+      <PrincessChat liftAboveBottomNav={activeSlide < SLIDES.length - 1} />
     </>
   );
 }

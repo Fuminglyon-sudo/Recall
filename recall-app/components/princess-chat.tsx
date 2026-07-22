@@ -5,14 +5,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Send } from "lucide-react";
 import { PRINCESS_GREETING } from "@/lib/princess-knowledge";
+import { HISTORY_WINDOW, clampMessage } from "@/lib/princess-limits";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const GREETING: ChatMessage = { role: "assistant", content: PRINCESS_GREETING };
-
-// Only the last few exchanges go to the API — enough for the reply to
-// stay coherent without letting the request grow unbounded.
-const HISTORY_WINDOW = 12;
 
 // Shows the attention nudge once per browser session, not on every page
 // view — sessionStorage clears when the tab/browser closes, localStorage
@@ -90,7 +87,14 @@ function PrincessMessageContent({ content }: { content: string }) {
   );
 }
 
-export function PrincessChat() {
+/**
+ * @param liftAboveBottomNav  Set on pages that render their own fixed chrome
+ *   along the bottom edge on mobile (the landing page's About/Features/Pricing
+ *   pill). Raises the closed launcher clear of it so the two don't sit on top
+ *   of each other on a narrow screen. The open panel doesn't need this — it is
+ *   opaque and covers that chrome.
+ */
+export function PrincessChat({ liftAboveBottomNav = false }: { liftAboveBottomNav?: boolean } = {}) {
   const [open, setOpen] = useState(false);
   const [showNudge, setShowNudge] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
@@ -143,7 +147,14 @@ export function PrincessChat() {
       const res = await fetch("/api/princess-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-HISTORY_WINDOW) }),
+        // Clamp on the way out so an over-long turn can never make the whole
+        // conversation start failing validation.
+        body: JSON.stringify({
+          messages: next.slice(-HISTORY_WINDOW).map((m) => ({
+            role: m.role,
+            content: clampMessage(m.role, m.content),
+          })),
+        }),
       });
       const data = (await res.json().catch(() => null)) as { reply?: string } | null;
 
@@ -163,7 +174,11 @@ export function PrincessChat() {
 
   if (!open) {
     return (
-      <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
+      <div
+        className={`fixed right-5 z-[60] flex flex-col items-end gap-3 ${
+          liftAboveBottomNav ? "bottom-24 sm:bottom-5" : "bottom-5"
+        }`}
+      >
         {showNudge ? (
           <div className="flex max-w-[15rem] items-start gap-2.5 rounded-2xl rounded-br-sm border border-emerald-400/25 bg-slate-950/97 p-3 shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-xl">
             <PrincessAvatar size={28} />
@@ -191,7 +206,7 @@ export function PrincessChat() {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 flex h-[32rem] max-h-[80vh] w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/97 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl">
+    <div className="fixed bottom-5 right-5 z-[60] flex h-[32rem] max-h-[80vh] w-[22rem] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-3xl border border-white/10 bg-slate-950/97 shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3 border-b border-white/8 px-4 py-3">
         <div className="flex items-center gap-2.5">
           <PrincessAvatar size={36} />

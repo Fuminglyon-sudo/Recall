@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { chatWithPrincess } from "@/lib/anthropic";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { MAX_ASSISTANT_CHARS, MAX_TURNS, MAX_USER_CHARS } from "@/lib/princess-limits";
 
 // Unauthenticated by design — this runs on the public homepage before
 // anyone has signed in. Rate-limited by IP instead of userId, and kept
 // stricter than the logged-in AI routes since every request here is a
 // real API cost with no account behind it to hold accountable.
 const LIMIT_PER_MINUTE = 8;
-const MAX_TURNS = 20;
 
 function getClientIp(req: NextRequest): string {
   return (
@@ -18,13 +18,17 @@ function getClientIp(req: NextRequest): string {
   );
 }
 
+// Validated per role. Visitor input stays tightly capped, but assistant turns
+// are Princess's own replies being echoed back as context — holding them to the
+// user limit rejected any history containing a long answer, which silently
+// broke the conversation from that point on.
 const schema = z.object({
   messages: z
     .array(
-      z.object({
-        role: z.enum(["user", "assistant"]),
-        content: z.string().min(1).max(1000),
-      })
+      z.discriminatedUnion("role", [
+        z.object({ role: z.literal("user"), content: z.string().min(1).max(MAX_USER_CHARS) }),
+        z.object({ role: z.literal("assistant"), content: z.string().min(1).max(MAX_ASSISTANT_CHARS) }),
+      ])
     )
     .min(1)
     .max(MAX_TURNS),
