@@ -26,7 +26,13 @@ type DocReviewResult = {
   raisingTip: string;
 };
 
-type ActiveDoc = { title: string; body: string; isOwn: boolean };
+type ActiveDoc = {
+  title: string;
+  body: string;
+  isOwn: boolean;
+  sampleDocId?: string;
+  topic?: DocTopic;
+};
 
 const TOPIC_COLORS: Record<DocTopic, string> = {
   workplace: "border-violet-300/20 bg-violet-400/10 text-violet-200",
@@ -58,7 +64,7 @@ export function DocLabClient() {
   const shown = topicFilter === "all" ? SAMPLE_DOCS : SAMPLE_DOCS.filter((d) => d.topic === topicFilter);
 
   function startSample(doc: SampleDoc) {
-    setActiveDoc({ title: doc.title, body: doc.body, isOwn: false });
+    setActiveDoc({ title: doc.title, body: doc.body, isOwn: false, sampleDocId: doc.id, topic: doc.topic });
     setNotes("");
     setResult(null);
     setError(null);
@@ -85,6 +91,10 @@ export function DocLabClient() {
         body: JSON.stringify({
           docText: activeDoc.body,
           userNotes: notes,
+          sampleDocId: activeDoc.sampleDocId,
+          docTitle: activeDoc.title,
+          docTopic: activeDoc.topic,
+          isOwnDoc: activeDoc.isOwn,
           tzOffsetMinutes: new Date().getTimezoneOffset(),
         }),
       });

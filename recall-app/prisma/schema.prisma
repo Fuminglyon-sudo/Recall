@@ -34,6 +34,7 @@ model User {
   socialSessions    SocialSession[]
   speakUpSessions   SpeakUpSession[]
   debateSessions    DebateSession[]
+  docReviewSessions DocReviewSession[]
   pushSubscriptions PushSubscription[]
   countryProgress   UserCountryProgress[]
 
@@ -244,6 +245,45 @@ model DebateSession {
   feedbackRating String?
   userId        String?
   user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// ─── Doc Lab ───────────────────────────────────────────────────────────────
+// One graded pass over a document: what the user said they would raise, and
+// what the coach came back with.
+//
+// Deliberately stores NO document body. Practice runs reference the sample by
+// id (the text lives in lib/doc-review-samples.ts), and for a document the
+// user pasted we keep only the analysis — never the source. People paste real
+// board papers, specs, and strategy memos here; that is confidential material
+// belonging to their employer, and there is no product reason to hold a copy
+// of it. `userNotes` is kept because it is the user's own writing and reading
+// back your own past attempt is the point of the exercise.
+
+model DocReviewSession {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  // Set when practising on a built-in sample; null when the user pasted their own.
+  sampleDocId    String?
+  docTitle       String
+  docTopic       String?
+  isOwnDoc       Boolean  @default(false)
+  // False when the user skipped straight to the analysis without committing to
+  // what they would raise. Those runs are excluded from the score trend, since
+  // there was no attempt to score.
+  attempted      Boolean  @default(false)
+  detectionScore Int
+  userNotes      String
+  caught         Json
+  missed         Json
+  topQuestions   Json
+  judgmentNote   String
+  raisingTip     String
+  // null = admin session; set for all Google users
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])

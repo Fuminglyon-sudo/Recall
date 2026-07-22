@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { History } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { DocLabClient } from "@/components/doc-lab-client";
 import { getCurrentUserId } from "@/lib/session";
@@ -26,6 +28,14 @@ export default async function DocLabPage() {
             so it lands without sounding like an attack.
           </p>
         </section>
+
+        <Link
+          href="/doc-lab/history"
+          className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white"
+        >
+          <History className="h-4 w-4" />
+          Session history
+        </Link>
 
         <DocLabClient />
       </div>
