@@ -1176,3 +1176,179 @@ export async function chatWithPrincess(messages: PrincessMessage[]): Promise<str
   const text = extractText(response.content).trim();
   return text.length > 0 ? text : PRINCESS_FALLBACK_REPLY;
 }
+
+// Claude occasionally wraps a JSON reply in a ```json fence despite being
+// told not to. Every JSON.parse in this file assumes a bare object; this
+// strips a wrapping fence if present so a stray fence doesn't fall all the
+// way through to the fallback response.
+function stripJsonFence(text: string): string {
+  const trimmed = text.trim();
+  const match = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/);
+  return match ? match[1] : trimmed;
+}
+
+// ─── Doc Lab — Presenter mode ───────────────────────────────────────────────
+// The flip side of the read-and-critique mode: the user summarizes the
+// document to a room, an AI "listener" who only heard the summary (never
+// read the document itself) asks one genuinely testing follow-up question,
+// the user answers, then the whole exchange gets graded together. Fixed at
+// exactly one follow-up — the point being practiced is fielding the one
+// sharp question a real audience asks, not a long interrogation.
+
+export type PresenterMessage = { role: "presenter" | "listener"; content: string };
+
+export type PresenterStep =
+  | { type: "followup"; followUpQuestion: string }
+  | {
+      type: "final";
+      summaryScore: number;
+      answerScore: number;
+      overallScore: number;
+      strengths: string[];
+      improvements: string[];
+      idealFollowUpAnswer: string;
+      reviewedByAI: boolean;
+    };
+
+export async function conductDocPresentation(input: {
+  docText: string;
+  messages: PresenterMessage[];
+  exchangeCount: number;
+}): Promise<PresenterStep> {
+  if (!client) return fallbackPresenterStep(input.exchangeCount);
+
+  const summary = input.messages.find((m) => m.role === "presenter")?.content ?? "";
+
+  if (input.exchangeCount < 2) {
+    const prompt = `You are a sharp, engaged member of an audience who just listened to someone summarize the document below out loud. You have NOT read the document yourself — you only heard their summary, exactly like a real listener would.
+
+DOCUMENT:
+"""
+${input.docText}
+"""
+
+THEIR SUMMARY, AS YOU HEARD IT:
+"""
+${summary}
+"""
+
+Ask exactly one follow-up question — the kind an engaged listener would actually ask, that tests whether they understand the material or just recited a summary. Favor a question that probes a specific number, an assumption, a consequence, or a "what happens if" — not a vague "can you say more?" Keep it natural, one or two sentences, phrased as something spoken out loud in the room.
+
+Return strict JSON: { "followUpQuestion": "..." }`;
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-5",
+      max_tokens: 300,
+      thinking: { type: "disabled" },
+      system: "Return only valid JSON. No markdown. No preamble.",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    try {
+      const parsed = JSON.parse(stripJsonFence(extractText(response.content))) as { followUpQuestion?: string };
+      const q =
+        typeof parsed.followUpQuestion === "string" && parsed.followUpQuestion.length > 0
+          ? parsed.followUpQuestion
+          : "What would you say is the single biggest risk if this doesn't go as planned?";
+      return { type: "followup", followUpQuestion: q };
+    } catch {
+      return fallbackPresenterStep(input.exchangeCount);
+    }
+  }
+
+  const followUpQuestion = input.messages.find((m) => m.role === "listener")?.content ?? "";
+  const answer = input.messages.filter((m) => m.role === "presenter")[1]?.content ?? "";
+
+  const prompt = `You are coaching someone practicing how to present a document to a room, then field a question about it. Grade the full exchange below.
+
+DOCUMENT:
+"""
+${input.docText}
+"""
+
+THEIR SUMMARY TO THE ROOM:
+"""
+${summary}
+"""
+
+THE FOLLOW-UP QUESTION THEY WERE ASKED:
+"""
+${followUpQuestion}
+"""
+
+THEIR ANSWER:
+"""
+${answer.trim().length > 0 ? answer : "(They did not answer.)"}
+"""
+
+Judge the summary on: did it convey the actual point of the document — not just its topic — at the right level of detail for someone who has not read it, without losing the parts that matter? Judge the answer on: did they actually engage with the question, or dodge it, and does their answer stay consistent with the document itself?
+
+SCORING PRINCIPLE: reward clarity and command of the material over length or hedging. A short, confident, accurate answer beats a long, vague one. Penalise an answer that contradicts the document.
+
+Return strict JSON with ALL of these fields:
+{
+  "summaryScore": integer 0-10 for the summary alone,
+  "answerScore": integer 0-10 for how well they handled the follow-up (0 if they did not answer),
+  "overallScore": integer 0-10 for the exchange as a whole,
+  "strengths": ["1-2 specific things that worked, quoting their own words where useful"],
+  "improvements": ["1-2 specific, actionable things to tighten next time"],
+  "idealFollowUpAnswer": "a 2-4 sentence example of a strong answer to that exact follow-up question, grounded in the document"
+}`;
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-5",
+    max_tokens: 1200,
+    thinking: { type: "disabled" },
+    system: "Return only valid JSON. No markdown. No preamble.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  try {
+    const parsed = JSON.parse(stripJsonFence(extractText(response.content))) as Partial<{
+      summaryScore: number;
+      answerScore: number;
+      overallScore: number;
+      strengths: string[];
+      improvements: string[];
+      idealFollowUpAnswer: string;
+    }>;
+    const clamp = (n: unknown) => Math.min(10, Math.max(0, Math.round(Number(n)) || 0));
+    return {
+      type: "final",
+      summaryScore: clamp(parsed.summaryScore),
+      answerScore: clamp(parsed.answerScore),
+      overallScore: clamp(parsed.overallScore),
+      strengths: Array.isArray(parsed.strengths) ? parsed.strengths.filter((s): s is string => typeof s === "string") : [],
+      improvements: Array.isArray(parsed.improvements)
+        ? parsed.improvements.filter((s): s is string => typeof s === "string")
+        : [],
+      idealFollowUpAnswer: typeof parsed.idealFollowUpAnswer === "string" ? parsed.idealFollowUpAnswer : "",
+      reviewedByAI: true,
+    };
+  } catch {
+    return fallbackPresenterStep(input.exchangeCount);
+  }
+}
+
+function fallbackPresenterStep(exchangeCount: number): PresenterStep {
+  if (exchangeCount < 2) {
+    return {
+      type: "followup",
+      followUpQuestion: "What's the one thing in here that would actually change what we do next?",
+    };
+  }
+  return {
+    type: "final",
+    summaryScore: 5,
+    answerScore: 5,
+    overallScore: 5,
+    strengths: ["You gave a summary and answered the follow-up — that's the part most people avoid practicing."],
+    improvements: [
+      "Lead with the one sentence that matters most before any supporting detail.",
+      "When answering a follow-up, give the direct answer first, then the reasoning — not the other way around.",
+    ],
+    idealFollowUpAnswer:
+      "AI coaching is unavailable right now, so this is generic guidance rather than feedback on your specific answer.",
+    reviewedByAI: false,
+  };
+}

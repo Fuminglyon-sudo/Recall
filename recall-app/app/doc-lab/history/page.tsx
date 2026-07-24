@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Presentation } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { AppShell } from "@/components/app-shell";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
@@ -10,33 +10,83 @@ import { TOPIC_LABELS, type DocTopic } from "@/lib/doc-review-samples";
 
 export const metadata = { title: "Doc Lab History — Soro Soke" };
 
+type HistoryRow = {
+  id: string;
+  createdAt: Date;
+  docTitle: string;
+  docTopic: string | null;
+  isOwnDoc: boolean;
+  mode: "commenter" | "presenter";
+  score: number | null; // null = analysis-only commenter run, never true for presenter
+};
+
 export default async function DocLabHistoryPage() {
   const userId = await getCurrentUserId();
   if (!userId) redirect("/login");
   const uid = scopedUserId(userId);
 
-  const sessions = await prisma.docReviewSession.findMany({
-    where: { userId: uid },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    select: {
-      id: true,
-      createdAt: true,
-      docTitle: true,
-      docTopic: true,
-      isOwnDoc: true,
-      attempted: true,
-      detectionScore: true,
-    },
-  });
+  const [reviewSessions, presenterSessions] = await Promise.all([
+    prisma.docReviewSession.findMany({
+      where: { userId: uid },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: {
+        id: true,
+        createdAt: true,
+        docTitle: true,
+        docTopic: true,
+        isOwnDoc: true,
+        attempted: true,
+        detectionScore: true,
+      },
+    }),
+    prisma.docPresenterSession.findMany({
+      where: { userId: uid },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+      select: {
+        id: true,
+        createdAt: true,
+        docTitle: true,
+        docTopic: true,
+        isOwnDoc: true,
+        overallScore: true,
+      },
+    }),
+  ]);
 
-  // Only graded attempts belong in the average and the trend — runs where the
-  // user skipped straight to the analysis were never scored against anything.
-  const scored = sessions.filter((s) => s.attempted);
+  // Only graded commenter attempts belong in the average and the trend —
+  // runs where the user skipped straight to the analysis were never scored,
+  // and presenter-mode scores aren't the same metric, so they're kept in a
+  // combined list below but out of this specific trend.
+  const scored = reviewSessions.filter((s) => s.attempted);
   const avg =
     scored.length > 0
       ? Math.round(scored.reduce((sum, s) => sum + s.detectionScore, 0) / scored.length)
       : null;
+
+  const combined: HistoryRow[] = [
+    ...reviewSessions.map((s) => ({
+      id: s.id,
+      createdAt: s.createdAt,
+      docTitle: s.docTitle,
+      docTopic: s.docTopic,
+      isOwnDoc: s.isOwnDoc,
+      mode: "commenter" as const,
+      score: s.attempted ? s.detectionScore : null,
+    })),
+    ...presenterSessions.map((s) => ({
+      id: s.id,
+      createdAt: s.createdAt,
+      docTitle: s.docTitle,
+      docTopic: s.docTopic,
+      isOwnDoc: s.isOwnDoc,
+      mode: "presenter" as const,
+      score: s.overallScore,
+    })),
+  ]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 50);
 
   return (
     <AppShell>
@@ -50,7 +100,7 @@ export default async function DocLabHistoryPage() {
           <h1 className="mt-2 text-2xl font-semibold text-white">Documents you have read closely</h1>
           {avg !== null ? (
             <p className="mt-1 text-sm text-slate-400">
-              {scored.length} graded attempt{scored.length !== 1 ? "s" : ""} · average{" "}
+              {scored.length} graded commenter attempt{scored.length !== 1 ? "s" : ""} · average{" "}
               <span className="font-semibold text-white">{avg}/10</span>
             </p>
           ) : (
@@ -60,10 +110,12 @@ export default async function DocLabHistoryPage() {
           )}
         </div>
 
-        {/* Score trend — graded attempts only */}
+        {/* Score trend — graded commenter-mode attempts only; presenter mode
+            scores a different thing (summary + follow-up), so it's shown in
+            the list below but kept out of this specific trend. */}
         {scored.length >= 3 ? (
           <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
-            <p className="mb-4 text-xs uppercase tracking-[0.18em] text-slate-500">Detection trend</p>
+            <p className="mb-4 text-xs uppercase tracking-[0.18em] text-slate-500">Detection trend (commenter mode)</p>
             <div className="flex h-14 items-end gap-1">
               {[...scored]
                 .reverse()
@@ -91,9 +143,9 @@ export default async function DocLabHistoryPage() {
           </div>
         ) : null}
 
-        {/* Session list */}
+        {/* Session list — both modes, most recent first */}
         <div className="space-y-3">
-          {sessions.length === 0 ? (
+          {combined.length === 0 ? (
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 text-center">
               <p className="text-sm text-slate-400">
                 Nothing here yet. Read a document in Doc Lab and it will show up.
@@ -106,7 +158,7 @@ export default async function DocLabHistoryPage() {
               </Link>
             </div>
           ) : (
-            sessions.map((s) => (
+            combined.map((s) => (
               <div
                 key={s.id}
                 className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 px-5 py-4"
@@ -114,6 +166,15 @@ export default async function DocLabHistoryPage() {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-white">{s.docTitle}</p>
                   <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 text-xs text-slate-500">
+                    <span
+                      className={`inline-flex items-center gap-1 ${
+                        s.mode === "presenter" ? "text-violet-300/80" : "text-slate-500"
+                      }`}
+                    >
+                      {s.mode === "presenter" ? <Presentation className="h-3 w-3" /> : null}
+                      {s.mode === "presenter" ? "Presenter" : "Commenter"}
+                    </span>
+                    <span>·</span>
                     {s.isOwnDoc ? (
                       <span className="inline-flex items-center gap-1 text-emerald-300/80">
                         <FileText className="h-3 w-3" /> Your document
@@ -121,7 +182,7 @@ export default async function DocLabHistoryPage() {
                     ) : (
                       <span>{TOPIC_LABELS[s.docTopic as DocTopic] ?? "Practice"}</span>
                     )}
-                    {!s.attempted ? <span>· analysis only</span> : null}
+                    {s.mode === "commenter" && s.score === null ? <span>· analysis only</span> : null}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-600">
                     {new Date(s.createdAt).toLocaleDateString("en-GB", {
@@ -131,17 +192,13 @@ export default async function DocLabHistoryPage() {
                     })}
                   </p>
                 </div>
-                {s.attempted ? (
+                {s.score !== null ? (
                   <div
                     className={`shrink-0 text-2xl font-bold tabular-nums ${
-                      s.detectionScore >= 7
-                        ? "text-emerald-300"
-                        : s.detectionScore >= 4
-                        ? "text-amber-300"
-                        : "text-rose-300"
+                      s.score >= 7 ? "text-emerald-300" : s.score >= 4 ? "text-amber-300" : "text-rose-300"
                     }`}
                   >
-                    {s.detectionScore}
+                    {s.score}
                     <span className="text-sm text-slate-600">/10</span>
                   </div>
                 ) : (

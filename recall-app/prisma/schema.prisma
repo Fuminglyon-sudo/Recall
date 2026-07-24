@@ -24,19 +24,20 @@ model User {
   plan          String    @default("free")
   planStartedAt DateTime?
 
-  accounts          Account[]
-  sessions          Session[]
-  decks             Deck[]
-  streak            Streak?
-  settings          UserSettings?
-  achievements      UserAchievement[]
-  voiceProfile      VoiceProfile?
-  socialSessions    SocialSession[]
-  speakUpSessions   SpeakUpSession[]
-  debateSessions    DebateSession[]
-  docReviewSessions DocReviewSession[]
-  pushSubscriptions PushSubscription[]
-  countryProgress   UserCountryProgress[]
+  accounts             Account[]
+  sessions             Session[]
+  decks                Deck[]
+  streak               Streak?
+  settings             UserSettings?
+  achievements         UserAchievement[]
+  voiceProfile         VoiceProfile?
+  socialSessions       SocialSession[]
+  speakUpSessions      SpeakUpSession[]
+  debateSessions       DebateSession[]
+  docReviewSessions    DocReviewSession[]
+  docPresenterSessions DocPresenterSession[]
+  pushSubscriptions    PushSubscription[]
+  countryProgress      UserCountryProgress[]
 
   @@index([email])
   @@index([plan])
@@ -95,25 +96,25 @@ model Deck {
 }
 
 model Card {
-  id             String      @id @default(cuid())
-  deckId         String
-  front          String
-  back           String
-  partOfSpeech   String?
-  example        String?
-  hook           String?
-  synonyms       String?
-  association    String?
-  kind           String      @default("VOCABULARY")
-  sourceContext  String?
-  easeFactor     Float       @default(2.5)
-  interval       Int         @default(0)
-  repetitions    Int         @default(0)
-  dueAt          DateTime    @default(now())
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  deck           Deck        @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  reviewLogs     ReviewLog[]
+  id            String      @id @default(cuid())
+  deckId        String
+  front         String
+  back          String
+  partOfSpeech  String?
+  example       String?
+  hook          String?
+  synonyms      String?
+  association   String?
+  kind          String      @default("VOCABULARY")
+  sourceContext String?
+  easeFactor    Float       @default(2.5)
+  interval      Int         @default(0)
+  repetitions   Int         @default(0)
+  dueAt         DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deck          Deck        @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  reviewLogs    ReviewLog[]
 
   @@index([deckId])
   @@index([dueAt])
@@ -132,25 +133,25 @@ model ReviewLog {
 }
 
 model Streak {
-  id             String    @id @default(cuid())
-  currentStreak  Int       @default(0)
-  longestStreak  Int       @default(0)
-  lastReviewDate DateTime?
-  recoveryUsedAt DateTime?
+  id              String    @id @default(cuid())
+  currentStreak   Int       @default(0)
+  longestStreak   Int       @default(0)
+  lastReviewDate  DateTime?
+  recoveryUsedAt  DateTime?
   // When the current streak began (first review, or the day it last reset
   // to 1). Used to tell whether a recovery was used *during* this streak
   // ("Perfect Streak" badge) vs. in some earlier streak.
   streakStartedAt DateTime?
   // null = admin streak; set for all new users
-  userId         String?   @unique
-  user           User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String?   @unique
+  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserSettings {
-  id            String  @id @default(cuid())
-  dailyNewCards Int     @default(3)
-  userId        String  @unique
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String @id @default(cuid())
+  dailyNewCards Int    @default(3)
+  userId        String @unique
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserAchievement {
@@ -202,24 +203,24 @@ model SocialSession {
 }
 
 model SpeakUpSession {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  scenarioId   String
-  scenarioTag  String
-  personaId    String
-  personaLabel String
-  difficulty   String
-  practiceGoal String?
-  exchangeCount Int
-  score        Int
-  strongPoints Json
-  improvements Json
-  modelAnswer        String
-  modelConversation  Json?
-  messages           Json
-  feedbackRating     String?
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  scenarioId        String
+  scenarioTag       String
+  personaId         String
+  personaLabel      String
+  difficulty        String
+  practiceGoal      String?
+  exchangeCount     Int
+  score             Int
+  strongPoints      Json
+  improvements      Json
+  modelAnswer       String
+  modelConversation Json?
+  messages          Json
+  feedbackRating    String?
   // null = admin session; set for all new users
-  userId             String?
+  userId            String?
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -228,23 +229,23 @@ model SpeakUpSession {
 }
 
 model DebateSession {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  motion        String
-  position      String
-  opponentType  String
-  difficulty    String
-  exchangeCount Int
-  score         Int
-  strongPoints  Json
-  improvements  Json
-  keyFallacy    String?
-  missedArg     String
-  modelRebuttal String
-  messages      Json
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  motion         String
+  position       String
+  opponentType   String
+  difficulty     String
+  exchangeCount  Int
+  score          Int
+  strongPoints   Json
+  improvements   Json
+  keyFallacy     String?
+  missedArg      String
+  modelRebuttal  String
+  messages       Json
   feedbackRating String?
-  userId        String?
-  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
+  user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
@@ -284,6 +285,34 @@ model DocReviewSession {
   // null = admin session; set for all Google users
   userId         String?
   user           User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// One graded pass in Presenter mode: the user's summary of a document, the
+// follow-up question an AI "listener" asked about it, and how they answered.
+// Same no-document-body policy as DocReviewSession, for the same reason —
+// only the user's own words (summary, answer) and the coach's output are kept.
+model DocPresenterSession {
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+  sampleDocId         String?
+  docTitle            String
+  docTopic            String?
+  isOwnDoc            Boolean  @default(false)
+  summary             String
+  followUpQuestion    String
+  answer              String
+  summaryScore        Int
+  answerScore         Int
+  overallScore        Int
+  strengths           Json
+  improvements        Json
+  idealFollowUpAnswer String
+  // null = admin session; set for all Google users
+  userId              String?
+  user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([createdAt])
