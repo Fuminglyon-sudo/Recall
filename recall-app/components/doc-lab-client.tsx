@@ -73,15 +73,62 @@ export function DocLabClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [micError, setMicError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const notesBeforeRecording = useRef("");
 
+  // Groq mic mode — a fast batch Whisper endpoint, not true low-latency
+  // streaming (Groq doesn't offer that for audio). "Live" is simulated by
+  // cutting the recording into segments on natural pauses in speech and
+  // transcribing each one as it completes, so text appears every time the
+  // user pauses rather than only once at the very end.
+  const groqMicEnabled = process.env.NEXT_PUBLIC_DOC_LAB_GROQ_MIC === "true";
+  const usingGroqRef = useRef(false);
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const stoppingRef = useRef(false);
+  const hasSpokenRef = useRef(false);
+  const silenceTimerRef = useRef<number | null>(null);
+  const chunkSeqRef = useRef(0);
+  // Chunks resolve over the network in whatever order they finish — chaining
+  // each append onto this promise keeps transcribed text appearing in the
+  // order the person actually said it, not the order the responses arrived.
+  const appendQueueRef = useRef<Promise<void>>(Promise.resolve());
+
+  const SILENCE_THRESHOLD = 12;
+  const SILENCE_DURATION_MS = 1300;
+
   const shown = topicFilter === "all" ? SAMPLE_DOCS : SAMPLE_DOCS.filter((d) => d.topic === topicFilter);
 
   function startRecording() {
     setMicError("");
+    const groqSupported =
+      groqMicEnabled &&
+      typeof navigator !== "undefined" &&
+      !!navigator.mediaDevices?.getUserMedia &&
+      typeof MediaRecorder !== "undefined";
+    usingGroqRef.current = groqSupported;
+    if (groqSupported) {
+      void startGroqRecording();
+    } else {
+      startBrowserRecording();
+    }
+  }
+
+  function stopRecording() {
+    if (usingGroqRef.current) {
+      stopGroqRecording();
+    } else {
+      stopBrowserRecording();
+    }
+  }
+
+  // ── Browser SpeechRecognition fallback ─────────────────────────────────
+  function startBrowserRecording() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
     if (!SR) {
@@ -111,11 +158,146 @@ export function DocLabClient() {
     setRecording(true);
   }
 
-  function stopRecording() {
+  function stopBrowserRecording() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
+    setRecording(false);
+  }
+
+  // ── Groq Whisper mic mode ───────────────────────────────────────────────
+  async function startGroqRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const Ctx = window.AudioContext ?? (window as any).webkitAudioContext;
+      const audioContext = new Ctx() as AudioContext;
+      audioContextRef.current = audioContext;
+      const source = audioContext.createMediaStreamSource(stream);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+      analyserRef.current = analyser;
+
+      stoppingRef.current = false;
+      chunkSeqRef.current = 0;
+      appendQueueRef.current = Promise.resolve();
+      setRecording(true);
+      beginSegment();
+      monitorVolume();
+    } catch {
+      setMicError("Microphone access denied.");
+    }
+  }
+
+  function beginSegment() {
+    const stream = streamRef.current;
+    if (!stream) return;
+    const mimeType = ["audio/webm", "audio/mp4", "audio/ogg"].find(
+      (t) => typeof MediaRecorder.isTypeSupported === "function" && MediaRecorder.isTypeSupported(t)
+    );
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    const chunks: BlobPart[] = [];
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+      // Skip near-silent segments (e.g. the final cut when the user hits stop).
+      if (blob.size > 1200) {
+        enqueueTranscription(blob, chunkSeqRef.current++);
+      }
+      if (!stoppingRef.current) beginSegment();
+    };
+    recorder.start();
+    mediaRecorderRef.current = recorder;
+    hasSpokenRef.current = false;
+  }
+
+  function monitorVolume() {
+    const analyser = analyserRef.current;
+    if (!analyser) return;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    const tick = () => {
+      if (!analyserRef.current) return;
+      analyser.getByteTimeDomainData(data);
+      let sumSquares = 0;
+      for (let i = 0; i < data.length; i++) {
+        const deviation = data[i] - 128;
+        sumSquares += deviation * deviation;
+      }
+      const rms = Math.sqrt(sumSquares / data.length);
+
+      if (rms > SILENCE_THRESHOLD) {
+        hasSpokenRef.current = true;
+        if (silenceTimerRef.current) {
+          window.clearTimeout(silenceTimerRef.current);
+          silenceTimerRef.current = null;
+        }
+      } else if (hasSpokenRef.current && !silenceTimerRef.current) {
+        silenceTimerRef.current = window.setTimeout(() => {
+          silenceTimerRef.current = null;
+          if (mediaRecorderRef.current?.state === "recording") {
+            mediaRecorderRef.current.stop(); // triggers onstop -> transcribe + beginSegment()
+          }
+        }, SILENCE_DURATION_MS);
+      }
+
+      if (!stoppingRef.current) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function enqueueTranscription(blob: Blob, seq: number) {
+    setTranscribing(true);
+    appendQueueRef.current = appendQueueRef.current.then(async () => {
+      try {
+        const extension = blob.type.includes("mp4") ? "mp4" : blob.type.includes("ogg") ? "ogg" : "webm";
+        const formData = new FormData();
+        formData.append("audio", blob, `chunk-${seq}.${extension}`);
+        const res = await fetch("/api/doc-mic-transcribe", { method: "POST", body: formData });
+        if (res.ok) {
+          const data = (await res.json().catch(() => null)) as { text?: string } | null;
+          const text = data?.text?.trim();
+          if (text) {
+            setNotes((current) => {
+              const base = current.trim();
+              return base ? `${base} ${text}` : text;
+            });
+          }
+        } else if (res.status === 503) {
+          setMicError("Live transcription isn't configured on this deployment — falling back to your browser's dictation.");
+          stopGroqRecording();
+          usingGroqRef.current = false;
+          startBrowserRecording();
+        } else if (res.status !== 429) {
+          setMicError("Couldn't transcribe that part — try again.");
+        }
+      } catch {
+        setMicError("Connection issue during transcription.");
+      }
+    });
+    void appendQueueRef.current.finally(() => setTranscribing(false));
+  }
+
+  function stopGroqRecording() {
+    stoppingRef.current = true;
+    if (silenceTimerRef.current) {
+      window.clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+    }
+    if (mediaRecorderRef.current?.state === "recording") {
+      mediaRecorderRef.current.stop();
+    }
+    mediaRecorderRef.current = null;
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    void audioContextRef.current?.close();
+    audioContextRef.current = null;
+    analyserRef.current = null;
     setRecording(false);
   }
 
@@ -339,7 +521,14 @@ export function DocLabClient() {
                 Speak instead
               </button>
             )}
-            <span className="text-xs text-slate-500">Say what you'd raise out loud — it fills the box as you talk.</span>
+            {transcribing ? (
+              <span className="flex items-center gap-1.5 text-xs text-emerald-300">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Transcribing…
+              </span>
+            ) : (
+              <span className="text-xs text-slate-500">Say what you'd raise out loud — it fills in as you pause.</span>
+            )}
           </div>
           {micError ? <p className="text-xs text-amber-300">{micError}</p> : null}
           {error ? (
