@@ -53,6 +53,7 @@ const TOPIC_COLORS: Record<DocTopic, string> = {
   social: "border-amber-300/20 bg-amber-400/10 text-amber-200",
   tech: "border-rose-300/20 bg-rose-400/10 text-rose-200",
   health: "border-teal-300/20 bg-teal-400/10 text-teal-200",
+  entertainment: "border-fuchsia-300/20 bg-fuchsia-400/10 text-fuchsia-200",
 };
 
 const SEVERITY_STYLE: Record<DocQuestion["severity"], string> = {

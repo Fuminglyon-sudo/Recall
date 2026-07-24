@@ -9,7 +9,7 @@
 // them from the text alone, exactly as it does for a document the user pastes
 // in themselves, so practice and real use behave identically.
 
-export const DOC_TOPICS = ["workplace", "economics", "politics", "social", "tech", "health"] as const;
+export const DOC_TOPICS = ["workplace", "economics", "politics", "social", "tech", "health", "entertainment"] as const;
 
 export type DocTopic = (typeof DOC_TOPICS)[number];
 
@@ -29,6 +29,7 @@ export const TOPIC_LABELS: Record<DocTopic, string> = {
   social: "Social",
   tech: "Tech",
   health: "Health",
+  entertainment: "Entertainment",
 };
 
 export const SAMPLE_DOCS: SampleDoc[] = [
@@ -420,6 +421,68 @@ We will track average wait time and no-show rate by department, reported monthly
 
 Recommendation
 We recommend approving the clinic-wide rollout on the timeline above, beginning with cardiology and behavioural health.`,
+  },
+  {
+    id: "true-crime-greenlight",
+    topic: "entertainment",
+    emoji: "🎬",
+    title: "Content proposal: Greenlighting a true-crime documentary slate",
+    blurb: "A streaming platform's content strategy memo, built on strong watch-time numbers.",
+    body: `CONTENT STRATEGY PROPOSAL
+Expanding into True Crime — Documentary Slate
+Prepared for: Content Investment Committee
+
+Summary
+We propose greenlighting a slate of six true-crime documentary features over the next eighteen months, produced in-house rather than licensed. This follows the strong performance of our one existing true-crime title.
+
+The evidence
+"The Quiet Street," our sole true-crime release to date, was our third most-watched original in its debut month and remained in the daily top ten for five weeks — well beyond the typical two-week tail for a documentary release. Total watch hours exceeded our internal target by 40%.
+
+Why now
+True crime consistently ranks among the most-searched genres on our platform, and competitor platforms have visibly expanded their true-crime slates over the past year. Being a fast follower here risks ceding a genre our own data shows real appetite for.
+
+Production plan
+Six features, produced in-house using our existing documentary production team, released one every three months starting next quarter. Each feature follows the same format that worked for "The Quiet Street": archival footage, family interviews, and a single true crime case per film.
+
+Cost
+Each feature is budgeted at $1.8M, based on "The Quiet Street"'s actual production cost. Total slate cost: $10.8M over eighteen months, drawn from the existing documentary content budget.
+
+Success criteria
+We will consider the slate successful if the average feature matches or exceeds "The Quiet Street"'s watch-hour performance.
+
+Recommendation
+We recommend approving the six-feature slate and beginning pre-production on the first two titles immediately, so the first release can hit the target quarter.`,
+  },
+  {
+    id: "festival-dynamic-pricing",
+    topic: "entertainment",
+    emoji: "🎟️",
+    title: "Proposal: Dynamic pricing for festival ticket sales",
+    blurb: "A pricing-strategy memo borrowing a model from a very different industry.",
+    body: `PRICING STRATEGY PROPOSAL
+Introducing Dynamic Pricing for General Admission Tickets
+Prepared for: Festival Leadership Team
+
+Summary
+We propose replacing our fixed-price ticket tiers with dynamic pricing for general admission to next year's festival, where prices rise automatically as demand for a given day or tier increases, beginning with the on-sale for next year's event.
+
+The case for dynamic pricing
+Ride-sharing and airline pricing have used real-time demand-based pricing for years, and both industries report significantly higher revenue capture during peak-demand periods compared to fixed pricing. Our own on-sale data shows the clearest possible demand signal: single-day tickets for our headline day have sold out within eleven minutes for three consecutive years, while our lowest-demand day has never sold out. Fixed pricing means we are leaving obvious revenue on the table during the eleven-minute headline-day rush while overpricing the slower day.
+
+How it would work
+Ticket prices for each day adjust in real time based on remaining inventory and sales velocity during the on-sale window, similar to the models used in ride-sharing surge pricing. A price ceiling will cap the maximum increase at 40% above the current fixed price, and a floor will prevent the slow day from pricing below 80% of its current fixed price.
+
+Revenue projection
+Based on the sell-out velocity of our headline day, we project a 15-20% increase in total gate revenue in year one, without any change to total attendance capacity.
+
+Operational plan
+Our existing ticketing vendor already offers a dynamic pricing module used by several sports venues, so no new vendor relationship is required. The on-sale page will display current price and a note that price may increase with demand.
+
+Success criteria
+We will consider the first year successful if total gate revenue increases by at least 10% against the prior fixed-price year, with attendance held flat.
+
+Recommendation
+We recommend approving dynamic pricing for next year's on-sale, using the vendor's existing module, with the price ceiling and floor described above.`,
   },
 ];
 
