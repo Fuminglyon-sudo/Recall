@@ -224,6 +224,203 @@ Launch to all staff at once, supported by an all-hands announcement and manager 
 Recommendation
 Approve the programme for the coming financial year.`,
   },
+  {
+    id: "continuous-feedback",
+    topic: "workplace",
+    emoji: "🔄",
+    title: "People strategy: Retiring annual reviews for continuous feedback",
+    blurb: "A denser HR paper — the flaw sits underneath a real-sounding stat.",
+    body: `PEOPLE STRATEGY PAPER
+Retiring the Annual Performance Review
+Prepared for: Executive Team
+
+Summary
+We propose retiring the annual performance review cycle in favour of continuous, manager-led feedback delivered through a new internal tool ("Pulse"), beginning next fiscal year. This brings us in line with the direction the majority of high-performing organisations have already taken.
+
+The case against annual reviews
+Annual reviews are widely regarded as a poor mechanism for improving performance. A frequently cited industry analysis found that companies which moved from annual to continuous feedback saw a 15% improvement in a composite "employee effectiveness" index within eighteen months. Given our own engagement scores have been flat for three consecutive cycles, we believe the current model is a contributing factor.
+
+What continuous feedback looks like here
+Managers will hold a structured quarter-hour check-in with each report every two weeks, logged in Pulse. Pulse surfaces a running summary that replaces the single annual write-up. Compensation and promotion decisions will draw on the accumulated Pulse record rather than a single end-of-year rating.
+
+Why now
+Our current HRIS contract renews in five months, and bundling Pulse into the renewal negotiation gives us leverage on price. Waiting a further cycle means either paying for a tool we are not using or missing the negotiation window entirely.
+
+Cost
+Pulse licensing: $22 per employee per month. For 1,100 employees, this is approximately $290,000 annually. This is offset by retiring our current standalone review software, which costs $95,000 annually, for a net increase of roughly $195,000.
+
+Success criteria
+We will consider this a success if manager-report check-in completion exceeds 85% and if next year's engagement survey shows an improvement in the "I receive feedback that helps me grow" item.
+
+Recommendation
+We recommend approving the transition and beginning manager training two months ahead of the HRIS renewal date.`,
+  },
+  {
+    id: "land-value-tax",
+    topic: "economics",
+    emoji: "🏛️",
+    title: "Policy memo: Replacing commercial property tax with a land value tax",
+    blurb: "A fiscal-policy memo — the hardest part of the reform is left unaddressed.",
+    body: `FISCAL POLICY MEMO
+Subject: Transitioning commercial property tax to a land value tax (LVT)
+Prepared for: Finance Committee
+
+Recommendation
+That the city transition commercial property taxation from the current improvement-inclusive model to a pure land value tax over a three-year phase-in, beginning next fiscal year.
+
+The economic case
+Standard property tax discourages investment: a business that improves its building sees its tax bill rise, while a business that leaves a downtown lot as surface parking pays less. A land value tax removes this disincentive entirely, since the tax is based only on the land's value, not what sits on it. A well-known case study of this reform in a mid-sized US city found a measurable increase in downtown building density within a decade of adoption, which we would expect to replicate here given similar zoning constraints.
+
+Revenue design
+The reform is intended to be revenue-neutral in year one: land value tax rates will be calibrated so total citywide commercial tax revenue matches current collections, then held flat in nominal terms as the phase-in proceeds. This protects the budget while the new system beds in.
+
+Implementation
+The city assessor's office will produce separate land and improvement valuations for all 6,400 commercial parcels ahead of the first transition year, using the existing mass-appraisal methodology extended to isolate land value.
+
+Business impact
+Owners of underdeveloped high-value land (surface lots, vacant storefronts) will see the largest increases; owners of well-improved buildings on that same land will see reductions. We expect this redistribution to be broadly popular, since more businesses will see a cut than an increase.
+
+Timeline
+Year 1: assessment build-out and public communication. Years 2-3: phased rate transition. Year 4: full LVT in effect.
+
+Recommendation
+We recommend approving the three-year transition and directing the assessor's office to begin the land/improvement valuation build-out immediately.`,
+  },
+  {
+    id: "ranked-choice-voting",
+    topic: "politics",
+    emoji: "🗳️",
+    title: "Council memo: Adopting ranked-choice voting for municipal elections",
+    blurb: "An electoral-reform memo built almost entirely on one borrowed result.",
+    body: `MEMORANDUM
+To: City Council, Elections Committee
+Subject: Adoption of ranked-choice voting (RCV) for municipal elections
+
+Recommendation
+That the Council adopt ranked-choice voting for all municipal elections beginning with the next election cycle, replacing the current plurality system.
+
+Background
+Under our current system, council seats have twice in the past decade been won with under 35% of the vote in crowded fields, which critics argue does not reflect majority preference. RCV allows voters to rank candidates and eliminates lower-finishing candidates in rounds until one candidate holds a majority of remaining votes.
+
+Evidence
+A peer city of comparable size adopted RCV eight years ago. Voter turnout in that city's next municipal election rose four points against the prior cycle, and post-election surveys found 71% of voters found the ballot "easy or very easy" to complete. We would expect a similar reception here given the similarity in electorate size and existing voting infrastructure.
+
+Administration
+Ballots will be counted using our existing tabulation vendor, which offers an RCV counting module already certified in fourteen states. A single public information campaign ahead of the first RCV election will cover the change in ballot format.
+
+Cost
+The vendor's RCV module carries a one-time licensing cost of $180,000 and no ongoing increase to per-election costs. The public information campaign is budgeted at $65,000.
+
+Equity considerations
+RCV is designed to give voters more voice, not less, since no vote is wasted on a candidate who cannot win. We do not anticipate the change creating new barriers to participation.
+
+Success criteria
+We will consider adoption successful if the first RCV election proceeds without a significant rise in ballot errors and if voter turnout does not decline relative to the prior cycle.
+
+Recommendation
+We recommend approving adoption and directing the elections office to begin vendor onboarding and the public information campaign six months ahead of the first RCV election.`,
+  },
+  {
+    id: "parent-support-line",
+    topic: "social",
+    emoji: "📞",
+    title: "Proposal: Peer-support hotline for new parents",
+    blurb: "A compassionate pilot with a scaling problem hiding inside the good results.",
+    body: `PROGRAMME PROPOSAL
+Peer Support Line for New Parents
+Prepared for: Board of Directors
+
+The case for the programme
+New parents in our county report high rates of isolation in the first postpartum year, and existing clinical mental-health services have an eleven-week average wait. We propose a peer-support hotline staffed by trained volunteer parents, offering same-day phone or text support to any new parent who calls.
+
+Pilot results
+Our six-month pilot, staffed by twelve trained volunteers, handled 340 calls. Post-call surveys showed 92% of callers rated the interaction as helpful, and volunteers themselves reported high satisfaction with the role. Callers frequently described the line as "a lifeline" in open-text feedback.
+
+Proposed expansion
+We propose scaling the line countywide over the next year, moving from twelve volunteers to an estimated eighty, sufficient to cover extended hours and an anticipated call volume of roughly 2,400 calls annually based on population ratios from the pilot area.
+
+Training and screening
+Volunteers complete a 20-hour training curriculum covering active listening, common postpartum challenges, and when to refer a caller to clinical services. Training will be delivered by the two staff members who developed and ran the pilot's training.
+
+Budget
+Volunteer recruitment and training materials: $40,000. Staff coordinator (one FTE) to manage the volunteer roster and referral pipeline: $58,000. Phone system and text platform licensing: $12,000. Total: $110,000 for the expansion year, covered by our existing family-services grant.
+
+Measurement
+Success will be measured by caller satisfaction ratings and total calls handled, tracked monthly by the coordinator.
+
+Recommendation
+We recommend approving countywide expansion on the timeline above, beginning volunteer recruitment immediately.`,
+  },
+  {
+    id: "streaming-migration",
+    topic: "tech",
+    emoji: "🌊",
+    title: "Platform proposal: Moving the data warehouse to real-time streaming",
+    blurb: "An infrastructure pitch that reads like it was written by someone very sure of themselves.",
+    body: `PLATFORM ENGINEERING PROPOSAL
+Migrating from Nightly Batch to Real-Time Streaming
+Author: Data Platform team
+
+Context
+Our analytics and reporting currently run on nightly batch ETL, meaning dashboards reflect yesterday's data. Product and sales teams have repeatedly asked for same-day visibility into key metrics, and two customer-facing features currently blocked on the roadmap require sub-hour data freshness.
+
+Proposal
+Replace the nightly batch pipeline with a real-time streaming architecture built on a managed event-streaming platform, with a stream-processing layer computing rolling aggregates directly into the warehouse. This is the standard architecture used by companies operating at the scale we are heading toward, and adopting it now avoids a more disruptive migration later.
+
+Approach
+We will stand up the streaming platform, migrate our eleven highest-value data pipelines first (covering roughly 80% of dashboard traffic), and run batch and streaming in parallel for one release cycle before decommissioning the legacy pipelines.
+
+Team readiness
+The platform team has strong distributed-systems fundamentals from our existing services work, and the managed platform's documentation is thorough. We are confident the team can ramp on stream processing concepts during the build phase.
+
+Benefits
+- Same-day, and eventually sub-hour, data freshness across dashboards
+- Unblocks the two roadmap features waiting on fresh data
+- Positions us on infrastructure that scales with our growth trajectory
+
+Cost
+Managed streaming platform licensing: approximately $14,000 monthly at current data volumes. Engineering effort: estimated at one quarter for the initial eleven-pipeline migration.
+
+Success criteria
+We will consider the migration successful when the eleven priority pipelines are running on streaming infrastructure with dashboard data lag under one hour.
+
+Recommendation
+Approve the migration and begin platform evaluation and procurement immediately so the build can start next sprint.`,
+  },
+  {
+    id: "same-day-scheduling",
+    topic: "health",
+    emoji: "🩺",
+    title: "Clinical operations: Same-day scheduling clinic-wide",
+    blurb: "An access-improvement proposal built on one specialty's pilot.",
+    body: `CLINICAL OPERATIONS PROPOSAL
+Clinic-Wide Same-Day Appointment Scheduling
+Prepared for: Medical Director and Operations Committee
+
+Background
+Patients currently wait an average of eighteen days for a non-urgent appointment across our clinics. Same-day scheduling — holding a portion of each day's slots open rather than booking weeks in advance — is a recognised approach to reducing wait times and no-show rates.
+
+Pilot results
+Our family medicine department piloted same-day scheduling for four months, holding 40% of each provider's daily slots open until that morning. Wait times for non-urgent visits in that department fell from nineteen days to same-day or next-day in the large majority of cases, and the no-show rate fell from 14% to 6%.
+
+Proposed rollout
+Given these results, we propose extending same-day scheduling to all clinical departments — including cardiology, endocrinology, and behavioural health — over the next two quarters, using the same 40% open-slot ratio that worked in family medicine.
+
+Why now
+Patient satisfaction scores around access have been our lowest-rated domain for two consecutive years, and same-day scheduling directly targets the most common complaint in patient feedback: difficulty getting an appointment.
+
+Implementation
+Scheduling staff will be retrained on the new booking rules department by department, starting with the two departments with the longest current wait times. No change to provider staffing levels is planned for the initial rollout.
+
+Cost
+The primary cost is scheduling-staff retraining time, estimated at 80 hours total across all departments, plus updated patient communication materials explaining the new booking process. No new hires are budgeted.
+
+Measurement
+We will track average wait time and no-show rate by department, reported monthly, against the family medicine pilot as a benchmark.
+
+Recommendation
+We recommend approving the clinic-wide rollout on the timeline above, beginning with cardiology and behavioural health.`,
+  },
 ];
 
 export function getSampleDoc(id: string): SampleDoc | undefined {

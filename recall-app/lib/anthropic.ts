@@ -1032,6 +1032,11 @@ export type DocReviewResult = {
   topQuestions: DocQuestion[];
   judgmentNote: string;
   raisingTip: string;
+  // True only when Claude actually graded this pass. False for the generic
+  // heuristic fallback (no API key configured, or the model's response
+  // failed to parse) — the UI uses this to show an honest "AI reviewed" tag
+  // rather than implying every result got real judgment applied to it.
+  reviewedByAI: boolean;
 };
 
 const DOC_LENSES = `- What is asserted but never evidenced?
@@ -1116,6 +1121,7 @@ Return strict JSON with ALL of these fields:
         typeof parsed.raisingTip === "string" && parsed.raisingTip.length > 0
           ? parsed.raisingTip
           : "Ask your question early, before the room settles into agreement — it is far easier to open a question than to reopen a closed one.",
+      reviewedByAI: true,
     };
   } catch {
     return fallbackDocReview(input.userNotes);
@@ -1145,6 +1151,7 @@ function fallbackDocReview(userNotes: string): DocReviewResult {
       "AI coaching is unavailable right now, so this is the generic starting set. The two questions above work on almost any proposal.",
     raisingTip:
       "Lead with the shared goal before the question — 'I want this to land well, so I'm curious…' — it makes a challenge sound like help.",
+    reviewedByAI: false,
   };
 }
 

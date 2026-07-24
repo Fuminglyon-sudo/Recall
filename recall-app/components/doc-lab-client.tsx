@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   FileText,
@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   AlertCircle,
   ShieldCheck,
+  Sparkles,
+  Mic,
 } from "lucide-react";
 import {
   SAMPLE_DOCS,
@@ -33,6 +35,7 @@ type DocReviewResult = {
   topQuestions: DocQuestion[];
   judgmentNote: string;
   raisingTip: string;
+  reviewedByAI: boolean;
 };
 
 type ActiveDoc = {
@@ -69,8 +72,52 @@ export function DocLabClient() {
   const [result, setResult] = useState<DocReviewResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [micError, setMicError] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+  const notesBeforeRecording = useRef("");
 
   const shown = topicFilter === "all" ? SAMPLE_DOCS : SAMPLE_DOCS.filter((d) => d.topic === topicFilter);
+
+  function startRecording() {
+    setMicError("");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SR = (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+    if (!SR) {
+      setMicError("Live dictation needs Chrome or Edge. Type your notes instead.");
+      return;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const recognition = new SR() as any;
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+    notesBeforeRecording.current = notes.trim();
+    let final = "";
+    recognition.onresult = (event: { resultIndex: number; results: { isFinal: boolean; 0: { transcript: string } }[] }) => {
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) final += event.results[i][0].transcript + " ";
+        else interim += event.results[i][0].transcript;
+      }
+      const base = notesBeforeRecording.current;
+      setNotes(base ? `${base} ${final}${interim}` : `${final}${interim}`);
+    };
+    recognition.onerror = () => setMicError("Microphone access denied or speech recognition unavailable.");
+    recognition.onend = () => setRecording(false);
+    recognition.start();
+    recognitionRef.current = recognition;
+    setRecording(true);
+  }
+
+  function stopRecording() {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      recognitionRef.current = null;
+    }
+    setRecording(false);
+  }
 
   function startSample(doc: SampleDoc) {
     setActiveDoc({ title: doc.title, body: doc.body, isOwn: false, sampleDocId: doc.id, topic: doc.topic });
@@ -272,6 +319,29 @@ export function DocLabClient() {
             placeholder={"e.g. The cost section only covers salaries — what about the coordination overhead?\ne.g. Success is defined as 'wellbeing improves' — how would we measure that?"}
             className="input-base text-sm leading-6"
           />
+          <div className="flex flex-wrap items-center gap-3">
+            {recording ? (
+              <button
+                type="button"
+                onClick={stopRecording}
+                className="flex items-center gap-2 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-2.5 text-sm font-semibold text-red-300 transition hover:bg-red-400/20"
+              >
+                <span className="h-2 w-2 animate-pulse rounded-full bg-red-400" />
+                Stop recording
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={startRecording}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                <Mic className="h-4 w-4 text-emerald-300" />
+                Speak instead
+              </button>
+            )}
+            <span className="text-xs text-slate-500">Say what you'd raise out loud — it fills the box as you talk.</span>
+          </div>
+          {micError ? <p className="text-xs text-amber-300">{micError}</p> : null}
           {error ? (
             <p className="rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-2 text-sm text-red-300">{error}</p>
           ) : null}
@@ -311,6 +381,17 @@ export function DocLabClient() {
 
     return (
       <div className="space-y-5">
+        {result.reviewedByAI ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-emerald-300">
+            <Sparkles className="h-3 w-3" />
+            AI reviewed
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-400/20 bg-white/5 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+            <AlertCircle className="h-3 w-3" />
+            Heuristic fallback — AI coaching unavailable right now
+          </span>
+        )}
         {attempted ? (
           <section className={`rounded-[2rem] border p-6 sm:p-8 ${scoreBorder}`}>
             <div className="flex items-end gap-4">
