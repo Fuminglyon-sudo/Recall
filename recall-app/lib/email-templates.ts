@@ -10,19 +10,20 @@ const LOGO_URL = `${SITE_URL}/brand/app-icon-192.png`;
 type WelcomeEmailInput = { name: string | null };
 type Email = { subject: string; html: string; text: string };
 
-// Priscilla's own story — why the three practice modes exist, in her words.
+// Priscilla's own story — why the practice modes exist, in her words.
 // Shared by both templates: the reason doesn't change based on which plan
-// someone lands on.
+// someone lands on. When a new mode ships, only the closing list of names
+// changes here — the story itself is hers, not ours to extend.
 const FOUNDER_NOTE_HTML = `
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%; margin:4px 0 22px; background:#f7faf8; border-radius:14px; border-left:3px solid #059669;">
       <tr>
         <td style="padding:16px 20px; font-size:14px; line-height:1.7; color:#334155;">
-          A quick word from me — I'm Priscilla, and I built Sọrọ Sọkẹ AI out of a habit I couldn't shake. I'd rehearse the big moments entirely in my head — the interview answer, the pitch, the hard conversation — run it until I felt completely ready, then walk into the actual room and watch it fall apart anyway. Thinking it through and saying it out loud turned out to be two different skills, and I only ever found that out too late to fix in the moment. Speak Up, Small Talk Lab, and Debate Lab exist so you find that gap here, in private, instead of there.
+          A quick word from me — I'm Priscilla, and I built Sọrọ Sọkẹ AI out of a habit I couldn't shake. I'd rehearse the big moments entirely in my head — the interview answer, the pitch, the hard conversation — run it until I felt completely ready, then walk into the actual room and watch it fall apart anyway. Thinking it through and saying it out loud turned out to be two different skills, and I only ever found that out too late to fix in the moment. Speak Up, Small Talk Lab, Debate Lab, and Doc Lab exist so you find that gap here, in private, instead of there.
         </td>
       </tr>
     </table>`;
 
-const FOUNDER_NOTE_TEXT = `A quick word from me — I'm Priscilla, and I built Sọrọ Sọkẹ AI out of a habit I couldn't shake. I'd rehearse the big moments entirely in my head — the interview answer, the pitch, the hard conversation — run it until I felt completely ready, then walk into the actual room and watch it fall apart anyway. Thinking it through and saying it out loud turned out to be two different skills, and I only ever found that out too late to fix in the moment. Speak Up, Small Talk Lab, and Debate Lab exist so you find that gap here, in private, instead of there.`;
+const FOUNDER_NOTE_TEXT = `A quick word from me — I'm Priscilla, and I built Sọrọ Sọkẹ AI out of a habit I couldn't shake. I'd rehearse the big moments entirely in my head — the interview answer, the pitch, the hard conversation — run it until I felt completely ready, then walk into the actual room and watch it fall apart anyway. Thinking it through and saying it out loud turned out to be two different skills, and I only ever found that out too late to fix in the moment. Speak Up, Small Talk Lab, Debate Lab, and Doc Lab exist so you find that gap here, in private, instead of there.`;
 
 function shell(preheader: string, bodyHtml: string): string {
   return `<!doctype html>
@@ -63,7 +64,7 @@ function button(label: string, href: string): string {
   return `<a href="${href}" style="display:inline-block; margin:20px 0 4px; padding:13px 26px; background:#059669; color:#ffffff; font-weight:600; font-size:14px; text-decoration:none; border-radius:12px;">${label}</a>`;
 }
 
-// Leads with the three differentiators — the point of the product, not the
+// Leads with the four differentiators — the point of the product, not the
 // mechanics of it. Capturing words comes last, reframed as what you bring
 // back FROM those sessions rather than a prerequisite before you can use
 // them — closes the loop instead of gating it.
@@ -89,9 +90,15 @@ function stepsList(): string {
         </td>
       </tr>
       <tr>
+        <td style="padding:10px 0; border-top:1px solid #eef2f0;">
+          <strong style="color:#0f172a;">Doc Lab</strong><br>
+          <span style="color:#64748b; font-size:14px;">Read a document and arrive with the questions nobody else asked — and learn to raise them without it sounding like an attack.</span>
+        </td>
+      </tr>
+      <tr>
         <td style="padding:10px 0; border-top:1px solid #eef2f0; border-bottom:1px solid #eef2f0;">
           <strong style="color:#0f172a;">Keep what you learn</strong><br>
-          <span style="color:#64748b; font-size:14px;">A word from Speak Up, an opener from Small Talk Lab, an argument from Debate Lab — turn it into a card, and spaced repetition keeps it coming back.</span>
+          <span style="color:#64748b; font-size:14px;">A word from Speak Up, an opener from Small Talk Lab, an argument from Debate Lab, a question from Doc Lab — turn any of it into a card, and spaced repetition keeps it coming back.</span>
         </td>
       </tr>
     </table>`;
@@ -101,7 +108,8 @@ const STEPS_TEXT = [
   "Speak Up — rehearse the room before you're in it. Say it out loud, get honest feedback, try again.",
   "Small Talk Lab — practice the awkward part first, with coaching on what to try next time.",
   "Debate Lab — hold your ground before you need to, against an AI that actually pushes back.",
-  "Keep what you learn — a word from Speak Up, an opener from Small Talk Lab, an argument from Debate Lab. Turn it into a card, and spaced repetition keeps it coming back.",
+  "Doc Lab — read a document and arrive with the questions nobody else asked, and learn to raise them without it sounding like an attack.",
+  "Keep what you learn — a word from Speak Up, an opener from Small Talk Lab, an argument from Debate Lab, a question from Doc Lab. Turn any of it into a card, and spaced repetition keeps it coming back.",
 ].map((s, i) => `${i + 1}. ${s}`).join("\n");
 
 function firstName(name: string | null): string {

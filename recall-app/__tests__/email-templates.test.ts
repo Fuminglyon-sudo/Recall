@@ -19,14 +19,16 @@ describe("welcomeEmail", () => {
     expect(html).not.toMatch(/free, forever/i);
   });
 
-  test("names all three practice modes as their own steps, leading the list", () => {
+  test("names all four practice modes as their own steps, leading the list", () => {
     const { html } = welcomeEmail({ name: "Ada" });
     expect(html).toContain("Speak Up");
     expect(html).toContain("Small Talk Lab");
     expect(html).toContain("Debate Lab");
+    expect(html).toContain("Doc Lab");
     expect(html).toContain("Keep what you learn");
     // Practice modes lead; word-capture is the closing step, not the opener.
     expect(html.indexOf("Speak Up")).toBeLessThan(html.indexOf("Keep what you learn"));
+    expect(html.indexOf("Doc Lab")).toBeLessThan(html.indexOf("Keep what you learn"));
   });
 
   test("includes the founder's note and signs off as Priscilla", () => {
@@ -47,6 +49,7 @@ describe("welcomeEmail", () => {
     expect(text).toContain("Hi Ada,");
     expect(text).toContain("Keep what you learn");
     expect(text).toContain("Speak Up");
+    expect(text).toContain("Doc Lab");
     expect(text).toMatch(/I'm Priscilla/);
     expect(text).toMatch(/14-day free trial/i);
     expect(text).not.toMatch(/<[a-z][\s\S]*>/i); // no leftover HTML tags
@@ -67,13 +70,15 @@ describe("founderWelcomeEmail", () => {
     expect(html).not.toMatch(/14-day free trial/i);
   });
 
-  test("names all three practice modes as their own steps, leading the list", () => {
+  test("names all four practice modes as their own steps, leading the list", () => {
     const { html } = founderWelcomeEmail({ name: "Ada" });
     expect(html).toContain("Speak Up");
     expect(html).toContain("Small Talk Lab");
     expect(html).toContain("Debate Lab");
+    expect(html).toContain("Doc Lab");
     expect(html).toContain("Keep what you learn");
     expect(html.indexOf("Speak Up")).toBeLessThan(html.indexOf("Keep what you learn"));
+    expect(html.indexOf("Doc Lab")).toBeLessThan(html.indexOf("Keep what you learn"));
   });
 
   test("includes the founder's note and signs off as Priscilla", () => {
