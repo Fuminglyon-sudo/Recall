@@ -143,6 +143,44 @@ async function getData() {
   };
 }
 
+// ── Admin nav bar ────────────────────────────────────────────────────────────
+// This page (site config, users, bans) is one of several admin-only pages —
+// the others (founder words, pitch practice, social skills, saved sessions,
+// visitor analytics) live under the regular AppShell/sidebar. This row is the
+// only link between them, since this page intentionally doesn't use AppShell.
+
+const ADMIN_NAV_LINKS = [
+  { href: "/founder-words", label: "Founder words" },
+  { href: "/pitch-practice", label: "Pitch practice" },
+  { href: "/social-skills", label: "Social skills" },
+  { href: "/saved-sessions", label: "Saved sessions" },
+  { href: "/analytics", label: "Visitor analytics" },
+];
+
+function AdminNav() {
+  return (
+    <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <nav
+        className="flex flex-wrap items-center gap-2 px-6 py-2.5"
+        style={{ maxWidth: "72rem", margin: "0 auto" }}
+      >
+        <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+          Overview
+        </span>
+        {ADMIN_NAV_LINKS.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-400 transition hover:border-white/20 hover:text-slate-200"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function StatCard({
@@ -464,6 +502,7 @@ export default async function AdminPage() {
             Admin
           </span>
         </div>
+        <AdminNav />
       </header>
 
       <main style={{ maxWidth: "72rem", margin: "0 auto", padding: "2rem 1.5rem", display: "flex", flexDirection: "column", gap: "2rem" }}>
