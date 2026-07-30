@@ -1086,7 +1086,7 @@ export const POSTS: Post[] = [
     title: "How to Disagree Well: Why Arguing Is a Skill Almost Nobody Practices",
     description:
       "Most people handle disagreement in one of two broken ways: they avoid it, or they try to win it on volume. Structured argument is a trainable skill — and almost nobody trains it.",
-    date: "2025-09-25",
+    date: "2026-07-16",
     readTime: "6 min read",
     category: "Critical Thinking",
     excerpt:
@@ -1168,7 +1168,7 @@ export const POSTS: Post[] = [
     title: "You Read the Report. So Why Did Your Mind Go Blank When They Asked What You Think?",
     description:
       "You did the reading. You understood it. Then someone asked what you thought and the answer wasn't there. The gap between reading a document and being able to speak on it is bigger than most people realise.",
-    date: "2025-10-02",
+    date: "2026-07-23",
     readTime: "5 min read",
     category: "Career & Confidence",
     excerpt:
@@ -1229,7 +1229,7 @@ export const POSTS: Post[] = [
     title: "Why Talking to an AI Can Actually Make You Better at Talking to Humans",
     description:
       "It sounds backwards — practicing a human skill on something that isn't human. But the research on how expertise is actually built explains exactly why it works, and why 'just talk to more people' rarely does.",
-    date: "2025-10-09",
+    date: "2026-07-30",
     readTime: "6 min read",
     category: "Learning Science",
     excerpt:
