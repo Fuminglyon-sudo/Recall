@@ -6,7 +6,7 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
-  text: z.string().min(1),
+  text: z.string().min(1).max(4000),
 });
 
 export async function POST(request: Request) {

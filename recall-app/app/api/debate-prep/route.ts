@@ -5,9 +5,9 @@ import { getCurrentUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
-  motion: z.string().min(5),
+  motion: z.string().min(5).max(600),
   position: z.enum(["for", "against"]),
-  opponentType: z.string().min(1),
+  opponentType: z.string().min(1).max(100),
 });
 
 export async function POST(req: NextRequest) {

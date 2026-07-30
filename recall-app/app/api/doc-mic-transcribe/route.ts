@@ -33,6 +33,13 @@ export async function POST(req: NextRequest) {
     if (!(audio instanceof File)) {
       return NextResponse.json({ error: "No audio provided." }, { status: 400 });
     }
+    // Client-supplied Content-Type is spoofable, so this isn't a hard
+    // guarantee — but combined with the size cap, auth, and rate limit
+    // above, it stops the easy case of an arbitrary file being forwarded to
+    // a paid third-party API on every request.
+    if (audio.type && !audio.type.startsWith("audio/")) {
+      return NextResponse.json({ error: "File must be an audio recording." }, { status: 400 });
+    }
     if (audio.size > MAX_CHUNK_BYTES) {
       return NextResponse.json({ error: "Audio chunk too large." }, { status: 413 });
     }

@@ -6,15 +6,16 @@ import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   app: z.enum(["japa-reality", "sharpen", "both"]),
-  scenario: z.string().min(10),
+  scenario: z.string().min(10).max(2000),
   messages: z
     .array(
       z.object({
         role: z.enum(["interviewer", "founder"]),
-        content: z.string().min(1),
+        content: z.string().min(1).max(4000),
       })
     )
-    .min(2),
+    .min(2)
+    .max(20),
   exchangeCount: z.number().int().min(1),
   forceEnd: z.boolean().optional(),
 });

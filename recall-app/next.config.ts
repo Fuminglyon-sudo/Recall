@@ -14,7 +14,7 @@ const ContentSecurityPolicy = [
   "default-src 'self'",
   scriptSrc,
   "style-src 'self' 'unsafe-inline'",                // Tailwind inline styles
-  "img-src 'self' data: https://lh3.googleusercontent.com https://lh4.googleusercontent.com",
+  "img-src 'self' data:",
   "font-src 'self'",
   // google-analytics.com/analytics.google.com receive gtag.js's collect
   // (pageview/event) beacons; GA4 routes to region-specific subdomains,

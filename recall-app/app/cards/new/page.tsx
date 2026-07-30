@@ -10,12 +10,17 @@ import { createDeck } from "../../decks/actions";
 import { DraftCardForm } from "@/components/draft-card-form";
 import { isDatabaseReady } from "@/lib/db-ready";
 import { FounderBatchGenerator } from "@/components/founder-batch-generator";
-import { getCurrentUserId, scopedUserId } from "@/lib/session";
+import { getCurrentUserId, isAdmin, scopedUserId } from "@/lib/session";
 
 export default async function NewCardPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const userId = await getCurrentUserId();
   if (!userId) redirect("/login");
   const uid = scopedUserId(userId);
+  // FounderBatchGenerator's own API (/api/founder-cards) is admin-only —
+  // rendering it for every signed-in user just gave regular users a fully
+  // built form that silently 401s on submit. Match the UI to what the API
+  // already enforces.
+  const admin = await isAdmin();
 
   const ready = await isDatabaseReady();
   const decks = ready ? await prisma.deck.findMany({ where: { userId: uid }, orderBy: { createdAt: "asc" } }).catch(() => []) : [];
@@ -77,7 +82,7 @@ export default async function NewCardPage({ searchParams }: { searchParams: Prom
           </div>
         </section>
 
-        {decks.length > 0 ? <FounderBatchGenerator decks={decks} saveAction={createFounderBatchCards} /> : null}
+        {admin && decks.length > 0 ? <FounderBatchGenerator decks={decks} saveAction={createFounderBatchCards} /> : null}
       </div>
     </AppShell>
   );

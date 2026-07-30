@@ -7,15 +7,15 @@ import { checkRateLimit } from "@/lib/rate-limit";
 const schema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("scenario"),
-    word: z.string().min(1),
-    definition: z.string().min(1),
+    word: z.string().min(1).max(200),
+    definition: z.string().min(1).max(1000),
   }),
   z.object({
     action: z.literal("grade"),
-    word: z.string().min(1),
-    definition: z.string().min(1),
-    scenario: z.string().min(1),
-    userSentence: z.string().min(2),
+    word: z.string().min(1).max(200),
+    definition: z.string().min(1).max(1000),
+    scenario: z.string().min(1).max(2000),
+    userSentence: z.string().min(2).max(1000),
   }),
 ]);
 

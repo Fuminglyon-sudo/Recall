@@ -6,8 +6,8 @@ import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
   product: z.enum(["japa-reality", "sharpen", "custom"]),
-  context: z.string().min(8),
-  deckName: z.string().min(1),
+  context: z.string().min(8).max(4000),
+  deckName: z.string().min(1).max(200),
 });
 
 export async function POST(request: Request) {

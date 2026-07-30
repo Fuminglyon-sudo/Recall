@@ -3,7 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 function escapeCell(value: string | null | undefined): string {
-  const s = value ?? "";
+  let s = value ?? "";
+  // CSV/formula injection: a cell starting with =, +, -, or @ gets evaluated
+  // as a formula by Excel/Sheets/LibreOffice on open. A card front like
+  // "=cmd|'/c calc'!A1" would otherwise execute on whoever opens the export.
+  // A leading apostrophe is the standard neutralizer — spreadsheet apps
+  // treat it as "force text" and don't render it.
+  if (/^[=+\-@]/.test(s)) {
+    s = `'${s}`;
+  }
   // Wrap in quotes and escape inner quotes if the cell contains commas, quotes, or newlines
   if (s.includes(",") || s.includes('"') || s.includes("\n")) {
     return `"${s.replace(/"/g, '""')}"`;

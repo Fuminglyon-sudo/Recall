@@ -22,6 +22,8 @@ export async function sendEmail({ to, subject, html, text }: { to: string; subje
   try {
     await resend.emails.send({ from: FROM, to, subject, html, text });
   } catch (err) {
-    console.error("EMAIL_SEND_FAILED", { to, subject, err });
+    // Recipient address deliberately left out of the log line — no reason
+    // for a delivery-failure log to accumulate PII by default.
+    console.error("EMAIL_SEND_FAILED", { subject, err });
   }
 }

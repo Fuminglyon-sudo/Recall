@@ -31,8 +31,20 @@ async function getClientIp(): Promise<string> {
   );
 }
 
+// `from` comes straight from the query string of an unauthenticated request
+// and gets echoed into the login form, then used as a post-login redirect
+// target. next/navigation's redirect() accepts absolute URLs, so without
+// this check a link like /login?from=https://evil.example would send a
+// successfully-authenticated admin off-site right after they type in real
+// credentials — an open-redirect phishing setup. Only same-origin relative
+// paths are allowed through; same guard already used in app/decks/actions.ts.
+function safeRedirectTarget(from: string | null): string {
+  if (from && from.startsWith("/") && !from.startsWith("//")) return from;
+  return "/";
+}
+
 export async function loginAction(formData: FormData) {
-  const from = (formData.get("from") as string | null) ?? "/";
+  const from = safeRedirectTarget(formData.get("from") as string | null);
   const ip = await getClientIp();
 
   if (isRateLimited(ip)) {
@@ -59,7 +71,7 @@ export async function loginAction(formData: FormData) {
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
-  redirect(from || "/");
+  redirect(from);
 }
 
 export async function logoutAction() {

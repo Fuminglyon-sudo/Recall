@@ -6,8 +6,8 @@ import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
-  front: z.string().min(1),
-  deckId: z.string().min(1),
+  front: z.string().min(1).max(500),
+  deckId: z.string().min(1).max(100),
 });
 
 export async function POST(request: Request) {

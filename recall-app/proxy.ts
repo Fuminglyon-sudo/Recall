@@ -26,6 +26,16 @@ export async function proxy(req: NextRequest) {
     // Princess is the anonymous homepage chat widget — it has no session
     // to check by design, and rate-limits by IP inside the route itself.
     pathname === "/api/princess-chat" ||
+    // Vercel Cron calls this with a Bearer CRON_SECRET, never a session
+    // cookie — without this, proxy rejects every cron invocation with a 401
+    // before the route's own token check ever runs, silently disabling the
+    // daily due-card push job.
+    pathname === "/api/push/send" ||
+    // Shared-deck links are meant to work for signed-out visitors — the page
+    // itself renders a public preview and a "sign in to add this" prompt
+    // when there's no session. Without this, every shared link just bounces
+    // straight to /login instead of showing the deck.
+    pathname.startsWith("/decks/shared/") ||
     pathname === "/sw.js" ||
     pathname === "/favicon.ico" ||
     pathname === "/favicon.svg" ||
@@ -37,7 +47,11 @@ export async function proxy(req: NextRequest) {
     // /opengraph-image and /landing/opengraph-image), not just the root.
     /\/(opengraph-image|twitter-image)$/.test(pathname) ||
     // All static file types served from /public/ — images, fonts, etc.
-    /\.(png|jpe?g|webp|gif|svg|ico|woff2?|ttf|eot|mp4|mp3|pdf|txt|xml)$/i.test(pathname)
+    // Excludes /api/ so a future API route can never accidentally become
+    // public just because its path happens to end in one of these
+    // extensions (e.g. a PDF/image export endpoint) — actual API responses
+    // are never real files in /public/, so this exclusion costs nothing.
+    (!pathname.startsWith("/api/") && /\.(png|jpe?g|webp|gif|svg|ico|woff2?|ttf|eot|mp4|mp3|pdf|txt|xml)$/i.test(pathname))
   ) {
     return NextResponse.next();
   }
