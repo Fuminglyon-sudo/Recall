@@ -9,7 +9,7 @@ import { ReadingProgressBar } from "@/components/reading-progress-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { BlogContentGate } from "@/components/blog-content-gate";
 import { MarketingFooter } from "@/components/marketing-footer";
-import { POSTS, getPost, formatDate } from "../data";
+import { POSTS, getPost, getPostsNewestFirst, formatDate } from "../data";
 import { POST_IMAGES } from "../images";
 
 export function generateStaticParams() {
@@ -57,9 +57,10 @@ export default async function BlogPostPage({
   const post = getPost(slug);
   if (!post) notFound();
 
-  const postIndex = POSTS.findIndex((p) => p.slug === slug);
-  const prev = POSTS[postIndex - 1] ?? null;
-  const next = POSTS[postIndex + 1] ?? null;
+  const orderedPosts = getPostsNewestFirst();
+  const postIndex = orderedPosts.findIndex((p) => p.slug === slug);
+  const prev = orderedPosts[postIndex - 1] ?? null;
+  const next = orderedPosts[postIndex + 1] ?? null;
   const image = POST_IMAGES[slug];
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sorosokeai.com";
 

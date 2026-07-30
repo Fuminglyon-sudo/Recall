@@ -1291,6 +1291,14 @@ export function getPost(slug: string): Post | undefined {
   return POSTS.find((p) => p.slug === slug);
 }
 
+// POSTS is authored oldest-first (new entries just get appended). Display
+// order should read newest-first, so every page that lists or navigates
+// between posts pulls from this single sorted view instead of re-deriving
+// its own order and risking the listing and prev/next getting out of sync.
+export function getPostsNewestFirst(): Post[] {
+  return [...POSTS].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
 export function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-GB", {
     day: "numeric",

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
-import { POSTS, formatDate } from "./data";
+import { getPostsNewestFirst, formatDate, type Post } from "./data";
 import { POST_IMAGES, CATEGORY_STYLES } from "./images";
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  const [featured, ...rest] = POSTS;
+  const [featured, ...rest] = getPostsNewestFirst();
 
   return (
     <div className="min-h-screen bg-slate-950 text-white antialiased flex flex-col">
@@ -183,7 +183,7 @@ function CategoryBadge({ category }: { category: string }) {
   );
 }
 
-function PostCard({ post }: { post: (typeof POSTS)[number] }) {
+function PostCard({ post }: { post: Post }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
