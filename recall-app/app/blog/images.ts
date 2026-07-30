@@ -16,6 +16,9 @@ export const POST_IMAGES: Record<string, string> = {
   "how-to-make-new-words-stick":        "/scenerios/lab-coffee.webp",
   "ten-minutes-to-sharper-communication":"/dashboard.png",
   "what-your-voice-reveals":            "/scenerios/speak-up-interview-intro.webp",
+  "how-to-disagree-well":               "/scenerios/lab-conference.webp",
+  "why-you-freeze-when-asked-what-you-think": "/scenerios/lab-industry-event.webp",
+  "why-practicing-with-ai-works":       "/scenerios/lab-gym.webp",
 };
 
 export const CATEGORY_STYLES: Record<string, { color: string; bg: string }> = {
@@ -26,4 +29,5 @@ export const CATEGORY_STYLES: Record<string, { color: string; bg: string }> = {
   "Speaking Confidence": { color: "#fda4af", bg: "rgba(253,164,175,0.12)" },
   "Career & Confidence": { color: "#67e8f9", bg: "rgba(103,232,249,0.12)" },
   "Conversation Skills": { color: "#86efac", bg: "rgba(134,239,172,0.12)" },
+  "Critical Thinking":   { color: "#fb923c", bg: "rgba(251,146,60,0.12)"  },
 };

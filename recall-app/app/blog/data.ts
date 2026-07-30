@@ -186,7 +186,7 @@ export const POSTS: Post[] = [
       },
       {
         type: "p",
-        text: "Within one hour of learning something new, you'll forget roughly 50% of it. Within 24 hours, that figure rises to around 70%. By a week later, without any review, you'll retain less than 25% of what you originally learned.",
+        text: "Ebbinghaus's own data showed retention dropping to around 44% after just one hour — already more than half gone. By 24 hours it was down to roughly a third. By six days later, without any review, retention had settled around 25% of what he'd originally learned.",
       },
       {
         type: "p",
@@ -401,7 +401,7 @@ export const POSTS: Post[] = [
       },
       {
         type: "p",
-        text: "Research on this is fairly settled. Linguist Herbert Clark found that fillers function as 'speaking turns' — vocal signals that keep the floor while the speaker processes. They're not meaningless sounds. They're live negotiation with your listener. The problem is that in professional contexts — interviews, presentations, pitches — they erode perceived authority at a disproportionate rate.",
+        text: "Research on this is fairly settled. Linguists Herbert Clark and Jean Fox Tree analysed large corpora of spontaneous speech and found that 'uh' and 'um' aren't random noise — they're used systematically to announce an upcoming delay, a shorter one for 'uh' and a longer one for 'um,' often deliberately, to hold the floor while the speaker keeps thinking. They're not meaningless sounds. They're live negotiation with your listener. The problem is that in professional contexts — interviews, presentations, pitches — they erode perceived authority at a disproportionate rate.",
       },
       {
         type: "h2",
@@ -816,7 +816,7 @@ export const POSTS: Post[] = [
     content: [
       {
         type: "p",
-        text: "In 1978, psychologists Pauline Clance and Suzanne Imes described a phenomenon they were observing in high-achieving women: a persistent belief that their success was undeserved, and that they were at risk of being exposed as frauds. They called it the imposter phenomenon. Four decades later, research suggests it affects as many as 70% of professionals at some point in their career — regardless of gender, seniority, or field.",
+        text: "In 1978, psychologists Pauline Clance and Suzanne Imes described a phenomenon they were observing in high-achieving women: a persistent belief that their success was undeserved, and that they were at risk of being exposed as frauds. They called it the imposter phenomenon. A widely cited 2011 review by Sakulku and Alexander found it touches roughly 70% of people at some point in their lives — regardless of gender, seniority, or field.",
       },
       {
         type: "p",
@@ -1028,7 +1028,7 @@ export const POSTS: Post[] = [
     content: [
       {
         type: "p",
-        text: "A widely cited breakdown of communication attributes 55% of impression to body language, 38% to vocal tone, and 7% to the actual words. The original Mehrabian research behind this figure is often overapplied — it was conducted under specific conditions that don't generalise to all conversation — but the underlying finding holds: when verbal and nonverbal signals conflict, listeners trust the nonverbal ones. And your voice is the most powerful nonverbal signal you deliver in any setting where you can't be seen.",
+        text: "A widely cited breakdown of communication attributes 55% of impression to facial expression, 38% to vocal tone, and 7% to the actual words. That figure comes from Albert Mehrabian's 1960s research on how listeners judge feelings and attitudes from photographs of frozen facial expressions — a narrow setup that gets stretched into a general claim about all communication far more often than the data supports, something Mehrabian himself spent decades trying to correct. But the underlying finding holds up outside that narrow setup too: when verbal and nonverbal signals conflict, listeners trust the nonverbal ones. And your voice is the most powerful nonverbal signal you deliver in any setting where you can't be seen.",
       },
       {
         type: "h2",
@@ -1078,6 +1078,210 @@ export const POSTS: Post[] = [
       {
         type: "p",
         text: "What makes this hard is that your own voice sounds different to you than it does to your listeners. You experience it partially through bone conduction; they hear it entirely through air. This is why real feedback — on pace, on uptalk, on trailing off — is more useful than most people's self-assessment. You need to hear what others hear, and adjust from that signal rather than from your internal sense of how you're doing.",
+      },
+    ],
+  },
+  {
+    slug: "how-to-disagree-well",
+    title: "How to Disagree Well: Why Arguing Is a Skill Almost Nobody Practices",
+    description:
+      "Most people handle disagreement in one of two broken ways: they avoid it, or they try to win it on volume. Structured argument is a trainable skill — and almost nobody trains it.",
+    date: "2025-09-25",
+    readTime: "6 min read",
+    category: "Critical Thinking",
+    excerpt:
+      "Most people handle disagreement in one of two broken ways: they avoid it, or they try to win it on volume. Structured argument is a trainable skill — and almost nobody trains it.",
+    content: [
+      {
+        type: "p",
+        text: "Most people handle disagreement one of two ways. They avoid it — change the subject, nod along, save the real objection for the walk home. Or they push through it badly — raise their voice, repeat the same point louder, treat 'winning' the exchange as more important than being right. Neither is a skill. Both are what happens by default when nobody's ever practiced the alternative.",
+      },
+      {
+        type: "h2",
+        text: "Why an Untested Opinion Is a Fragile One",
+      },
+      {
+        type: "p",
+        text: "You don't find the weak point in your own reasoning by thinking about it quietly. You find it when someone else pushes on it — asks the question you hadn't considered, points out the case your rule doesn't cover, holds you to the actual claim instead of the vaguer version you meant. That pressure is uncomfortable, which is exactly why most people avoid it. But it's also the only thing that reveals where an argument actually breaks.",
+      },
+      {
+        type: "p",
+        text: "This is the same reason the stakes of practicing disagreement in real life are so high that most people never get real reps at it. You don't want to find the hole in your reasoning during the actual meeting, the actual disagreement with your partner, the actual pushback from your boss. But if that's the only place you ever get pushed on your thinking, you're always testing it live, for the first time, with something real on the line.",
+      },
+      {
+        type: "h2",
+        text: "The Four Ways an Argument Actually Fails",
+      },
+      {
+        type: "p",
+        text: "Most weak arguments fail in one of a small number of recognisable ways. Learning to spot these — in your own reasoning as much as anyone else's — is most of what separates a sharp arguer from a loud one.",
+      },
+      {
+        type: "ul",
+        items: [
+          "Ad hominem — attacking the person instead of the claim. It feels like a win in the moment and settles nothing.",
+          "Strawmanning — arguing against a weaker, distorted version of what the other person actually said, because the real version is harder to beat.",
+          "False dichotomy — presenting only two options when more exist, so that rejecting one forces acceptance of the other.",
+          "Appeal to emotion — substituting how something feels for whether it's true, especially under time pressure or in front of an audience.",
+        ],
+      },
+      {
+        type: "p",
+        text: "None of these require bad faith. They're the default failure modes your reasoning slips into under pressure, when the easier move is available and the harder, more honest one takes more effort to construct.",
+      },
+      {
+        type: "h2",
+        text: "Steelmanning: Arguing Against the Best Version of the Other Side",
+      },
+      {
+        type: "p",
+        text: "Strawmanning is easy because weak versions of an opposing argument are easy to beat. Steelmanning is the opposite habit: taking the strongest, most charitable version of the position you disagree with, and engaging with that instead. If you can still make your case against the best version of the counterargument, your case is actually strong. If you can only win against the weak version, you've learned something important about your own position — before someone else finds it for you.",
+      },
+      {
+        type: "p",
+        text: "This is harder than it sounds, because it requires genuinely understanding a position you don't hold well enough to argue it convincingly yourself. That effort is exactly what builds the skill. It's also what separates someone who's actually reasoned through a topic from someone who's just picked a side and is defending it.",
+      },
+      {
+        type: "h2",
+        text: "What Structured Practice Actually Builds",
+      },
+      {
+        type: "p",
+        text: "Repeated, structured disagreement builds three things that don't show up any other way. Composure — the ability to stay clear and specific when someone is actively challenging you, instead of getting defensive or going quiet. The ability to concede a point gracefully — noticing when the other side is right about something specific, saying so, and continuing to make your broader case, instead of treating every concession as total defeat. And sharper reasoning — because an argument that's been stress-tested against real pushback, repeatedly, is simply better constructed than one that's only ever been rehearsed in your own head.",
+      },
+      {
+        type: "h2",
+        text: "How to Actually Practice This",
+      },
+      {
+        type: "p",
+        text: "Reading about argumentation doesn't build the skill — the skill is in producing an argument out loud, under real pushback, and adjusting in real time when the pushback lands. The most useful version of practice has an opponent who genuinely disagrees, argues in good faith, and doesn't back down just because you sound confident.",
+      },
+      {
+        type: "p",
+        text: "Formal debate clubs have known this for a long time — that's why competitive debate assigns you a side, gives you an opponent, and puts a clock on it. What's changed is that you no longer need a club, a partner, or a scheduled event to get that rep. Picking a motion, taking a side, and arguing it against something that pushes back honestly is now something you can do alone, in ten minutes, as often as you want. The reps are what build the skill. The skill is what makes the next real disagreement — the one that actually matters — feel like something you're ready for.",
+      },
+    ],
+  },
+  {
+    slug: "why-you-freeze-when-asked-what-you-think",
+    title: "You Read the Report. So Why Did Your Mind Go Blank When They Asked What You Think?",
+    description:
+      "You did the reading. You understood it. Then someone asked what you thought and the answer wasn't there. The gap between reading a document and being able to speak on it is bigger than most people realise.",
+    date: "2025-10-02",
+    readTime: "5 min read",
+    category: "Career & Confidence",
+    excerpt:
+      "You did the reading. You understood it. Then someone asked what you thought and the answer wasn't there. The gap between reading a document and being able to speak on it is bigger than most people realise.",
+    content: [
+      {
+        type: "p",
+        text: "You read the report before the meeting. All of it, carefully, maybe twice. You understood it — the numbers made sense, the argument held together, you had opinions about the weaker parts. Then someone in the meeting turned to you and asked what you thought, and what came out was three vague sentences that didn't say what you actually thought at all.",
+      },
+      {
+        type: "p",
+        text: "This isn't a sign you didn't prepare. It's a sign you prepared for the wrong task.",
+      },
+      {
+        type: "h2",
+        text: "Reading Is Comprehension. Speaking Is Production.",
+      },
+      {
+        type: "p",
+        text: "These are different cognitive processes, and confusing them is the whole problem. When you read something, you're recognising — matching words on a page to meaning you already have some access to. It feels like understanding, and it is a kind of understanding. But recognition and recall are not the same operation. Recall is what happens when the page is closed and someone asks you to reconstruct your view from scratch, in real time, out loud, while they're watching.",
+      },
+      {
+        type: "p",
+        text: "This is the same passive-versus-active gap that shows up in vocabulary — you can recognise hundreds of words you'd never spontaneously produce in a sentence. A document works the same way. You can follow an argument fluently on the page and still have nothing ready to say about it the moment you're asked to produce a view rather than just receive one.",
+      },
+      {
+        type: "h2",
+        text: "Why Meetings Make This Worse",
+      },
+      {
+        type: "p",
+        text: "Reading has no time pressure. You can pause, re-read a paragraph, sit with a thought before forming it. A meeting removes all of that. You have to synthesise your read into a position and produce it verbally, on the spot, while simultaneously tracking what the room is doing and managing how you're coming across. That's three cognitive tasks running at once, and the one that gets sacrificed first is usually the actual content — the specific, well-formed opinion you had while reading quietly at your desk twenty minutes earlier.",
+      },
+      {
+        type: "h2",
+        text: "The Two Different Skills a Meeting Actually Demands",
+      },
+      {
+        type: "p",
+        text: "Being useful in a meeting about a document you've read requires two distinct things. The first is summarising — being able to state, in your own words and in a few sentences, what the document actually says and why it matters. The second is holding your ground — being able to expand, defend, or revise your read when someone pushes back on it, asks a question you hadn't considered, or disagrees with your take. Most people can do a rough version of the first if given enough silence. Almost nobody has practiced the second, because it only comes up in the moment it's needed, which is precisely the worst time to discover you can't do it.",
+      },
+      {
+        type: "h2",
+        text: "What Actually Fixes This",
+      },
+      {
+        type: "p",
+        text: "More reading doesn't fix it — you can comprehend a document perfectly and still freeze when asked to produce a view on it live. What closes the gap is retrieval practice applied to the thing you actually have to do: after reading something real, close it, and say out loud — to no one, to yourself, to anything that will listen — what you thought, why, and what you'd push back on if someone disagreed. Then imagine the follow-up question and answer that too.",
+      },
+      {
+        type: "p",
+        text: "It feels unnecessary the first few times, because you already know you understood the document. That's exactly the false signal this fixes. Comprehension was never the missing piece. Production — under mild pressure, out loud, before the real moment arrives — is the rep nobody does, and it's the one that actually transfers to the meeting.",
+      },
+    ],
+  },
+  {
+    slug: "why-practicing-with-ai-works",
+    title: "Why Talking to an AI Can Actually Make You Better at Talking to Humans",
+    description:
+      "It sounds backwards — practicing a human skill on something that isn't human. But the research on how expertise is actually built explains exactly why it works, and why 'just talk to more people' rarely does.",
+    date: "2025-10-09",
+    readTime: "6 min read",
+    category: "Learning Science",
+    excerpt:
+      "It sounds backwards — practicing a human skill on something that isn't human. But the research on how expertise is actually built explains exactly why it works, and why 'just talk to more people' rarely does.",
+    content: [
+      {
+        type: "p",
+        text: "It sounds like it shouldn't work. Practicing a fundamentally human skill — reading a room, holding your ground under pushback, thinking on your feet — by talking to something that isn't human. The obvious objection is that you should just go talk to more actual people. That advice isn't wrong, exactly. It's just missing what makes practice effective in the first place.",
+      },
+      {
+        type: "h2",
+        text: "What Deliberate Practice Actually Requires",
+      },
+      {
+        type: "p",
+        text: "Psychologist Anders Ericsson's research on expert performance — the work behind most of what's understood today about how skill is actually built — found that raw experience isn't what separates experts from everyone else. Two people can spend the same number of hours doing something and end up at very different skill levels, because time on task isn't the active ingredient. What Ericsson called deliberate practice has four specific components: a clear, specific goal for what's being improved; tasks pitched right at the edge of current ability, hard enough to require real effort, achievable enough that progress is possible; and immediate feedback that lets you correct errors while the attempt is still fresh in memory.",
+      },
+      {
+        type: "p",
+        text: "Most real-world conversation has none of these by default. You don't choose the difficulty. You rarely get honest, specific feedback on what actually went wrong. And the goal of a real conversation is usually the conversation itself, not your own improvement.",
+      },
+      {
+        type: "h2",
+        text: "Why 'Just Talk to More People' Doesn't Meet the Bar",
+      },
+      {
+        type: "p",
+        text: "Real conversations are valuable, but they're a poor training environment for a specific reason: the cost of failure is real, so you avoid the exact moves that would teach you the most. You won't try a riskier rhetorical approach on your actual boss. You won't deliberately let an actual first date go quiet just to practice recovering from it. You won't ask your actual interviewer to challenge your weakest answer twice. The stakes that make real conversations matter are the same stakes that stop you from experimenting inside them — which means the moments with the highest learning value are the ones you're least likely to attempt.",
+      },
+      {
+        type: "p",
+        text: "There's also the feedback problem. Most people, most of the time, don't tell you clearly what didn't land. They soften it, or they don't mention it at all, or they decide silently that the conversation just didn't go anywhere and move on. You're left guessing what to fix.",
+      },
+      {
+        type: "h2",
+        text: "What High-Stakes Fields Already Figured Out",
+      },
+      {
+        type: "p",
+        text: "This is exactly why simulation is standard training in fields where the cost of a real mistake is severe. Pilots train on flight simulators specifically because a simulator lets them fail at handling an engine failure a hundred times before they ever have to handle a real one. Surgeons rehearse procedures on simulated tissue before a real patient is on the table. The simulation isn't a lesser substitute for the real thing — it's the only environment where you can deliberately manufacture the exact difficulty you need, fail safely, get told precisely what went wrong, and try again immediately. That combination barely exists anywhere in ordinary life.",
+      },
+      {
+        type: "h2",
+        text: "The Missing Ingredient in Solo Practice: Reaction",
+      },
+      {
+        type: "p",
+        text: "Rehearsing alone — in the mirror, in your head, into a recording — solves part of the problem but not all of it. It gives you a controllable, low-stakes environment, but it strips out the other half of what makes conversation hard: the unpredictable reaction. Real conversation is monitoring and responding to someone else in real time, and that channel goes completely silent when you're the only one in the room.",
+      },
+      {
+        type: "p",
+        text: "This is the specific gap AI role-play closes. It keeps the low-stakes, repeatable, fail-safely structure of solo practice, but restores the missing half: something that pushes back unpredictably, asks the follow-up question you didn't prepare for, disagrees with your reasoning, and tells you afterward — specifically, not vaguely — where the argument was strong and where it wasn't. That's not a lesser version of real practice. Measured against what Ericsson's research says actually builds skill — a clear goal, calibrated difficulty, and real feedback — it's closer to the real thing than most real conversations are.",
       },
     ],
   },
