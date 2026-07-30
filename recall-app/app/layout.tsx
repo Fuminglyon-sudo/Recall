@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import { SwRegister } from "@/components/sw-register";
 import { PwaInstallBanner } from "@/components/pwa-install-banner";
+import { VisitTracker } from "@/components/visit-tracker";
 import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GA_MEASUREMENT_ID } from "@/lib/analytics";
@@ -112,6 +113,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${displayFont.variable} dark h-full`}>
       <body className="min-h-full bg-slate-950 text-slate-100 antialiased">
+        {/* Skipped outside production so local dev and preview traffic
+            doesn't pollute visit counts, same as the GA snippet below. */}
+        {process.env.NODE_ENV === "production" ? <VisitTracker /> : null}
+
         {/* Google tag (gtag.js) — skipped outside production so local dev
             and preview traffic doesn't pollute analytics. */}
         {process.env.NODE_ENV === "production" ? (

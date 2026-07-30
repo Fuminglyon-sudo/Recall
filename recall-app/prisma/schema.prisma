@@ -253,6 +253,21 @@ model DebateSession {
   @@index([createdAt])
 }
 
+// One row per full page load, anonymous and unauthenticated by design — this
+// is the only way to see where signed-out visitors are coming from. Only the
+// coarse location Vercel's edge network already resolves is stored, never
+// the raw IP itself.
+model VisitLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  country   String?
+  region    String?
+  city      String?
+
+  @@index([createdAt])
+  @@index([country])
+}
+
 // ─── Doc Lab ───────────────────────────────────────────────────────────────
 // One graded pass over a document: what the user said they would raise, and
 // what the coach came back with.

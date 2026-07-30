@@ -26,6 +26,10 @@ export async function proxy(req: NextRequest) {
     // Princess is the anonymous homepage chat widget — it has no session
     // to check by design, and rate-limits by IP inside the route itself.
     pathname === "/api/princess-chat" ||
+    // Fired by every visitor on every full page load, signed in or not —
+    // the whole point is capturing visitors before they ever have a
+    // session. Rate-limits by IP inside the route itself.
+    pathname === "/api/analytics/visit" ||
     // Vercel Cron calls this with a Bearer CRON_SECRET, never a session
     // cookie — without this, proxy rejects every cron invocation with a 401
     // before the route's own token check ever runs, silently disabling the

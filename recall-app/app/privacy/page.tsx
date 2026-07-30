@@ -79,6 +79,12 @@ export default function PrivacyPage() {
                 We may collect anonymised usage information (pages visited, feature usage) to understand
                 how the product is used and to improve it. This data is not linked to your identity.
               </p>
+              <p><span className="text-slate-300 font-medium">Approximate location.</span>{" "}
+                On each visit, we record a coarse location (country, region, and city) resolved by our
+                hosting provider from the request — never the IP address itself. This is used only in
+                aggregate, to understand which regions visitors come from, and is not linked to your
+                identity or account.
+              </p>
             </div>
           </section>
 

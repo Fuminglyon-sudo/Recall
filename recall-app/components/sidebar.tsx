@@ -32,6 +32,7 @@ import {
   Gavel,
   FileSearch,
   ChevronDown,
+  BarChart3,
 } from "lucide-react";
 
 const CORE_LINKS = [
@@ -63,6 +64,7 @@ const ADMIN_LINKS = [
   { href: "/social-skills", label: "Social skills", icon: Users, exact: false },
   { href: "/saved-sessions", label: "Saved sessions", icon: BookmarkCheck, exact: false },
   { href: "/founder-words", label: "Founder words", icon: Sparkles, exact: false },
+  { href: "/analytics", label: "Visitor analytics", icon: BarChart3, exact: false },
 ];
 
 function NavLink({
