@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { PRINCESS_SYSTEM_PROMPT, PRINCESS_FALLBACK_REPLY } from "./princess-knowledge";
 import { formatWeakWords, type WeakWord } from "./weak-words";
+import { buildPhaseInstruction } from "./debate-opponents";
 
 // Prompt fragments that weave a reviewer's weak vocabulary into a practice
 // session. `steer` goes in the character's live-reply prompt (subtly create
@@ -868,7 +869,9 @@ ${input.opponentPrompt}
 Debate so far:
 ${history}
 
-Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and specific — react to exactly what they just said. Push back hard but stay on topic. Do not concede the whole argument, but you may acknowledge a point if it genuinely lands.
+Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and specific — react to exactly what they just said, then advance your own case for your side too — you're not just poking holes, you have a position of your own to argue. Concede a specific point only when it is well-supported and hard to refute — say so plainly in one clause, then pivot back to your case. Never concede your entire position.
+
+${buildPhaseInstruction(input.exchangeCount)}
 
 Also rate how the audience is responding to the debater's most recent argument. audienceReaction is an integer from -3 to 3:
   -3 = audience clearly swaying against the debater (weak, confused, or fallacious argument)
@@ -918,6 +921,7 @@ export function streamDebateReply(input: {
   position: "for" | "against";
   opponentPrompt: string;
   messages: DebateMessage[];
+  exchangeCount: number;
 }) {
   if (!client) return null;
 
@@ -937,7 +941,9 @@ ${input.opponentPrompt}
 Debate so far:
 ${history}
 
-Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and specific — react to exactly what they just said. Push back hard but stay on topic. Do not concede the whole argument, but you may acknowledge a point if it genuinely lands.
+Respond now as the opponent. Keep your reply to 2-4 sentences. Be direct and specific — react to exactly what they just said, then advance your own case for your side too — you're not just poking holes, you have a position of your own to argue. Concede a specific point only when it is well-supported and hard to refute — say so plainly in one clause, then pivot back to your case. Never concede your entire position.
+
+${buildPhaseInstruction(input.exchangeCount)}
 
 After your rebuttal, on its own final line, write exactly ⟦REACTION:n⟧ where n is an integer from -3 to 3 rating how the audience received the debater's most recent argument (-3 = clearly swaying against them, 0 = neutral, 3 = clearly persuaded).`;
 

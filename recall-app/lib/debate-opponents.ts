@@ -34,3 +34,19 @@ const DIFFICULTY_MODIFIER: Record<DebateDifficulty, string> = {
 export function buildOpponentPrompt(id: OpponentId, difficulty: DebateDifficulty): string {
   return OPPONENT_PROMPTS[id] + DIFFICULTY_MODIFIER[difficulty];
 }
+
+// Keyed by how many debater turns have happened so far (i.e. which of their
+// turns you're replying to). Without this, the opponent reacted identically
+// on exchange 1 and exchange 4 — same "push back hard" instruction every
+// time, no structure. These give each reply a distinct job so the debate
+// actually escalates instead of looping the same move.
+const PHASE_INSTRUCTIONS: Record<number, string> = {
+  1: "This is your first reply — the debater just made their opening statement. Before countering them, spend one sentence stating your own case for your side. You need a position on record, not just objections to theirs.",
+  2: "The debater just tried to back up their opening with evidence or an example. Attack that specific evidence or example directly — don't fall back on generic skepticism.",
+  3: "The debater just challenged your position directly. If their challenge is genuinely strong, concede the specific point in one clause, then pivot straight back to why your overall case still stands. If it's weak, say exactly why it fails.",
+  4: "The debater is cross-examining you — they likely asked you a direct question or tried to expose a contradiction. Answer whatever they asked directly and specifically, in your first sentence, before adding anything else. Dodging a direct question is the fastest way to lose credibility.",
+};
+
+export function buildPhaseInstruction(exchangeCount: number): string {
+  return PHASE_INSTRUCTIONS[exchangeCount] ?? PHASE_INSTRUCTIONS[4];
+}

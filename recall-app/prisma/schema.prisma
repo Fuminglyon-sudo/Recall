@@ -242,6 +242,8 @@ model DebateSession {
   keyFallacy     String?
   missedArg      String
   modelRebuttal  String
+  argumentBreakdown Json?
+  skillScores    Json?
   messages       Json
   feedbackRating String?
   userId         String?

@@ -8,6 +8,8 @@ import { AppShell } from "@/components/app-shell";
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 
 type Message = { role: "user" | "opponent"; content: string };
+type ArgumentNote = { exchange: number; verdict: "strong" | "ok" | "weak"; note: string };
+type SkillScores = { clarity: number | null; evidence: number | null; rebuttal: number | null; logic: number | null; composure: number | null };
 
 function scoreColor(s: number) {
   if (s >= 8) return "text-emerald-300";
@@ -55,6 +57,8 @@ export default async function DebateSessionDetailPage({
       keyFallacy: true,
       missedArg: true,
       modelRebuttal: true,
+      argumentBreakdown: true,
+      skillScores: true,
       messages: true,
     },
   });
@@ -64,6 +68,15 @@ export default async function DebateSessionDetailPage({
   const messages = (session.messages as unknown as Message[]) ?? [];
   const strongPoints = (session.strongPoints as unknown as string[]) ?? [];
   const improvements = (session.improvements as unknown as string[]) ?? [];
+  const argumentBreakdown = (session.argumentBreakdown as unknown as ArgumentNote[]) ?? [];
+  const skillScores = session.skillScores as unknown as SkillScores | null;
+  const SKILLS: { key: keyof SkillScores; label: string }[] = [
+    { key: "clarity", label: "Clarity" },
+    { key: "evidence", label: "Evidence" },
+    { key: "rebuttal", label: "Rebuttal" },
+    { key: "logic", label: "Logic" },
+    { key: "composure", label: "Composure" },
+  ];
 
   const DIFFICULTY_LABELS: Record<string, string> = { easy: "Easy", medium: "Medium", hard: "Hard" };
 
@@ -121,6 +134,30 @@ export default async function DebateSessionDetailPage({
           </div>
         ) : null}
 
+        {/* Skill sub-scores */}
+        {skillScores ? (
+          <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Skill breakdown</p>
+            <div className="mt-3 grid grid-cols-5 gap-3">
+              {SKILLS.map(({ key, label }) => {
+                const val = skillScores[key];
+                if (val === null) return null;
+                const color = val >= 8 ? "text-emerald-300" : val >= 5 ? "text-amber-300" : "text-red-300";
+                const bar = val >= 8 ? "bg-emerald-400" : val >= 5 ? "bg-amber-400" : "bg-red-400";
+                return (
+                  <div key={key} className="flex flex-col items-center gap-1.5">
+                    <div className="relative flex h-16 w-full items-end justify-center overflow-hidden rounded-lg bg-white/5">
+                      <div className={`w-full rounded-t-sm transition-all ${bar}`} style={{ height: `${val * 10}%` }} />
+                    </div>
+                    <span className={`text-sm font-bold tabular-nums ${color}`}>{val}</span>
+                    <span className="text-[9px] font-medium uppercase tracking-wide text-slate-500">{label}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+
         {/* Key fallacy */}
         {session.keyFallacy ? (
           <div className="rounded-[2rem] border border-red-400/20 bg-red-400/5 p-5">
@@ -140,6 +177,30 @@ export default async function DebateSessionDetailPage({
           <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">How to handle their hardest challenge</p>
           <p className="mt-2 text-sm leading-6 text-slate-200 italic">&ldquo;{session.modelRebuttal}&rdquo;</p>
         </div>
+
+        {/* Argument by argument */}
+        {argumentBreakdown.length > 0 ? (
+          <div className="rounded-[2rem] border border-white/8 bg-white/[0.02] p-5 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Argument by argument</p>
+            <div className="space-y-2">
+              {argumentBreakdown.map((b) => (
+                <div key={b.exchange} className="flex items-start gap-3">
+                  <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold ${
+                    b.verdict === "strong" ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300" :
+                    b.verdict === "weak"   ? "border-red-400/30 bg-red-400/10 text-red-300" :
+                    "border-white/15 bg-white/5 text-slate-400"
+                  }`}>{b.exchange}</span>
+                  <div className="min-w-0">
+                    <span className={`text-[10px] font-bold uppercase tracking-wide ${
+                      b.verdict === "strong" ? "text-emerald-400" : b.verdict === "weak" ? "text-red-400" : "text-slate-500"
+                    }`}>{b.verdict}</span>
+                    <p className="text-sm leading-5 text-slate-300">{b.note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {/* Full transcript */}
         {messages.length > 0 ? (

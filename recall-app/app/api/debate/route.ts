@@ -5,6 +5,7 @@ import { OPPONENT_IDS, OPPONENT_LABELS, buildOpponentPrompt } from "@/lib/debate
 import { getCurrentUserId, scopedUserId } from "@/lib/session";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { recordDailyActivity, awardStreakAchievements } from "@/lib/record-activity";
 
 const messageSchema = z.object({
@@ -79,6 +80,8 @@ export async function POST(req: NextRequest) {
             keyFallacy: result.keyFallacy,
             missedArg: result.missedArg,
             modelRebuttal: result.modelRebuttal,
+            argumentBreakdown: result.argumentBreakdown,
+            skillScores: result.skillScores ?? Prisma.JsonNull,
             messages,
           },
         });
@@ -93,7 +96,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ...result, sessionId });
     }
 
-    const stream = streamDebateReply({ motion, position, opponentPrompt, messages });
+    const stream = streamDebateReply({ motion, position, opponentPrompt, messages, exchangeCount });
     if (!stream) {
       // No API key configured — conductDebate returns the canned fallback.
       const result = await conductDebate({
