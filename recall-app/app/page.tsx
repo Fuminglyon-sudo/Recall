@@ -320,6 +320,14 @@ const MASTERY_ORDER: MasteryLevel[] = ["new", "learning", "familiar", "mastered"
 async function Dashboard({ uid }: { uid: string | null }) {
   const data = await getDashboardData(uid);
   const total = data.totalCards || 1;
+  // A brand-new account has nothing yet for the mastery breakdown, streak
+  // calendar, or upcoming-reviews grid to actually show — those sections
+  // just render confusing zeros ("0 of 0 mastered") and empty boxes before
+  // the onboarding checklist below has even been acted on. Hiding them
+  // until there's a first card keeps the first screen short and actionable
+  // instead of a long scroll of empty state; they reappear on their own
+  // the moment the checklist's first step is done.
+  const isNewUser = data.totalCards === 0;
 
   return (
     <AppShell>
@@ -456,64 +464,68 @@ async function Dashboard({ uid }: { uid: string | null }) {
 
         <WordOfTheDay card={data.wordOfDay} />
 
-        <PhraseItPanel initialTone={data.voiceTone} saveToneAction={saveTone} />
+        {!isNewUser ? (
+          <>
+            <PhraseItPanel initialTone={data.voiceTone} saveToneAction={saveTone} />
 
-        <HowToUse />
+            <HowToUse />
 
-        {/* Mastery distribution */}
-        <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Mastery</p>
-              <p className="mt-1 text-base font-semibold text-white">
-                {data.mastery.mastered} of {data.totalCards} card{data.totalCards === 1 ? "" : "s"} mastered
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
-              {MASTERY_ORDER.map((lvl) => (
-                <span key={lvl} className="flex items-center gap-1.5">
-                  <span className={`h-2 w-2 rounded-full ${MASTERY[lvl].bar}`} />
-                  {MASTERY[lvl].label}
-                  <span className="font-medium text-slate-300">{data.mastery[lvl]}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-white/5">
-            {MASTERY_ORDER.map((lvl) => {
-              const pct = (data.mastery[lvl] / total) * 100;
-              if (pct === 0) return null;
-              return (
-                <div
-                  key={lvl}
-                  className={`h-full transition-all ${MASTERY[lvl].bar}`}
-                  style={{ width: `${pct}%` }}
-                  title={`${MASTERY[lvl].label}: ${data.mastery[lvl]}`}
-                />
-              );
-            })}
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {MASTERY_ORDER.map((lvl) => {
-              const meta = MASTERY[lvl];
-              const count = data.mastery[lvl];
-              return (
-                <div key={lvl} className={`rounded-2xl border p-3 ${meta.bg} ${meta.border}`}>
-                  <p className={`text-xs font-medium ${meta.color}`}>{meta.label}</p>
-                  <p className="mt-1 text-2xl font-semibold text-white">{count}</p>
-                  <p className="text-xs text-slate-500">{total > 0 ? Math.round((count / total) * 100) : 0}%</p>
+            {/* Mastery distribution */}
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Mastery</p>
+                  <p className="mt-1 text-base font-semibold text-white">
+                    {data.mastery.mastered} of {data.totalCards} card{data.totalCards === 1 ? "" : "s"} mastered
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                  {MASTERY_ORDER.map((lvl) => (
+                    <span key={lvl} className="flex items-center gap-1.5">
+                      <span className={`h-2 w-2 rounded-full ${MASTERY[lvl].bar}`} />
+                      {MASTERY[lvl].label}
+                      <span className="font-medium text-slate-300">{data.mastery[lvl]}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <StreakCalendar reviewDays={data.reviewDays} />
-          <UpcomingReviews byDay={data.upcomingByDay} />
-        </div>
+              <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-white/5">
+                {MASTERY_ORDER.map((lvl) => {
+                  const pct = (data.mastery[lvl] / total) * 100;
+                  if (pct === 0) return null;
+                  return (
+                    <div
+                      key={lvl}
+                      className={`h-full transition-all ${MASTERY[lvl].bar}`}
+                      style={{ width: `${pct}%` }}
+                      title={`${MASTERY[lvl].label}: ${data.mastery[lvl]}`}
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {MASTERY_ORDER.map((lvl) => {
+                  const meta = MASTERY[lvl];
+                  const count = data.mastery[lvl];
+                  return (
+                    <div key={lvl} className={`rounded-2xl border p-3 ${meta.bg} ${meta.border}`}>
+                      <p className={`text-xs font-medium ${meta.color}`}>{meta.label}</p>
+                      <p className="mt-1 text-2xl font-semibold text-white">{count}</p>
+                      <p className="text-xs text-slate-500">{total > 0 ? Math.round((count / total) * 100) : 0}%</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <StreakCalendar reviewDays={data.reviewDays} />
+              <UpcomingReviews byDay={data.upcomingByDay} />
+            </div>
+          </>
+        ) : null}
 
         <div className="grid gap-4 lg:grid-cols-[1.35fr_0.9fr]">
           <CalmCard

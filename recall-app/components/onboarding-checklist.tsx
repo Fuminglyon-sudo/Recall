@@ -98,6 +98,13 @@ export function OnboardingChecklist({
           </div>
         ))}
       </div>
+
+      <Link
+        href="/guide"
+        className="mt-4 inline-flex items-center gap-1 text-xs text-slate-500 transition hover:text-slate-300"
+      >
+        Want the full picture first? Read the guide →
+      </Link>
     </div>
   );
 }

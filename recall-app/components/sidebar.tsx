@@ -31,6 +31,7 @@ import {
   RotateCw,
   Gavel,
   FileSearch,
+  ChevronDown,
 } from "lucide-react";
 
 const CORE_LINKS = [
@@ -117,6 +118,14 @@ function NavSection({ label, children }: { label?: string; children: React.React
 }
 
 function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean }) {
+  const pathname = usePathname();
+  // A brand-new sidebar starts with just Core + Tools visible (11 items,
+  // 7 without admin) instead of every extra practice mode at once — these
+  // four are genuinely supplementary, not part of the main practice loop.
+  // Opens automatically if the user is already on one of these pages, so
+  // it never hides their own current location.
+  const moreActive = MORE_LINKS.some((link) => pathname.startsWith(link.href));
+
   return (
     <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
       <NavSection>
@@ -131,11 +140,17 @@ function NavItems({ onClose, isAdmin }: { onClose?: () => void; isAdmin: boolean
         ))}
       </NavSection>
 
-      <NavSection label="More">
-        {MORE_LINKS.map((link) => (
-          <NavLink key={link.href} {...link} onClose={onClose} />
-        ))}
-      </NavSection>
+      <details className="group" open={moreActive}>
+        <summary className="flex cursor-pointer list-none items-center justify-between px-3 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:text-slate-400 [&::-webkit-details-marker]:hidden">
+          More
+          <ChevronDown className="h-3 w-3 transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="space-y-0.5 pt-0.5">
+          {MORE_LINKS.map((link) => (
+            <NavLink key={link.href} {...link} onClose={onClose} />
+          ))}
+        </div>
+      </details>
 
       {isAdmin && (
         <NavSection label="Admin">
