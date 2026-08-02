@@ -100,6 +100,26 @@ export default async function SettingsPage() {
           </div>
         ) : null}
 
+        {/* Your data — Google users only */}
+        {!isAdminUser && email ? (
+          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 space-y-4">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Your data</p>
+            <div>
+              <p className="text-sm font-medium text-white">Download my data</p>
+              <p className="mt-1 text-xs leading-5 text-slate-400">
+                Get a JSON export of everything Soro Soke holds about your account — decks, cards, review
+                history, and practice session records.
+              </p>
+            </div>
+            <a
+              href="/api/account/export"
+              className="inline-flex items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/8"
+            >
+              Download my data
+            </a>
+          </div>
+        ) : null}
+
         {/* Danger zone — Google users only */}
         {!isAdminUser && email ? (
           <DeleteAccountForm email={email} />

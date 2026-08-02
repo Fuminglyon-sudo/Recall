@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { MarketingNav } from "@/components/marketing-nav";
 import { MarketingFooter } from "@/components/marketing-footer";
 import {
@@ -288,32 +287,46 @@ export default function AboutPage() {
 
         {/* ── Who's behind it ── */}
         <section className="py-20 border-b border-white/8">
-          <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5 p-8 sm:flex-row sm:items-center sm:gap-8">
-            <Image
-              src="/japa-reality-logo.png"
-              alt="Japa Reality"
-              width={64}
-              height={64}
-              className="h-16 w-16 shrink-0 rounded-2xl"
-            />
-            <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">A product of Japa Reality</p>
+          <div className="space-y-6">
+            <div className="max-w-xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">Who's behind it</p>
+              <h2 className="text-2xl font-extrabold text-white">Built by Japa Reality Technologies Inc.</h2>
               <p className="text-base leading-7 text-slate-300">
-                Soro Soke is built by the team behind{" "}
+                Soro Soke is built and operated by{" "}
+                <span className="font-medium text-emerald-300">Japa Reality Technologies Inc.</span>,
+                part of the{" "}
                 <a
-                  href="https://japareality.com"
+                  href="https://fuminglyonnetwork.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-emerald-300 underline decoration-emerald-300/30 underline-offset-4 transition hover:text-emerald-200"
                 >
-                  Japa Reality
-                </a>
-                , an AI-powered platform that helps African professionals plan their emigration —
-                matching them to the countries and routes that fit their profile, with transparent
-                costs and real-time policy data, instead of generic advice. &ldquo;Own your journey&rdquo;
-                is the same belief that shapes Soro Soke: give people the specific tools they need
-                for the moment ahead of them, not a one-size-fits-all script.
+                  FumingLyon Network
+                </a>{" "}
+                group.
               </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <a
+                href="https://getnexthop.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col gap-1.5 rounded-3xl border border-white/10 bg-white/5 p-6 transition hover:border-emerald-400/30 hover:bg-white/8"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Also from Japa Reality Technologies Inc.</p>
+                <p className="text-sm font-bold text-white">My Next Hop</p>
+                <p className="text-xs leading-5 text-slate-400">Interview coaching and career prep for engineers.</p>
+              </a>
+              <a
+                href="https://japareality.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col gap-1.5 rounded-3xl border border-white/10 bg-white/5 p-6 transition hover:border-emerald-400/30 hover:bg-white/8"
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Also from Japa Reality Technologies Inc.</p>
+                <p className="text-sm font-bold text-white">Japa Reality</p>
+                <p className="text-xs leading-5 text-slate-400">Emigration planning for African professionals — matching people to the countries and routes that fit their profile.</p>
+              </a>
             </div>
           </div>
         </section>

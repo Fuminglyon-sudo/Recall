@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import { SwRegister } from "@/components/sw-register";
 import { PwaInstallBanner } from "@/components/pwa-install-banner";
 import { VisitTracker } from "@/components/visit-tracker";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { AuthProvider } from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { GA_MEASUREMENT_ID } from "@/lib/analytics";
@@ -55,9 +56,9 @@ export const metadata: Metadata = {
     "Soro Soke",
     "language learning app",
   ],
-  authors: [{ name: "Sọrọ Sọkẹ AI", url: SITE_URL }],
-  creator: "Sọrọ Sọkẹ AI",
-  publisher: "Sọrọ Sọkẹ AI",
+  authors: [{ name: "Japa Reality Technologies Inc.", url: "https://japareality.com" }],
+  creator: "Japa Reality Technologies Inc.",
+  publisher: "Japa Reality Technologies Inc.",
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: {
     icon: [
@@ -97,6 +98,26 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+// Japa Reality Technologies Inc. operates three sibling products under the
+// FumingLyon Network group — this is the one place that relationship is
+// declared structurally, rather than just stated in footer/about copy.
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Japa Reality Technologies Inc.",
+  url: "https://japareality.com",
+  parentOrganization: {
+    "@type": "Organization",
+    name: "FumingLyon Network Inc.",
+    url: "https://fuminglyonnetwork.com",
+  },
+  subOrganization: [
+    { "@type": "Organization", name: "Sọrọ Sọkẹ AI", url: SITE_URL },
+    { "@type": "Organization", name: "My Next Hop", url: "https://getnexthop.com" },
+    { "@type": "Organization", name: "Japa Reality", url: "https://japareality.com" },
+  ],
+};
+
 const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
@@ -107,6 +128,7 @@ const websiteJsonLd = {
   applicationCategory: "EducationApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "USD", availability: "https://schema.org/LimitedAvailability" },
+  publisher: { "@type": "Organization", name: "Japa Reality Technologies Inc.", url: "https://japareality.com" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -118,7 +140,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {process.env.NODE_ENV === "production" ? <VisitTracker /> : null}
 
         {/* Google tag (gtag.js) — skipped outside production so local dev
-            and preview traffic doesn't pollute analytics. */}
+            and preview traffic doesn't pollute analytics. Consent Mode v2:
+            storage defaults to denied for every visitor until they choose
+            in the cookie banner (components/cookie-consent-banner.tsx); if
+            they already chose "allow analytics" on a previous visit, that
+            choice is re-applied immediately so returning visitors aren't
+            re-asked. No ad features exist in this app, so ad_* signals stay
+            permanently denied rather than being wired to any UI control. */}
         {process.env.NODE_ENV === "production" ? (
           <>
             <Script
@@ -129,6 +157,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               {`
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
+                gtag('consent', 'default', {
+                  ad_storage: 'denied',
+                  ad_user_data: 'denied',
+                  ad_personalization: 'denied',
+                  analytics_storage: 'denied',
+                  wait_for_update: 500
+                });
+                (function(){
+                  try {
+                    var saved = JSON.parse(localStorage.getItem('soro-soke-cookie-consent') || 'null');
+                    if (saved && saved.analytics) {
+                      gtag('consent', 'update', { analytics_storage: 'granted' });
+                    }
+                  } catch (e) {}
+                })();
                 gtag('js', new Date());
 
                 gtag('config', '${GA_MEASUREMENT_ID}');
@@ -136,6 +179,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Script>
           </>
         ) : null}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
@@ -157,6 +204,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </ThemeProvider>
         <SwRegister />
         <PwaInstallBanner />
+        <CookieConsentBanner />
       </body>
     </html>
   );

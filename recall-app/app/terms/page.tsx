@@ -42,9 +42,12 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Acceptance</h2>
             <p>
-              By creating an account or using Soro Soke (&quot;the Service&quot;), you agree to these Terms of
-              Service. If you do not agree, do not use the Service. These terms form a binding agreement
-              between you and Soro Soke.
+              Soro Soke (&quot;the Service&quot;) is operated by{" "}
+              <span className="text-slate-300 font-medium">Japa Reality Technologies Inc.</span>{" "}
+              (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;), a Canadian company and part of the FumingLyon Network group.
+              By creating an account or using the Service, you agree to these Terms of Service. If you
+              do not agree, do not use the Service. These terms form a binding agreement between you and
+              Japa Reality Technologies Inc.
             </p>
           </section>
 
@@ -53,8 +56,8 @@ export default function TermsPage() {
             <p>
               Soro Soke is a vocabulary and communication-practice tool that uses spaced repetition
               (SM-2 algorithm), AI-assisted card drafting, and speaking/conversation practice features
-              including Speak Up and Small Talk Lab. The Service is provided &quot;as is&quot; and is free
-              to use during its current beta period.
+              including Speak Up, Small Talk Lab, Debate Lab, and Doc Lab. The Service is provided
+              &quot;as is&quot; and is free to use during its current beta period.
             </p>
           </section>
 
@@ -75,8 +78,8 @@ export default function TermsPage() {
                 account with others. You are responsible for all activity that occurs under your account.
               </p>
               <p>
-                You may delete your account at any time from Settings. Deletion permanently removes all
-                your data and cannot be undone.
+                You may download a copy of your data, or delete your account, at any time from Settings.
+                Account deletion permanently removes all your data and cannot be undone.
               </p>
             </div>
           </section>
@@ -145,11 +148,20 @@ export default function TermsPage() {
           <section className="space-y-4">
             <h2 className="text-base font-semibold text-white">Limitation of liability</h2>
             <p>
-              To the maximum extent permitted by law, Soro Soke shall not be liable for any indirect,
-              incidental, special, consequential, or punitive damages arising from your use of the
-              Service, even if we have been advised of the possibility of such damages. Our total
-              liability to you for any claim shall not exceed the amount you paid to use the Service
-              in the 12 months preceding the claim, or £50, whichever is greater.
+              To the maximum extent permitted by law, Japa Reality Technologies Inc. shall not be liable
+              for any indirect, incidental, special, consequential, or punitive damages arising from
+              your use of the Service, even if we have been advised of the possibility of such damages.
+              Our total liability to you for any claim shall not exceed the amount you paid to use the
+              Service in the 12 months preceding the claim, or CAD $75, whichever is greater.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-base font-semibold text-white">Governing law</h2>
+            <p>
+              These terms are governed by the laws of Canada, without regard to conflict of law
+              principles. This does not remove any mandatory consumer-protection rights you have under
+              the law of the country where you live.
             </p>
           </section>
 
