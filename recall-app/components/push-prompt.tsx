@@ -1,20 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, BellOff, X } from "lucide-react";
 
 export function PushPrompt({ vapidPublicKey }: { vapidPublicKey: string }) {
-  const [status, setStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">(() => {
-    if (typeof window === "undefined") return "idle";
-    if (!("Notification" in window) || !("serviceWorker" in navigator)) return "unsupported";
-    if (Notification.permission === "granted") return "subscribed";
-    if (Notification.permission === "denied") return "denied";
-    return "idle";
-  });
-  const [dismissed, setDismissed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !!sessionStorage.getItem("push-prompt-dismissed");
-  });
+  // Both default to the server-safe value (there's no window there) instead
+  // of reading Notification.permission / sessionStorage directly during the
+  // initial render. That read-during-render caused a hydration mismatch for
+  // anyone who'd already subscribed, been denied, or dismissed this before —
+  // the server always rendered the "Turn on reminders" prompt regardless of
+  // their real state. Corrected in the effect below, after hydration.
+  const [status, setStatus] = useState<"idle" | "subscribed" | "denied" | "unsupported">("idle");
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) setStatus("unsupported");
+    else if (Notification.permission === "granted") setStatus("subscribed");
+    else if (Notification.permission === "denied") setStatus("denied");
+    setDismissed(!!sessionStorage.getItem("push-prompt-dismissed"));
+  }, []);
 
   async function subscribe() {
     if (!("serviceWorker" in navigator)) return;

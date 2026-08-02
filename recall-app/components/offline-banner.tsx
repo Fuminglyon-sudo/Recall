@@ -4,9 +4,14 @@ import { useState, useEffect } from "react";
 import { WifiOff } from "lucide-react";
 
 export function OfflineBanner() {
-  const [offline, setOffline] = useState(() => typeof navigator !== "undefined" ? !navigator.onLine : false);
+  // Starts false to match the server (no navigator there) — corrected
+  // immediately in the effect below instead of read directly during the
+  // initial render, which caused a hydration mismatch for anyone actually
+  // offline at load.
+  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
+    setOffline(!navigator.onLine);
     const on = () => setOffline(false);
     const off = () => setOffline(true);
     window.addEventListener("online", on);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Copy, Check, Link2Off } from "lucide-react";
 import { generateShareLink, revokeShareLink } from "@/app/decks/actions";
 import { SubmitButton } from "@/components/forms";
@@ -12,7 +12,12 @@ export function DeckSharePanel({
   deckId: string;
   shareToken: string | null;
 }) {
-  const [origin] = useState(() => typeof window !== "undefined" ? window.location.origin : "");
+  // Starts empty to match the server (no window there) instead of reading
+  // window.location.origin directly during the initial render — for an
+  // already-shared deck, that mismatched the share URL text between server
+  // and client on every load. Filled in after hydration, in the effect.
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
   const [copied, setCopied] = useState(false);
 
   const shareUrl = shareToken ? `${origin}/decks/shared/${shareToken}` : null;

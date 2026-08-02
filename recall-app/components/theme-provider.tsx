@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "dark" | "light";
 
@@ -10,10 +10,18 @@ const ThemeCtx = createContext<{ theme: Theme; toggle: () => void }>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof document === "undefined") return "dark";
-    return document.documentElement.classList.contains("dark") ? "dark" : "light";
-  });
+  // Must start as "dark" to match the server-rendered <html> class (see
+  // app/layout.tsx) — reading document.documentElement here directly caused
+  // a hydration mismatch, since by the time this runs on the client the
+  // beforeInteractive no-flash script has already corrected the DOM to the
+  // real saved theme, while the server never had a DOM to read at all. The
+  // effect below applies the real value after hydration completes, where
+  // it's safe.
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  useEffect(() => {
+    setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
+  }, []);
 
   function toggle() {
     setTheme((prev) => {

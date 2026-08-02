@@ -48,9 +48,14 @@ export function ReviewCard({
   const [association, setAssociation] = useState("");
   const [pendingGrade, setPendingGrade] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [offline, setOffline] = useState(() => typeof navigator !== "undefined" ? !navigator.onLine : false);
+  // Starts false to match the server (no navigator there) — corrected
+  // immediately in the effect below instead of read directly during the
+  // initial render, which caused a hydration mismatch for anyone actually
+  // offline at load.
+  const [offline, setOffline] = useState(false);
 
   useEffect(() => {
+    setOffline(!navigator.onLine);
     const on = () => setOffline(false);
     const off = () => setOffline(true);
     window.addEventListener("online", on);
