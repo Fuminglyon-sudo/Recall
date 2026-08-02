@@ -8,6 +8,7 @@ import { SoroSokeMark } from "./soro-soke-mark";
 import { ThemeToggle } from "./theme-toggle";
 import { PrincessChat } from "./princess-chat";
 import { purgeOfflineCaches } from "@/lib/service-worker";
+import { openCookieSettings } from "@/lib/cookie-consent";
 
 interface LandingPageProps {
   isLoggedIn?: boolean;
@@ -614,7 +615,10 @@ export function LandingPage({ isLoggedIn = false }: LandingPageProps) {
                     ].map(({ label, href }) => (
                       <Link key={label} href={href} className="transition hover:text-slate-400">{label}</Link>
                     ))}
-                    <span>© {new Date().getFullYear()} Soro Soke</span>
+                    <button type="button" onClick={openCookieSettings} className="transition hover:text-slate-400">
+                      Cookie settings
+                    </button>
+                    <span>© {new Date().getFullYear()} Japa Reality Technologies Inc.</span>
                   </div>
                 </section>
               );
